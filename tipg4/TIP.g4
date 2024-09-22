@@ -38,12 +38,17 @@ nameDeclaration : IDENTIFIER ;
 //
 expr : expr '(' (expr (',' expr)*)? ')' 	#funAppExpr
      | expr '.' IDENTIFIER 			#accessExpr
-     | '*' expr 				#deRefExpr
+     | '*' expr 				#deRefExpr // added
+     | '-' expr                 #negExpr // added
      | SUB NUMBER				#negNumber
+     | expr op=(INCR | DECR)    #incrementExpr // added
      | '&' expr					#refExpr
-     | expr op=(MUL | DIV) expr 		#multiplicativeExpr
+     | '!' expr                 #notExpr // added
+     | '#' arrayExpr                 #lengthExpr // added
+     | expr op=(AND | OR) expr          #logicalExpr
+     | expr op=(MUL | DIV | MOD) expr 		#multiplicativeExpr // added
      | expr op=(ADD | SUB) expr 		#additiveExpr
-     | expr op=GT expr 				#relationalExpr
+     | expr op=(GT | LT | GTE | LTE) expr 				#relationalExpr // added
      | expr op=(EQ | NE) expr 			#equalityExpr
      | IDENTIFIER				#varExpr
      | NUMBER					#numExpr
@@ -51,12 +56,17 @@ expr : expr '(' (expr (',' expr)*)? ')' 	#funAppExpr
      | KALLOC expr				#allocExpr
      | KNULL					#nullExpr
      | recordExpr				#recordRule
+     | arrayExpr                #arrayRule
      | '(' expr ')'				#parenExpr
 ;
 
 recordExpr : '{' (fieldExpr (',' fieldExpr)*)? '}' ;
 
 fieldExpr : IDENTIFIER ':' expr ;
+
+arrayIndexExpr : expr '[' expr ']' ; added
+
+arrayExpr : '[' (expr? (',' expr)*)? ']'  | '[' expr 'of' expr ']'; //added
 
 ////////////////////// TIP Statements ////////////////////////// 
 
@@ -66,6 +76,9 @@ statement : blockStmt
     | ifStmt
     | outputStmt
     | errorStmt
+    | ternaryStmt // added below
+    | forStmt
+    | forRangeStmt
 ;
 
 assignStmt : expr '=' expr ';' ;
@@ -82,6 +95,13 @@ errorStmt : KERROR expr ';'  ;
 
 returnStmt : KRETURN expr ';'  ;
 
+ternaryStmt : expr '?' expr ':' expr // added below
+
+forStmt : KFOR '(' expr ':' expr ')' statement ;
+
+forRangeStmt : KFOR '(' expr ':' expr  '..' 'expr' 'by' (expr | 1) ')' statement ;
+
+
 
 ////////////////////// TIP Lexicon ////////////////////////// 
 
@@ -94,6 +114,16 @@ SUB : '-' ;
 GT  : '>' ;
 EQ  : '==' ;
 NE  : '!=' ;
+NOT : '!' ; // new additions below
+AND : '&&' ;
+OR  : '||' ; 
+MOD : '%' ;
+LT  : '<' ;
+GTE : '>=' ;
+LTE : '<=' ;
+INCR : '++' ;
+DECR : '--' ; 
+
 
 NUMBER : [0-9]+ ;
 
@@ -109,6 +139,9 @@ KRETURN : 'return' ;
 KNULL   : 'null' ;
 KOUTPUT : 'output' ;
 KERROR  : 'error' ;
+KFALSE  : 'false' ; // added keyword false
+KTRUE   : 'true'  ; // added keyword true
+KFOR    : 'for'   ;
 
 // Keyword to declare functions as polymorphic
 KPOLY   : 'poly' ;
