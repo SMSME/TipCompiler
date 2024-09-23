@@ -64,7 +64,7 @@ recordExpr : '{' (fieldExpr (',' fieldExpr)*)? '}' ;
 
 fieldExpr : IDENTIFIER ':' expr ;
 
-arrayIndexExpr : expr '[' expr ']' ; added
+arrayIndexExpr : expr '[' expr ']' ; //added
 
 arrayExpr : '[' (expr? (',' expr)*)? ']'  | '[' expr 'of' expr ']'; //added
 
