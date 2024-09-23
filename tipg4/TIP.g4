@@ -44,7 +44,8 @@ expr : expr '(' (expr (',' expr)*)? ')' 	#funAppExpr
      | expr op=(INCR | DECR)    #incrementExpr // added
      | '&' expr					#refExpr
      | '!' expr                 #notExpr // added
-     | '#' arrayExpr                 #lengthExpr // added
+     | '#' expr                 #lengthExpr // added
+     | expr '[' expr ']'        #arrayIndexExpr // added
      | expr op=(AND | OR) expr          #logicalExpr
      | expr op=(MUL | DIV | MOD) expr 		#multiplicativeExpr // added
      | expr op=(ADD | SUB) expr 		#additiveExpr
@@ -64,9 +65,8 @@ recordExpr : '{' (fieldExpr (',' fieldExpr)*)? '}' ;
 
 fieldExpr : IDENTIFIER ':' expr ;
 
-arrayIndexExpr : expr '[' expr ']' ; //added
-
-arrayExpr : '[' (expr? (',' expr)*)? ']'  | '[' expr 'of' expr ']'; //added
+arrayExpr : '[' (expr (',' expr)*)? ']' 
+    | '[' expr 'of' expr ']'; //added
 
 ////////////////////// TIP Statements ////////////////////////// 
 
@@ -95,11 +95,11 @@ errorStmt : KERROR expr ';'  ;
 
 returnStmt : KRETURN expr ';'  ;
 
-ternaryStmt : expr '?' expr ':' expr // added below
+ternaryStmt : expr '?' expr ':' expr  ; // added below
 
-forStmt : KFOR '(' expr ':' expr ')' statement ;
+forStmt : KFOR '(' expr ':' expr ')' statement  ;
 
-forRangeStmt : KFOR '(' expr ':' expr  '..' 'expr' 'by' (expr | 1) ')' statement ;
+forRangeStmt : KFOR '(' expr ':' expr  '..' 'expr' ('by' expr)? ')' statement   ;
 
 
 
