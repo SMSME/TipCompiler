@@ -46,6 +46,7 @@ expr : expr '(' (expr (',' expr)*)? ')' 	#funAppExpr
      | '!' expr                 #notExpr // added
      | '#' expr                 #lengthExpr // added
      | expr '[' expr ']'        #arrayIndexExpr // added
+     | expr '?' expr ':' expr  ;        #ternaryExpr //added
      | expr op=(AND | OR) expr          #logicalExpr
      | expr op=(MUL | DIV | MOD) expr 		#multiplicativeExpr // added
      | expr op=(ADD | SUB) expr 		#additiveExpr
@@ -76,9 +77,9 @@ statement : blockStmt
     | ifStmt
     | outputStmt
     | errorStmt
-    | ternaryStmt // added below
-    | forStmt
+    | forStmt //change start
     | forRangeStmt
+    | incrementStmt
 ;
 
 assignStmt : expr '=' expr ';' ;
@@ -95,11 +96,11 @@ errorStmt : KERROR expr ';'  ;
 
 returnStmt : KRETURN expr ';'  ;
 
-ternaryStmt : expr '?' expr ':' expr  ; // added below
-
-forStmt : KFOR '(' expr ':' expr ')' statement  ;
+forStmt : KFOR '(' expr ':' expr ')' statement  ; // changes start
 
 forRangeStmt : KFOR '(' expr ':' expr  '..' 'expr' ('by' expr)? ')' statement   ;
+
+incrementStmt : expr (INCR | DECR) ';' ;
 
 
 
@@ -119,8 +120,8 @@ AND : '&&' ;
 OR  : '||' ; 
 MOD : '%' ;
 LT  : '<' ;
-GTE : '>=' ;
-LTE : '<=' ;
+GTE : '>=' ; 
+LTE : '<=' ; // test done basic
 INCR : '++' ;
 DECR : '--' ; 
 
