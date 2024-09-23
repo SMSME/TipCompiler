@@ -39,14 +39,14 @@ nameDeclaration : IDENTIFIER ;
 expr : expr '(' (expr (',' expr)*)? ')' 	#funAppExpr
      | expr '.' IDENTIFIER 			#accessExpr
      | '*' expr 				#deRefExpr // added
-     | '-' expr                 #negExpr // added
      | SUB NUMBER				#negNumber
+     | '-' expr                 #negExpr // added
      | expr op=(INCR | DECR)    #incrementExpr // added
      | '&' expr					#refExpr
      | '!' expr                 #notExpr // added
      | '#' expr                 #lengthExpr // added
      | expr '[' expr ']'        #arrayIndexExpr // added
-     | expr '?' expr ':' expr  ;        #ternaryExpr //added
+     | expr '?' expr ':' expr          #ternaryExpr //added
      | expr op=(AND | OR) expr          #logicalExpr
      | expr op=(MUL | DIV | MOD) expr 		#multiplicativeExpr // added
      | expr op=(ADD | SUB) expr 		#additiveExpr
