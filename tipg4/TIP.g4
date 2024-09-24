@@ -38,16 +38,15 @@ nameDeclaration : IDENTIFIER ;
 //
 expr : expr '(' (expr (',' expr)*)? ')' 	#funAppExpr
      | expr '.' IDENTIFIER 			#accessExpr
-     | '*' expr 				#deRefExpr // added
+     | '*' expr 				#deRefExpr
      | SUB NUMBER				#negNumber
      | '-' expr                 #negExpr // added
-     | expr op=(INCR | DECR)    #incrementExpr // added
      | '&' expr					#refExpr
      | '!' expr                 #notExpr // added
      | '#' expr                 #lengthExpr // added
      | expr '[' expr ']'        #arrayIndexExpr // added
      | expr '?' expr ':' expr          #ternaryExpr //added
-     | expr op=(AND | OR) expr          #logicalExpr
+     | expr op=(AND | OR) expr          #logicalExpr // added
      | expr op=(MUL | DIV | MOD) expr 		#multiplicativeExpr // added
      | expr op=(ADD | SUB) expr 		#additiveExpr
      | expr op=(GT | LT | GTE | LTE) expr 				#relationalExpr // added
@@ -142,7 +141,7 @@ KOUTPUT : 'output' ;
 KERROR  : 'error' ;
 KFALSE  : 'false' ; // added keyword false
 KTRUE   : 'true'  ; // added keyword true
-KFOR    : 'for'   ;
+KFOR    : 'for'   ; // added for
 
 // Keyword to declare functions as polymorphic
 KPOLY   : 'poly' ;

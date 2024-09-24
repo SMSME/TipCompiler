@@ -5,6 +5,88 @@
 
 #include <catch2/catch_test_macros.hpp>
 
+
+/* 
+BASE TESTS:
+
+Precedence tests???zzdid u 
+
+Boolean:
+- true
+- false
+
+Expression tests:
+- Deref
+- Negative expression
+- ! expression
+- Ternary expressions
+- Mod expression (within multiplicative) x
+- Relational expression 
+    - GTE x
+    - LTE x 
+    - LT x
+- Logical
+    - ||
+    - &&
+
+Array Tests:
+- Creating array expression
+- Length of array
+- Indexing into array
+
+For Loop Tests:
+- For loop statement
+- Range statement
+
+Increment and decrement statements
+
+*/
+
+// RELATIONAL EXPRESSIONS
+TEST_CASE("TIP Lexer: New legal comparison token - LT", "[TIP Lexer]") {
+  std::stringstream stream;
+  stream << R"(
+      operators() { var x; if (x < 0) x = x + 1; return x; }
+    )";
+
+  REQUIRE(ParserHelper::is_parsable(stream));
+}
+
+TEST_CASE("TIP Lexer: New legal comparison token - GTE", "[TIP Lexer]") {
+  std::stringstream stream;
+  stream << R"(
+      operators() { var x; if (x >= 0) x = x + 1; return x; }
+    )";
+
+  REQUIRE(ParserHelper::is_parsable(stream));
+}
+
+TEST_CASE("TIP Lexer: New legal comparison token - LTE", "[TIP Lexer]") {
+  std::stringstream stream;
+  stream << R"(
+      operators() { var x; if (x <= 0) x = x + 1; return x; }
+    )";
+
+  REQUIRE(ParserHelper::is_parsable(stream));
+}
+
+// Altered test case MOD illegal comparison token now legal, require_false -> require_true
+TEST_CASE("TIP Lexer: New legal operator token - MOD", "[TIP Lexer]") {
+  std::stringstream stream;
+  stream << R"(
+      operators() { var x; if (x == 0) x = x % 2; return x; }
+    )";
+
+  REQUIRE(ParserHelper::is_parsable(stream));
+}
+
+
+
+
+
+
+
+//TODO: Replace with for loop
 TEST_CASE("SIP Parser: conditionals", "[SIP Parser]") {
   std::stringstream stream;
   stream << R"(
@@ -24,6 +106,7 @@ TEST_CASE("SIP Parser: conditionals", "[SIP Parser]") {
   REQUIRE(ParserHelper::is_parsable(stream));
 }
 
+//TODO: Replace with for loop range
 TEST_CASE("TIP Parser: operators", "[TIP Parser]") {
   std::stringstream stream;
   stream << R"(
@@ -266,25 +349,7 @@ TEST_CASE("TIP Parser: keywords as ids", "[TIP Parser]") {
 
   REQUIRE_FALSE(ParserHelper::is_parsable(stream));
 }
-// Altered test case LTE illegal comparison token now legal, require_false -> require
-TEST_CASE("TIP Lexer: New legal comparison token - LTE", "[TIP Lexer]") {
-  std::stringstream stream;
-  stream << R"(
-      operators() { var x; if (x <= 0) x = x + 1; return x; }
-    )";
 
-  REQUIRE(ParserHelper::is_parsable(stream));
-}
-
-// Altered test case MOD illegal comparison token now legal, require_false -> require_true
-TEST_CASE("TIP Lexer: New legal operator token - MOD", "[TIP Lexer]") {
-  std::stringstream stream;
-  stream << R"(
-      operators() { var x; if (x == 0) x = x % 2; return x; }
-    )";
-
-  REQUIRE(ParserHelper::is_parsable(stream));
-}
 
 TEST_CASE("TIP Lexer: illegal identifier token", "[TIP Lexer]") {
   std::stringstream stream;
