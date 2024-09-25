@@ -12,51 +12,44 @@ BASE TESTS:
 Precedence tests???
 
 Boolean:
-- true
-- false
+- true x
+- false x
 
 Expression tests:
 
 - Negative expression
-- ! expression
-- Ternary expressions
+- ! expression x 
+- Ternary expressions x
 - Mod expression (within multiplicative) x
 - Relational expression 
     - GTE x
     - LTE x 
     - LT x
 - Logical
-    - ||
-    - &&
+    - || x
+    - && x
 
 Array Tests:
-- Creating array expression
-- Length of array
-- Indexing into array
+- Creating array expression x
+- Length of array x 
+- Indexing into array x
 
 For Loop Tests:
-- For loop statement
-- Range statement
+- For loop statement x
+- Range statement x
 
-Increment and decrement statements
+Increment and decrement statements x
 
 */
 
-TEST_CASE("SIP Parser: simple ternary expression", "[SIP Parser]") {
+// /************ Ternary Expression ************/
+TEST_CASE("SIP Parser: ternary expression", "[SIP Parser]") {
   std::stringstream stream;
   stream << R"(
-      var x; var y; var z; x '?' y ':' z;
-    )";
-
-  REQUIRE(ParserHelper::is_parsable(stream));
-}
-
-TEST_CASE("SIP Parser: ternary expression in function", "[SIP Parser]") {
-  std::stringstream stream;
-  stream << R"(
-    main() { 
-        var x; var y; var z; 
-        x '?' y ':' z; 
+    tern() { 
+        var x, y, z;
+        z = 1;
+        z = (x == 1) ? 1 : 2; 
         return 0; 
         }
     )";
@@ -64,15 +57,275 @@ TEST_CASE("SIP Parser: ternary expression in function", "[SIP Parser]") {
   REQUIRE(ParserHelper::is_parsable(stream));
 }
 
-TEST_CASE("SIP Parser: invalid ternary expression", "[SIP Parser]") {
+TEST_CASE("SIP Parser: illegal ternary expression no colon", "[SIP Parser]") {
   std::stringstream stream;
   stream << R"(
-        var x; var y; x '?' y; 
+    ill_tern() { 
+        var x, y, z;
+        z = 1;
+        z = (x == 1) ? 1; 
+        return 0; 
+        }
     )";
 
   REQUIRE_FALSE(ParserHelper::is_parsable(stream));
 }
 
+TEST_CASE("SIP Parser: illegal ternary expression only colon", "[SIP Parser]") {
+  std::stringstream stream;
+  stream << R"(
+    ill_tern() { 
+        var x, y, z;
+        z = 1;
+        z = (x == 1) : 1; 
+        return 0; 
+        }
+    )";
+
+  REQUIRE_FALSE(ParserHelper::is_parsable(stream));
+}
+
+TEST_CASE("SIP Parser: illegal ternary no second and third xpressions", "[SIP Parser]") {
+  std::stringstream stream;
+  stream << R"(
+    ill_tern() { 
+        var x, y, z;
+        z = 1;
+        z = (x == 1) ? : ; 
+        return 0; 
+        }
+    )";
+
+  REQUIRE_FALSE(ParserHelper::is_parsable(stream));
+}
+
+TEST_CASE("SIP Parser: illegal ternary no first expression", "[SIP Parser]") {
+  std::stringstream stream;
+  stream << R"(
+    ill_tern() { 
+        var x, y, z;
+        z = 1;
+         ? 1 : 2 ; 
+        return 0; 
+        }
+    )";
+
+  REQUIRE_FALSE(ParserHelper::is_parsable(stream));
+}
+
+TEST_CASE("SIP Parser: illegal ternary no second expression", "[SIP Parser]") {
+  std::stringstream stream;
+  stream << R"(
+    ill_tern() { 
+        var x, y, z;
+        z = 1;
+         z = (x == 1 ? : 2 ; 
+        return 0; 
+        }
+    )";
+
+  REQUIRE_FALSE(ParserHelper::is_parsable(stream));
+}
+
+TEST_CASE("SIP Parser: illegal ternary expression no third expression", "[SIP Parser]") {
+  std::stringstream stream;
+  stream << R"(
+    ill_tern() { 
+        var x, y, z;
+        z = 1;
+        z = (x == 1) ? 1 : ; 
+        return 0; 
+        }
+    )";
+
+  REQUIRE_FALSE(ParserHelper::is_parsable(stream));
+}
+
+// /************ Array Expression ************/
+TEST_CASE("SIP Parser: empty array expression", "[SIP Parser]") {
+  std::stringstream stream;
+  stream << R"(
+      arr() {
+        return [];
+      }
+    )";
+  REQUIRE(ParserHelper::is_parsable(stream));
+}
+
+TEST_CASE("SIP Parser: array expression one item", "[SIP Parser]") {
+  std::stringstream stream;
+  stream << R"(
+      arr() {
+        return [2];
+      }
+    )";
+  REQUIRE(ParserHelper::is_parsable(stream));
+}
+
+TEST_CASE("SIP Parser: array expression multiple items", "[SIP Parser]") {
+  std::stringstream stream;
+  stream << R"(
+      arr() {
+        return [1, 2, 3];
+      }
+    )";
+  REQUIRE(ParserHelper::is_parsable(stream));
+}
+
+TEST_CASE("SIP Parser: array of expression", "[SIP Parser]") {
+  std::stringstream stream;
+  stream << R"(
+      arr() {
+        return [1 of 4];
+      }
+    )";
+  REQUIRE(ParserHelper::is_parsable(stream));
+}
+
+TEST_CASE("SIP Parser: length of expression", "[SIP Parser]") {
+  std::stringstream stream;
+  stream << R"(
+      arr() {
+        return #[1 of 4];
+      }
+    )";
+  REQUIRE(ParserHelper::is_parsable(stream));
+}
+
+TEST_CASE("SIP Parser: length expression", "[SIP Parser]") {
+  std::stringstream stream;
+  stream << R"(
+      arr() {
+        return #[];
+      }
+    )";
+  REQUIRE(ParserHelper::is_parsable(stream));
+}
+
+TEST_CASE("SIP Parser: index expression", "[SIP Parser]") {
+  std::stringstream stream;
+  stream << R"(
+      arr() {
+        x = [1, 2, 3];
+        return x[0];
+      }
+    )";
+  REQUIRE(ParserHelper::is_parsable(stream));
+}
+
+TEST_CASE("SIP Parser: index of expression", "[SIP Parser]") {
+  std::stringstream stream;
+  stream << R"(
+      arr() {
+        x = [1 of 3];
+        return x[0];
+      }
+    )";
+  REQUIRE(ParserHelper::is_parsable(stream));
+}
+
+TEST_CASE("SIP Parser: illegal array statement ", "[SIP Parser]") {
+  std::stringstream stream;
+  stream << R"(
+      arr() {
+        return [2++ ;];
+      }
+    )";
+  REQUIRE_FALSE(ParserHelper::is_parsable(stream));
+}
+
+TEST_CASE("SIP Parser: illegal array of statement ", "[SIP Parser]") {
+  std::stringstream stream;
+  stream << R"(
+      arr() {
+        return [2++ ; of 2];
+      }
+    )";
+  REQUIRE_FALSE(ParserHelper::is_parsable(stream));
+}
+
+
+
+// /************ For Loops Expression ************/
+TEST_CASE("SIP Parser: for loop", "[SIP Parser]") {
+  std::stringstream stream;
+  stream << R"(
+      loop() {
+        var x, y, z;
+          x = 1; z = 5; y = 0;
+          for (x : z) {
+            y = y + 1;
+          }
+        return y;
+      }
+    )";
+
+  REQUIRE(ParserHelper::is_parsable(stream));
+}
+
+TEST_CASE("SIP Parser: range for loop", "[SIP Parser]") {
+  std::stringstream stream;
+  stream << R"(
+      loop() {
+        var x, y, z;
+          x = 1; z = 1; y = 5;
+          for (x : z .. y by 2) {
+            y = y + 1;
+          }
+        return y;
+      }
+    )";
+
+  REQUIRE(ParserHelper::is_parsable(stream));
+}
+
+TEST_CASE("SIP Parser: range for loop no by", "[SIP Parser]") {
+  std::stringstream stream;
+  stream << R"(
+      loop() {
+        var x, y, z;
+          x = 1; z = 1; y = 5;
+          for (x : z .. y) {
+            y = y + 1;
+          }
+        return y;
+      }
+    )";
+
+  REQUIRE(ParserHelper::is_parsable(stream));
+}
+
+TEST_CASE("SIP Parser: illegal for loop", "[SIP Parser]") {
+  std::stringstream stream;
+  stream << R"(
+      loop() {
+        var x, y, z;
+          x = 1; z = 5; y = 0;
+          for (x : z) {
+            2;
+          }
+        return y;
+      }
+    )";
+
+  REQUIRE_FALSE(ParserHelper::is_parsable(stream));
+}
+
+TEST_CASE("SIP Parser: illegal range loop no .. ", "[SIP Parser]") {
+  std::stringstream stream;
+  stream << R"(
+      loop() {
+        var x, y, z;
+          x = 1; z = 1; y = 5;
+          for (x : z  y) {
+            y = y + 1;
+          }
+        return y;
+      }
+    )";
+
+  REQUIRE_FALSE(ParserHelper::is_parsable(stream));
+}
 
 //TODO: Replace with for loop range
 // TEST_CASE("TIP Parser: operators", "[TIP Parser]") {

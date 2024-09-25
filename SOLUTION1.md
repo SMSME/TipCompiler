@@ -7,7 +7,7 @@ Deliverable 1:
 
 **Unary Operator**
 - [NOT : '!'] added under lexicon
-- []'!' expr] added under expressions
+- []'!' expr added under expressions
 
 **Non-short Cicruit Binary  Operators**
 - [AND : '&&'] as well as [OR  : '||'] added under lexicon

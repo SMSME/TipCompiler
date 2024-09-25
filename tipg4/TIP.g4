@@ -99,7 +99,7 @@ returnStmt : KRETURN expr ';'  ;
 
 forStmt : KFOR '(' expr ':' expr ')' statement  ; // changes start
 
-forRangeStmt : KFOR '(' expr ':' expr  '..' 'expr' ('by' expr)? ')' statement   ;
+forRangeStmt : KFOR '(' expr ':' expr  '..' expr ('by' expr)? ')' statement   ;
 
 incrementStmt : expr (INCR | DECR) ';' ;
 
