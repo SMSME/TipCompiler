@@ -56,6 +56,8 @@ expr : expr '(' (expr (',' expr)*)? ')' 	#funAppExpr
      | KINPUT					#inputExpr
      | KALLOC expr				#allocExpr
      | KNULL					#nullExpr
+     | KTRUE                    #trueExpr
+     | KFALSE                   #falseExpr
      | recordExpr				#recordRule
      | arrayExpr                #arrayRule
      | '(' expr ')'				#parenExpr

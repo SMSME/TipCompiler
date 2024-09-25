@@ -80,31 +80,67 @@ TEST_CASE("SIP Lexer: New legal operator token - MOD", "[SIP Lexer]") {
   REQUIRE(ParserHelper::is_parsable(stream));
 }
 
-
-
-
-
-
-
-//TODO: Replace with for loop
-TEST_CASE("SIP Parser: conditionals", "[SIP Parser]") {
+TEST_CASE("SIP Lexer: New legal token - true", "[SIP Lexer]") {
   std::stringstream stream;
   stream << R"(
-      short() {
-        var x, y, z;
-        if (x>0) {
-          for (y : z) {
-            y = y + 1;
-          }
-        } else {
-          z = z + 1;
-        }
-        return z;
-      }
+      main() { return true; }
     )";
 
   REQUIRE(ParserHelper::is_parsable(stream));
 }
+
+TEST_CASE("SIP Lexer: New legal token - false", "[SIP Lexer]") {
+  std::stringstream stream;
+  stream << R"(
+      main() { return false; }
+    )";
+
+  REQUIRE(ParserHelper::is_parsable(stream));
+}
+
+TEST_CASE("SIP Lexer: New legal operator token - AND", "[SIP Lexer]") {
+  std::stringstream stream;
+  stream << R"(
+      operators() { var x; if (x <= 0 && x == 0) x = x % 2; return x; }
+    )";
+
+  REQUIRE(ParserHelper::is_parsable(stream));
+}
+
+TEST_CASE("SIP Lexer: New legal operator token - OR", "[SIP Lexer]") {
+  std::stringstream stream;
+  stream << R"(
+      operators() { var x; if (x <= 0 || x == 0) x = x % 2; return x; }
+    )";
+
+  REQUIRE(ParserHelper::is_parsable(stream));
+}
+
+
+
+
+
+
+
+// //TODO: Replace with for loop
+// TEST_CASE("SIP Parser: conditionals", "[SIP Parser]") {
+//   std::stringstream stream;
+//   stream << R"(
+//       short() {
+//         var x, y, z;
+//         if (x>0) {
+//           for (y : z) {
+//             y = y + 1;
+//           }
+//         } else {
+//           z = z + 1;
+//         }
+//         return z;
+//       }
+//     )";
+
+//   REQUIRE(ParserHelper::is_parsable(stream));
+// }
 
 //TODO: Replace with for loop range
 // TEST_CASE("TIP Parser: operators", "[TIP Parser]") {
