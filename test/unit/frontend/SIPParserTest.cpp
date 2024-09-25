@@ -12,22 +12,22 @@ BASE TESTS:
 Precedence tests???
 
 Boolean:
-- true o
-- false o
+- true
+- false
 
 Expression tests:
 
 - Negative expression
-- ! expression (lexer) o
-- Ternary expressions o
+- ! expression
+- Ternary expressions
 - Mod expression (within multiplicative) x
 - Relational expression 
     - GTE x
     - LTE x 
     - LT x
 - Logical
-    - || (lexer)
-    - && (lexer)
+    - ||
+    - &&
 
 Array Tests:
 - Creating array expression
@@ -42,36 +42,47 @@ Increment and decrement statements
 
 */
 
-TEST_CASE("SIP Parser: simple ternary expression", "[SIP Parser]") {
+// RELATIONAL EXPRESSIONS
+TEST_CASE("SIP Lexer: New legal comparison token - LT", "[SIP Lexer]") {
   std::stringstream stream;
   stream << R"(
-      var x; var y; var z; x '?' y ':' z;
+      operators() { var x; if (x < 0) x = x + 1; return x; }
     )";
 
   REQUIRE(ParserHelper::is_parsable(stream));
 }
 
-TEST_CASE("SIP Parser: ternary expression in function", "[SIP Parser]") {
+TEST_CASE("SIP Lexer: New legal comparison token - GTE", "[SIP Lexer]") {
   std::stringstream stream;
   stream << R"(
-    main() { 
-        var x; var y; var z; 
-        x '?' y ':' z; 
-        return 0; 
-        }
+      operators() { var x; if (x >= 0) x = x + 1; return x; }
     )";
 
   REQUIRE(ParserHelper::is_parsable(stream));
 }
 
-TEST_CASE("SIP Parser: invalid ternary expression", "[SIP Parser]") {
+TEST_CASE("SIP Lexer: New legal comparison token - LTE", "[SIP Lexer]") {
   std::stringstream stream;
   stream << R"(
-        var x; var y; x '?' y; 
+      operators() { var x; if (x <= 0) x = x + 1; return x; }
     )";
 
-  REQUIRE_FALSE(ParserHelper::is_parsable(stream));
+  REQUIRE(ParserHelper::is_parsable(stream));
 }
+
+// Altered test case MOD illegal comparison token now legal, require_false -> require_true
+TEST_CASE("SIP Lexer: New legal operator token - MOD", "[SIP Lexer]") {
+  std::stringstream stream;
+  stream << R"(
+      operators() { var x; if (x == 0) x = x % 2; return x; }
+    )";
+
+  REQUIRE(ParserHelper::is_parsable(stream));
+}
+
+
+
+
 
 
 

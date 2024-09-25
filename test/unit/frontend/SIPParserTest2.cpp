@@ -42,39 +42,36 @@ Increment and decrement statements
 
 */
 
-// RELATIONAL EXPRESSIONS
-TEST_CASE("SIP Lexer: New legal comparison token - LT", "[SIP Lexer]") {
+TEST_CASE("SIP Parser: simple ternary expression", "[SIP Parser]") {
   std::stringstream stream;
   stream << R"(
-      operators() { var x; if (x < 0) x = x + 1; return x; }
-    )";
-
-
-
-
-
-
-
-
-
-//TODO: Replace with for loop
-TEST_CASE("SIP Parser: conditionals", "[SIP Parser]") {
-  std::stringstream stream;
-  stream << R"(
-      short() {
-        var x, y, z;
-        if (x>0) {
-          for (y : z) {
-            y = y + 1;
-          }
-        } else {
-          z = z + 1;
-        }
-        return z;
-      }
+      var x; var y; var z; x '?' y ':' z;
     )";
 
   REQUIRE(ParserHelper::is_parsable(stream));
+}
+
+TEST_CASE("SIP Parser: ternary expression in function", "[SIP Parser]") {
+  std::stringstream stream;
+  stream << R"(
+    main() { 
+        var x; var y; var z; 
+        x '?' y ':' z; 
+        return 0; 
+        }
+    )";
+
+  REQUIRE(ParserHelper::is_parsable(stream));
+}
+
+TEST_CASE("SIP Parser: invalid ternary expression", "[SIP Parser]") {
+  std::stringstream stream;
+  stream << R"(
+        var x; var y; x '?' y; 
+    )";
+
+  REQUIRE_FALSE(ParserHelper::is_parsable(stream));
+}
 }
 
 //TODO: Replace with for loop range
