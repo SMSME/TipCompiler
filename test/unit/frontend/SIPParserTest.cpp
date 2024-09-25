@@ -9,14 +9,14 @@
 /* 
 BASE TESTS:
 
-Precedence tests???zzdid u 
+Precedence tests???
 
 Boolean:
 - true
 - false
 
 Expression tests:
-- Deref
+
 - Negative expression
 - ! expression
 - Ternary expressions
