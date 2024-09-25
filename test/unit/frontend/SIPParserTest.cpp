@@ -42,7 +42,33 @@ Increment and decrement statements
 
 */
 
-// RELATIONAL EXPRESSIONS
+TEST_CASE("SIP Parser: operators", "[SIP Parser]") {
+  std::stringstream stream;
+  stream << R"(
+      operators() {
+        var x;
+        x = y + 1;
+        x = y - 1;
+        x = y * 1;
+        x = y / 1;
+        x = y % 2;
+        x = -1;
+        x = 1 > 0;
+        x = 1 >= 0;
+        x = 0 < 1;
+        x = 0 <= 1;
+        x = 1 == 0;
+        x = 1 != 0;
+        x = 1 > 0 && 0 < 1;
+        x = 1 > 0 || 0 < 1;
+        return z;
+      }
+    )";
+
+  REQUIRE(ParserHelper::is_parsable(stream));
+}
+
+//RELATIONAL EXPRESSIONS
 TEST_CASE("SIP Lexer: New legal comparison token - LT", "[SIP Lexer]") {
   std::stringstream stream;
   stream << R"(
@@ -80,6 +106,7 @@ TEST_CASE("SIP Lexer: New legal operator token - MOD", "[SIP Lexer]") {
   REQUIRE(ParserHelper::is_parsable(stream));
 }
 
+// BOOLEAN TESTS //
 TEST_CASE("SIP Lexer: New legal token - true", "[SIP Lexer]") {
   std::stringstream stream;
   stream << R"(
@@ -101,7 +128,7 @@ TEST_CASE("SIP Lexer: New legal token - false", "[SIP Lexer]") {
 TEST_CASE("SIP Lexer: New legal operator token - AND", "[SIP Lexer]") {
   std::stringstream stream;
   stream << R"(
-      operators() { var x; if (x <= 0 && x == 0) x = x % 2; return x; }
+      operators() { var x; if (x > 0 && x > -1) x = x % 2; return x; }
     )";
 
   REQUIRE(ParserHelper::is_parsable(stream));
@@ -110,7 +137,43 @@ TEST_CASE("SIP Lexer: New legal operator token - AND", "[SIP Lexer]") {
 TEST_CASE("SIP Lexer: New legal operator token - OR", "[SIP Lexer]") {
   std::stringstream stream;
   stream << R"(
-      operators() { var x; if (x <= 0 || x == 0) x = x % 2; return x; }
+      operators() { var x; if (x > 0 || x > -1) x = x % 2; return x; }
+    )";
+
+  REQUIRE(ParserHelper::is_parsable(stream));
+}
+
+TEST_CASE("SIP Lexer: New legal operator token - NOT", "[SIP Lexer]") {
+  std::stringstream stream;
+  stream << R"(
+      operators() { var x; if (!(x < 0)) x = x % 2; return x; }
+    )";
+
+  REQUIRE(ParserHelper::is_parsable(stream));
+}
+
+TEST_CASE("SIP Lexer: New legal operator token - ++", "[SIP Lexer]") {
+  std::stringstream stream;
+  stream << R"(
+      operators() { var x; x = 0; x++; return x; }
+    )";
+
+  REQUIRE(ParserHelper::is_parsable(stream));
+}
+
+TEST_CASE("SIP Lexer: New legal operator token - --", "[SIP Lexer]") {
+  std::stringstream stream;
+  stream << R"(
+      operators() { var x; x = 0; x--; return x; }
+    )";
+
+  REQUIRE(ParserHelper::is_parsable(stream));
+}
+
+TEST_CASE("SIP Lexer: New legal operator token - -", "[SIP Lexer]") {
+  std::stringstream stream;
+  stream << R"(
+      operators() { var x, var y; x = -y; return x; }
     )";
 
   REQUIRE(ParserHelper::is_parsable(stream));

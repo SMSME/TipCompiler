@@ -42,6 +42,7 @@ Increment and decrement statements x
 
 */
 
+<<<<<<< HEAD
 // /************ Ternary Expression ************/
 TEST_CASE("SIP Parser: ternary expression", "[SIP Parser]") {
   std::stringstream stream;
@@ -53,10 +54,31 @@ TEST_CASE("SIP Parser: ternary expression", "[SIP Parser]") {
         return 0; 
         }
     )";
+=======
+// TEST_CASE("SIP Parser: simple ternary expression", "[SIP Parser]") {
+//   std::stringstream stream;
+//   stream << R"(
+//       var x; var y; var z; x '?' y ':' z;
+//     )";
 
-  REQUIRE(ParserHelper::is_parsable(stream));
-}
+//   REQUIRE(ParserHelper::is_parsable(stream));
+// }
 
+// TEST_CASE("SIP Parser: ternary expression in function", "[SIP Parser]") {
+//   std::stringstream stream;
+//   stream << R"(
+//     main() { 
+//         var x; var y; var z; 
+//         x '?' y ':' z; 
+//         return 0; 
+//         }
+//     )";
+>>>>>>> d1f0076 (tests for increments, decrements, and/or, etc)
+
+//   REQUIRE(ParserHelper::is_parsable(stream));
+// }
+
+<<<<<<< HEAD
 TEST_CASE("SIP Parser: illegal ternary expression no colon", "[SIP Parser]") {
   std::stringstream stream;
   stream << R"(
@@ -67,9 +89,16 @@ TEST_CASE("SIP Parser: illegal ternary expression no colon", "[SIP Parser]") {
         return 0; 
         }
     )";
+=======
+// TEST_CASE("SIP Parser: invalid ternary expression", "[SIP Parser]") {
+//   std::stringstream stream;
+//   stream << R"(
+//         var x; var y; x '?' y; 
+//     )";
+>>>>>>> d1f0076 (tests for increments, decrements, and/or, etc)
 
-  REQUIRE_FALSE(ParserHelper::is_parsable(stream));
-}
+//   REQUIRE_FALSE(ParserHelper::is_parsable(stream));
+// }
 
 TEST_CASE("SIP Parser: illegal ternary expression only colon", "[SIP Parser]") {
   std::stringstream stream;
