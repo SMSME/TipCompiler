@@ -72,7 +72,7 @@ TEST_CASE("SIP Parser: invalid ternary expression", "[SIP Parser]") {
 
   REQUIRE_FALSE(ParserHelper::is_parsable(stream));
 }
-}
+
 
 //TODO: Replace with for loop range
 // TEST_CASE("TIP Parser: operators", "[TIP Parser]") {
