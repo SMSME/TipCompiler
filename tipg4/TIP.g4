@@ -51,7 +51,6 @@ expr : expr '(' (expr (',' expr)*)? ')' 	#funAppExpr
      | expr op=(EQ | NE) expr 			#equalityExpr
      | expr KAND expr          #andExpr
      | expr KOR expr           #orExpr
-     | expr '?' expr ':' expr          #ternaryExpr //added
      | IDENTIFIER				#varExpr
      | NUMBER					#numExpr
      | KINPUT					#inputExpr
@@ -59,6 +58,7 @@ expr : expr '(' (expr (',' expr)*)? ')' 	#funAppExpr
      | KNULL					#nullExpr
      | KTRUE                    #trueExpr
      | KFALSE                   #falseExpr
+     | expr '?' expr ':' expr          #ternaryExpr //added
      | recordExpr				#recordRule
      | arrayExpr                #arrayRule
      | '(' expr ')'				#parenExpr
