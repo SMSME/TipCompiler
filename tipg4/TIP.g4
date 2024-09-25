@@ -38,19 +38,20 @@ nameDeclaration : IDENTIFIER ;
 //
 expr : expr '(' (expr (',' expr)*)? ')' 	#funAppExpr
      | expr '.' IDENTIFIER 			#accessExpr
+     | expr '[' expr ']'        #arrayIndexExpr // added
      | '*' expr 				#deRefExpr
      | SUB NUMBER				#negNumber
      | '-' expr                 #negExpr // added
      | '&' expr					#refExpr
-     | '!' expr                 #notExpr // added
-     | '#' expr                 #lengthExpr // added
-     | expr '[' expr ']'        #arrayIndexExpr // added
-     | expr '?' expr ':' expr          #ternaryExpr //added
-     | expr op=(AND | OR) expr          #logicalExpr // added
+     | KNOT expr                 #notExpr // added
+     | LEN expr                 #lengthExpr // added
      | expr op=(MUL | DIV | MOD) expr 		#multiplicativeExpr // added
      | expr op=(ADD | SUB) expr 		#additiveExpr
      | expr op=(GT | LT | GTE | LTE) expr 				#relationalExpr // added
      | expr op=(EQ | NE) expr 			#equalityExpr
+     | expr KAND expr          #andExpr
+     | expr KOR expr           #orExpr
+     | expr '?' expr ':' expr          #ternaryExpr //added
      | IDENTIFIER				#varExpr
      | NUMBER					#numExpr
      | KINPUT					#inputExpr
@@ -81,6 +82,7 @@ statement : blockStmt
     | forStmt //change start
     | forRangeStmt
     | incrementStmt
+    | decrementStmt
 ;
 
 assignStmt : expr '=' expr ';' ;
@@ -101,7 +103,9 @@ forStmt : KFOR '(' expr ':' expr ')' statement  ; // changes start
 
 forRangeStmt : KFOR '(' expr ':' expr  '..' expr ('by' expr)? ')' statement   ;
 
-incrementStmt : expr (INCR | DECR) ';' ;
+incrementStmt : expr INCR ';' ;
+
+decrementStmt : expr DECR ';' ;
 
 
 
@@ -116,15 +120,13 @@ SUB : '-' ;
 GT  : '>' ;
 EQ  : '==' ;
 NE  : '!=' ;
-NOT : '!' ; // new additions below
-AND : '&&' ;
-OR  : '||' ; 
-MOD : '%' ;
+MOD : '%' ; // new additions below
 LT  : '<' ;
 GTE : '>=' ; 
-LTE : '<=' ; // test done basic
+LTE : '<=' ; 
 INCR : '++' ;
-DECR : '--' ; 
+DECR : '--' ;
+LEN : '#'; 
 
 
 NUMBER : [0-9]+ ;
@@ -144,6 +146,9 @@ KERROR  : 'error' ;
 KFALSE  : 'false' ; // added keyword false
 KTRUE   : 'true'  ; // added keyword true
 KFOR    : 'for'   ; // added for
+KNOT : 'not' ; 
+KAND : 'and' ;
+KOR  : 'or' ; 
 
 // Keyword to declare functions as polymorphic
 KPOLY   : 'poly' ;
