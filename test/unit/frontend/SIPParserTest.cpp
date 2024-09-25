@@ -173,7 +173,7 @@ TEST_CASE("SIP Lexer: New legal operator token - --", "[SIP Lexer]") {
 TEST_CASE("SIP Lexer: New legal operator token - -", "[SIP Lexer]") {
   std::stringstream stream;
   stream << R"(
-      operators() { var x, var y; x = -y; return x; }
+      operators() { var x; x = 1+x; return -x; }
     )";
 
   REQUIRE(ParserHelper::is_parsable(stream));
