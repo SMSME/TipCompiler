@@ -10,9 +10,8 @@ Deliverable 1:
 - KNOT expr  //added
 
 **Non-short Cicruit Binary  Operators**
-- AND : 'and' as well as OR  : 'or' //added under lexicon
-- expr KAND expr          #andExpr
-     | expr KOR expr           #orExpr // added under expressions
+- KAND and KOR // added under keywords
+- expr op=(KAND | KOR) expr        #orExpr // added under expressions
 
 **Array Type**
 - arrayExpr : '[' (expr (',' expr)*)? ']' 
@@ -44,11 +43,10 @@ Deliverable 1:
 - forRangeStmt : KFOR '(' expr ':' expr  '..' expr ('by' expr)? ')' statement   ; // statement added
 
 ## Tricky Parts
-There was a lot of back and forth on where certain elements should go. For example, reference and dereference were used as literals within the expression, and similarly the length operator, #, could have also been put as a literal in the expression. The same could be said for the increments and decrements. We thought about the location of 'ands', 'ors' as well as 'nots' since they could be operators due to their typical representation as '&&', '||' and '!'. 
+There was a lot of back and forth on where certain elements should go. For example, reference and dereference were used as literals within the expression, and similarly the length operator, #, could have also been put as a literal in the expression. The same could be said for the increments and decrements. We also implemented "and" and "or" as keywords specifically, but expressed them such as "expr op=(KAND | KOR) expr" to show how they are used as operators as well. This was to clarify they shouldn't be used as identifiers, but also that they are logical operators.
 
 Finally, after class discussions about left recursions and associativity we also contemplated how to write the ternary expression such that no problems would occur.
 
 
-
 ## Design Changes
-With the increment and decrement statements as well as the booleans we considered grouping them together. For example, we considered having the increment and decrement statements similar to how expressions were set up like incrementStmt : expr (DECR | INCR) ';' ; and the booleans under a condtional expression and have them as two options as well.
+We considering grouping the increment and decrement statements as well as the booleans together. For example, we considered having the increment and decrement statements similar to how expressions were set up like incrementStmt : expr (DECR | INCR) ';' ; and the booleans under a condtional expression and have them as two options as well. However, we decided against this to make the divide more clear between the two options, but in the future there if structuring the grammar like this has errors when it comes to typing them, then we will deal with it then. 

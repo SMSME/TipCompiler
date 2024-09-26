@@ -6,10 +6,14 @@
 #include <catch2/catch_test_macros.hpp>
 
 
+/*
+Make more failing tests?
+*/
+
 /* 
 BASE TESTS:
 
-Precedence tests???
+Precedence tests
 
 Boolean:
 - true
