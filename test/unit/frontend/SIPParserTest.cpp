@@ -42,25 +42,20 @@ Increment and decrement statements
 
 */
 
+
 TEST_CASE("SIP Parser: operators", "[SIP Parser]") {
   std::stringstream stream;
   stream << R"(
       operators() {
         var x;
-        x = y + 1;
-        x = y - 1;
-        x = y * 1;
-        x = y / 1;
         x = y % 2;
-        x = -1;
-        x = 1 > 0;
         x = 1 >= 0;
         x = 0 < 1;
         x = 0 <= 1;
-        x = 1 == 0;
-        x = 1 != 0;
-        x = 1 > 0 && 0 < 1;
-        x = 1 > 0 || 0 < 1;
+        x = 1 > 0 and 0 < 1;
+        x = 1 > 0 or 0 < 1;
+        x = not (x > 1);
+        x = -x;
         return z;
       }
     )";
@@ -68,115 +63,41 @@ TEST_CASE("SIP Parser: operators", "[SIP Parser]") {
   REQUIRE(ParserHelper::is_parsable(stream));
 }
 
-//RELATIONAL EXPRESSIONS
-TEST_CASE("SIP Lexer: New legal comparison token - LT", "[SIP Lexer]") {
+TEST_CASE("SIP Parser: increments/decrements", "[SIP Parser]") {
   std::stringstream stream;
   stream << R"(
-      operators() { var x; if (x < 0) x = x + 1; return x; }
+      operators() {
+        var x;
+        x++;
+        x--;
+        return z;
+      }
     )";
 
   REQUIRE(ParserHelper::is_parsable(stream));
 }
 
-TEST_CASE("SIP Lexer: New legal comparison token - GTE", "[SIP Lexer]") {
+TEST_CASE("SIP Parser: booleans", "[SIP Parser]") {
   std::stringstream stream;
   stream << R"(
-      operators() { var x; if (x >= 0) x = x + 1; return x; }
+      operators() {
+        var x;
+        x = false;
+        x = true;
+        return z;
+      }
     )";
 
   REQUIRE(ParserHelper::is_parsable(stream));
 }
 
-TEST_CASE("SIP Lexer: New legal comparison token - LTE", "[SIP Lexer]") {
-  std::stringstream stream;
-  stream << R"(
-      operators() { var x; if (x <= 0) x = x + 1; return x; }
-    )";
 
-  REQUIRE(ParserHelper::is_parsable(stream));
-}
-
-// Altered test case MOD illegal comparison token now legal, require_false -> require_true
-TEST_CASE("SIP Lexer: New legal operator token - MOD", "[SIP Lexer]") {
-  std::stringstream stream;
-  stream << R"(
-      operators() { var x; if (x == 0) x = x % 2; return x; }
-    )";
-
-  REQUIRE(ParserHelper::is_parsable(stream));
-}
-
-// BOOLEAN TESTS //
-TEST_CASE("SIP Lexer: New legal token - true", "[SIP Lexer]") {
-  std::stringstream stream;
-  stream << R"(
-      main() { return true; }
-    )";
-
-  REQUIRE(ParserHelper::is_parsable(stream));
-}
-
-TEST_CASE("SIP Lexer: New legal token - false", "[SIP Lexer]") {
-  std::stringstream stream;
-  stream << R"(
-      main() { return false; }
-    )";
-
-  REQUIRE(ParserHelper::is_parsable(stream));
-}
-
-TEST_CASE("SIP Lexer: New legal operator token - AND", "[SIP Lexer]") {
-  std::stringstream stream;
-  stream << R"(
-      operators() { var x; if (x > 0 && x > -1) x = x % 2; return x; }
-    )";
-
-  REQUIRE(ParserHelper::is_parsable(stream));
-}
-
-TEST_CASE("SIP Lexer: New legal operator token - OR", "[SIP Lexer]") {
-  std::stringstream stream;
-  stream << R"(
-      operators() { var x; if (x > 0 || x > -1) x = x % 2; return x; }
-    )";
-
-  REQUIRE(ParserHelper::is_parsable(stream));
-}
-
-TEST_CASE("SIP Lexer: New legal operator token - NOT", "[SIP Lexer]") {
-  std::stringstream stream;
-  stream << R"(
-      operators() { var x; if (!(x < 0)) x = x % 2; return x; }
-    )";
-
-  REQUIRE(ParserHelper::is_parsable(stream));
-}
-
-TEST_CASE("SIP Lexer: New legal operator token - ++", "[SIP Lexer]") {
-  std::stringstream stream;
-  stream << R"(
-      operators() { var x; x = 0; x++; return x; }
-    )";
-
-  REQUIRE(ParserHelper::is_parsable(stream));
-}
-
-TEST_CASE("SIP Lexer: New legal operator token - --", "[SIP Lexer]") {
-  std::stringstream stream;
-  stream << R"(
-      operators() { var x; x = 0; x--; return x; }
-    )";
-
-  REQUIRE(ParserHelper::is_parsable(stream));
-}
-
-TEST_CASE("SIP Lexer: New legal operator token - -", "[SIP Lexer]") {
-  std::stringstream stream;
-  stream << R"(
-      operators() { var x; x = 1+x; return -x; }
-    )";
-
-  REQUIRE(ParserHelper::is_parsable(stream));
+TEST_CASE("SIP Parser: mod higher precedence than add", "[SIP Parser]") {
+    std::stringstream stream;
+    stream << R"(main() { return 1 + 1 % 1; })";
+    std::string expected = "(expr (expr 1) + (expr (expr 2) % (expr 3)))";
+    std::string tree = ParserHelper::parsetree(stream);
+    REQUIRE(tree.find(expected) != std::string::npos);
 }
 
 // /************ Ternary Expression ************/
@@ -185,8 +106,11 @@ TEST_CASE("SIP Parser: ternary expression", "[SIP Parser]") {
   stream << R"(
     tern() { 
         var x, y, z;
-        z = 1;
-        z = (x == 1) ? 1 : 2; 
+        z = (x == 1) ? y : z;
+        z = x ? y : z;
+        z = x ? (y ? x : z) : z;
+        z = x ? (y ? x : z) : (z ? x : y);
+        z = (z ? y : x) ? (y ? x : z) : (z ? x : y);
         return 0; 
         }
     )";
@@ -194,7 +118,22 @@ TEST_CASE("SIP Parser: ternary expression", "[SIP Parser]") {
   REQUIRE(ParserHelper::is_parsable(stream));
 }
 
-TEST_CASE("SIP Parser: illegal ternary expression no colon", "[SIP Parser]") {
+TEST_CASE("SIP Parser: ternary expression right-associativity", "[SIP Parser]") {
+    std::stringstream stream;
+    stream << R"(
+        main() {
+            return a ? b : c ? d : e;
+        }
+    )";
+
+    std::string expected = "(expr (expr a) ? (expr b) : (expr (expr c) ? (expr d) : (expr e)))";
+
+    std::string tree = ParserHelper::parsetree(stream);
+
+    REQUIRE(tree.find(expected) != std::string::npos);
+}
+
+TEST_CASE("SIP Parser: illegal ternary expression ", "[SIP Parser]") {
   std::stringstream stream;
   stream << R"(
     ill_tern() { 
@@ -211,7 +150,7 @@ TEST_CASE("SIP Parser: illegal ternary expression no colon", "[SIP Parser]") {
 TEST_CASE("SIP Parser: illegal ternary expression only colon", "[SIP Parser]") {
   std::stringstream stream;
   stream << R"(
-    ill_tern() { 
+    ill_tern_2() { 
         var x, y, z;
         z = 1;
         z = (x == 1) : 1; 
@@ -279,83 +218,44 @@ TEST_CASE("SIP Parser: illegal ternary expression no third expression", "[SIP Pa
 }
 
 // /************ Array Expression ************/
-TEST_CASE("SIP Parser: empty array expression", "[SIP Parser]") {
+TEST_CASE("SIP Parser: array expressions", "[SIP Parser]") {
   std::stringstream stream;
   stream << R"(
       arr() {
-        return [];
+      var x;
+        x = [];
+        x = [2];
+        x = [1,2,3];
+        x = [1 of 4];
       }
     )";
   REQUIRE(ParserHelper::is_parsable(stream));
 }
 
-TEST_CASE("SIP Parser: array expression one item", "[SIP Parser]") {
+TEST_CASE("SIP Parser: array length expressions", "[SIP Parser]") {
   std::stringstream stream;
   stream << R"(
       arr() {
-        return [2];
+      var x;
+        x = #[];
+        x = #[2];
+        x = #[1,2,3];
+        x = #[1 of 4];
       }
     )";
   REQUIRE(ParserHelper::is_parsable(stream));
 }
 
-TEST_CASE("SIP Parser: array expression multiple items", "[SIP Parser]") {
+TEST_CASE("SIP Parser: array index expressions", "[SIP Parser]") {
   std::stringstream stream;
   stream << R"(
       arr() {
-        return [1, 2, 3];
-      }
-    )";
-  REQUIRE(ParserHelper::is_parsable(stream));
-}
-
-TEST_CASE("SIP Parser: array of expression", "[SIP Parser]") {
-  std::stringstream stream;
-  stream << R"(
-      arr() {
-        return [1 of 4];
-      }
-    )";
-  REQUIRE(ParserHelper::is_parsable(stream));
-}
-
-TEST_CASE("SIP Parser: length of expression", "[SIP Parser]") {
-  std::stringstream stream;
-  stream << R"(
-      arr() {
-        return #[1 of 4];
-      }
-    )";
-  REQUIRE(ParserHelper::is_parsable(stream));
-}
-
-TEST_CASE("SIP Parser: length expression", "[SIP Parser]") {
-  std::stringstream stream;
-  stream << R"(
-      arr() {
-        return #[];
-      }
-    )";
-  REQUIRE(ParserHelper::is_parsable(stream));
-}
-
-TEST_CASE("SIP Parser: index expression", "[SIP Parser]") {
-  std::stringstream stream;
-  stream << R"(
-      arr() {
-        x = [1, 2, 3];
-        return x[0];
-      }
-    )";
-  REQUIRE(ParserHelper::is_parsable(stream));
-}
-
-TEST_CASE("SIP Parser: index of expression", "[SIP Parser]") {
-  std::stringstream stream;
-  stream << R"(
-      arr() {
+        var x, y, z;
+        x = [1, 3, 4];
+        y = x[0];
         x = [1 of 3];
         return x[0];
+        return y;
       }
     )";
   REQUIRE(ParserHelper::is_parsable(stream));

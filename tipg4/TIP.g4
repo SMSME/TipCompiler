@@ -41,7 +41,7 @@ expr : expr '(' (expr (',' expr)*)? ')' 	#funAppExpr
      | expr '[' expr ']'        #arrayIndexExpr // added
      | '*' expr 				#deRefExpr
      | SUB NUMBER				#negNumber
-     | '-' expr                 #negExpr // added
+     | SUB expr                 #negExpr // added
      | '&' expr					#refExpr
      | KNOT expr                 #notExpr // added
      | LEN expr                 #lengthExpr // added
@@ -58,7 +58,7 @@ expr : expr '(' (expr (',' expr)*)? ')' 	#funAppExpr
      | KNULL					#nullExpr
      | KTRUE                    #trueExpr
      | KFALSE                   #falseExpr
-     | expr '?' expr ':' expr          #ternaryExpr //added
+     | <assoc=right> expr '?' expr ':' expr          #ternaryExpr //added
      | recordExpr				#recordRule
      | arrayExpr                #arrayRule
      | '(' expr ')'				#parenExpr
