@@ -94,7 +94,7 @@ TEST_CASE("SIP Parser: booleans", "[SIP Parser]") {
 
 TEST_CASE("SIP Parser: mod higher precedence than add", "[SIP Parser]") {
     std::stringstream stream;
-    stream << R"(main() { return 1 + 1 % 1; })";
+    stream << R"(main() { return 1 + 2 % 3; })";
     std::string expected = "(expr (expr 1) + (expr (expr 2) % (expr 3)))";
     std::string tree = ParserHelper::parsetree(stream);
     REQUIRE(tree.find(expected) != std::string::npos);
@@ -222,11 +222,12 @@ TEST_CASE("SIP Parser: array expressions", "[SIP Parser]") {
   std::stringstream stream;
   stream << R"(
       arr() {
-      var x;
+        var x, z;
         x = [];
         x = [2];
         x = [1,2,3];
         x = [1 of 4];
+        return z;
       }
     )";
   REQUIRE(ParserHelper::is_parsable(stream));
@@ -236,11 +237,12 @@ TEST_CASE("SIP Parser: array length expressions", "[SIP Parser]") {
   std::stringstream stream;
   stream << R"(
       arr() {
-      var x;
+        var x, z;
         x = #[];
         x = #[2];
         x = #[1,2,3];
         x = #[1 of 4];
+        return z;
       }
     )";
   REQUIRE(ParserHelper::is_parsable(stream));
@@ -250,11 +252,11 @@ TEST_CASE("SIP Parser: array index expressions", "[SIP Parser]") {
   std::stringstream stream;
   stream << R"(
       arr() {
-        var x, y, z;
+        var x, y, z, s;
         x = [1, 3, 4];
         y = x[0];
-        x = [1 of 3];
-        return x[0];
+        z = [1 of 3];
+        s = z[0];
         return y;
       }
     )";
