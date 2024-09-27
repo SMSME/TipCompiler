@@ -30,8 +30,7 @@ Deliverable 1:
 **Increment and Decrement Statements**
 - INCR : '++' ;
 - DECR : '--' ; // added in lexicon
-- incrementStmt : expr INCR ';' ; // statements added
-- decrementStmt : expr DECR ';' ;
+- incrementStmt : expr (INCR | DECR) ';' ; // statements added
 
 **Ternary Conditional Expression**
 - <assoc=right> expr '?' expr ':' expr  // expression added
@@ -50,10 +49,10 @@ After we established tests for all of our new code, we went through it again wit
 In terms of the actual style for test cases, we first wrote them individually. For example, there was one test case for passing relational operators "<", "<=", ">=", but after going through the TIP tests again we thought we should consolidate them, making them easier to find and read since there was significantly less text. So this lead to us having larger test cases, covering more. However, we primarily left failing test cases by themselves for the sake of finding bugs more easily in cases where our grammar should not pass.
 
 ## Tricky Parts
-There was a lot of back and forth on where certain elements should go. For example, reference and dereference were used as literals within the expression, and similarly the length operator, #, could have also been put as a literal in the expression. The same could be said for the increments and decrements. We also implemented "and" and "or" as keywords specifically, but expressed them such as "expr op=(KAND | KOR) expr" to show how they are used as operators as well. This was to clarify they shouldn't be used as identifiers, but also that they are logical operators.
+There was a lot of back and forth on where certain elements should go. For example, reference and dereference were used as literals within the expression, and similarly the length operator, #, could have also been put as a literal in the expression. The same could be said for the increments and decrements, however we did run into many issues where on one computer a version would work and one wouldn't so we ended up going with a statement such as "expr (INCR | DECR)". We also implemented "and" and "or" as keywords specifically, but expressed them such as "expr op=(KAND | KOR) expr" to show how they are used as operators as well. This was to clarify they shouldn't be used as identifiers, but also that they are logical operators.
 
 Finally, after class discussions about left recursions and associativity we also contemplated how to write the ternary expression such that no problems would occur.
 
 
 ## Design Changes
-We considering grouping the increment and decrement statements as well as the booleans together. For example, we considered having the increment and decrement statements similar to how expressions were set up like incrementStmt : expr (DECR | INCR) ';' ; and the booleans under a condtional expression and have them as two options as well. However, we decided against this to make the divide more clear between the two options, but in the future there if structuring the grammar like this has errors when it comes to typing them, then we will deal with it then. 
+We considering grouping the booleans together. For example, we considered having the true and false expressions under a condtional expression. However, we decided against this to make the divide more clear between the two options, but in the future there if structuring the grammar like this has errors when it comes to typing them, then we will deal with it then. Additionally, we were looking at a c precedence the entire time while structuring our expressions (https://en.cppreference.com/w/c/language/operator_precedence) which we used as a general guide, essentially keeping expressions within the groups. For example, function calls, subscripting arrays and accessing identifiers were grouped at the top together, but not necessarily in that order similar to how division, multiplication, and mod are at the same group level, but under the function and field accessing group.
