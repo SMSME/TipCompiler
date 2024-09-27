@@ -8,6 +8,7 @@ target_sources(
           ${CMAKE_CURRENT_SOURCE_DIR}/ASTVisualizerTest.cpp
           ${CMAKE_CURRENT_SOURCE_DIR}/PrettyPrinterTest.cpp
           ${CMAKE_CURRENT_SOURCE_DIR}/PreOrderIteratorTest.cpp
+          ${CMAKE_CURRENT_SOURCE_DIR}/SIPParserTest.cpp
           ${CMAKE_CURRENT_SOURCE_DIR}/SyntaxTreeTest.cpp
           ${CMAKE_CURRENT_SOURCE_DIR}/treetypes/ASTNodeTests.cpp
           ${CMAKE_CURRENT_SOURCE_DIR}/treetypes/ASTProgramTest.cpp)

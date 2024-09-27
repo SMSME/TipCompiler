@@ -38,25 +38,37 @@ nameDeclaration : IDENTIFIER ;
 //
 expr : expr '(' (expr (',' expr)*)? ')' 	#funAppExpr
      | expr '.' IDENTIFIER 			#accessExpr
+     | expr '[' expr ']'        #arrayIndexExpr // added
      | '*' expr 				#deRefExpr
      | SUB NUMBER				#negNumber
+     | SUB expr                 #negExpr // added
      | '&' expr					#refExpr
-     | expr op=(MUL | DIV) expr 		#multiplicativeExpr
+     | KNOT expr                 #notExpr // added
+     | LEN expr                 #lengthExpr // added
+     | expr op=(MUL | DIV | MOD) expr 		#multiplicativeExpr // added
      | expr op=(ADD | SUB) expr 		#additiveExpr
-     | expr op=GT expr 				#relationalExpr
+     | expr op=(GT | LT | GTE | LTE) expr 				#relationalExpr // added
      | expr op=(EQ | NE) expr 			#equalityExpr
+     | expr op=(KAND | KOR) expr          #logicalExpr
      | IDENTIFIER				#varExpr
      | NUMBER					#numExpr
      | KINPUT					#inputExpr
      | KALLOC expr				#allocExpr
      | KNULL					#nullExpr
+     | KTRUE                    #trueExpr
+     | KFALSE                   #falseExpr
+     | <assoc=right> expr '?' expr ':' expr          #ternaryExpr //added
      | recordExpr				#recordRule
+     | arrayExpr                #arrayRule
      | '(' expr ')'				#parenExpr
 ;
 
 recordExpr : '{' (fieldExpr (',' fieldExpr)*)? '}' ;
 
 fieldExpr : IDENTIFIER ':' expr ;
+
+arrayExpr : '[' (expr (',' expr)*)? ']' 
+    | '[' expr 'of' expr ']'; //added
 
 ////////////////////// TIP Statements ////////////////////////// 
 
@@ -66,6 +78,10 @@ statement : blockStmt
     | ifStmt
     | outputStmt
     | errorStmt
+    | forStmt //change start
+    | forRangeStmt
+    | incrementStmt
+    | decrementStmt
 ;
 
 assignStmt : expr '=' expr ';' ;
@@ -82,6 +98,15 @@ errorStmt : KERROR expr ';'  ;
 
 returnStmt : KRETURN expr ';'  ;
 
+forStmt : KFOR '(' expr ':' expr ')' statement  ; // changes start
+
+forRangeStmt : KFOR '(' expr ':' expr  '..' expr ('by' expr)? ')' statement   ;
+
+incrementStmt : expr INCR ';' ;
+
+decrementStmt : expr DECR ';' ;
+
+
 
 ////////////////////// TIP Lexicon ////////////////////////// 
 
@@ -94,6 +119,14 @@ SUB : '-' ;
 GT  : '>' ;
 EQ  : '==' ;
 NE  : '!=' ;
+MOD : '%' ; // new additions below
+LT  : '<' ;
+GTE : '>=' ; 
+LTE : '<=' ; 
+INCR : '++' ;
+DECR : '--' ;
+LEN : '#'; 
+
 
 NUMBER : [0-9]+ ;
 
@@ -109,6 +142,12 @@ KRETURN : 'return' ;
 KNULL   : 'null' ;
 KOUTPUT : 'output' ;
 KERROR  : 'error' ;
+KFALSE  : 'false' ; // added keyword false
+KTRUE   : 'true'  ; // added keyword true
+KFOR    : 'for'   ; // added for
+KNOT : 'not' ; 
+KAND : 'and' ;
+KOR  : 'or' ; 
 
 // Keyword to declare functions as polymorphic
 KPOLY   : 'poly' ;
