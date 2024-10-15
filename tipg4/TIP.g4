@@ -49,8 +49,8 @@ expr : expr '(' (expr (',' expr)*)? ')' 	#funAppExpr
      | expr op=(ADD | SUB) expr 		#additiveExpr
      | expr op=(GT | LT | GTE | LTE) expr 				#relationalExpr // added
      | expr op=(EQ | NE) expr 			#equalityExpr
-     | expr op=(KAND) expr          #andExpr
-     | expr op=(KOR) expr          #orExpr
+     | expr op=KAND expr          #andExpr
+     | expr op=KOR expr          #orExpr
      | IDENTIFIER				#varExpr
      | NUMBER					#numExpr
      | KINPUT					#inputExpr
