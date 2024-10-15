@@ -34,3 +34,18 @@
 #include "ASTStmt.h"
 #include "ASTVariableExpr.h"
 #include "ASTWhileStmt.h"
+
+// new statements
+// #include "ASTForStmt.h"
+// #include "ASTForRangeStmt.h"
+// #include "ASTIncrementStmt.h"
+
+// new expr
+// #include "ASTArrayIndexExpr"
+// #include "ASTNegExpr"
+// #include "ASTNotExpr"
+// #include "ASTLengthExpr"
+#include "ASTTrueExpr"
+#include "ASTFalseExpr"
+// #include "ASTTernaryExpr"
+// #include "ASTArrayExpr"
