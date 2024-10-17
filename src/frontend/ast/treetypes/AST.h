@@ -47,5 +47,5 @@
 // #include "ASTLengthExpr"
 #include "ASTTrueExpr"
 #include "ASTFalseExpr"
-// #include "ASTTernaryExpr"
+#include "ASTTernaryExpr"
 // #include "ASTArrayExpr"

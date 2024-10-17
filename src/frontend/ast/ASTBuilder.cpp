@@ -498,3 +498,30 @@ std::string ASTBuilder::generateSHA256(std::string tohash) {
   picosha2::hash256(tohash.begin(), tohash.end(), hash.begin(), hash.end());
   return picosha2::bytes_to_hex_string(hash.begin(), hash.end());
 }
+
+//NEW//
+Any ASTBuilder::visitTernaryExpr(TIPParser::TernaryExprContext *ctx) {
+  std::shared_ptr<ASTExpr> fExpr = nullptr;
+  std::vector<std::shared_ptr<ASTExpr>> fArgs;
+
+  // First expression is the function, the rest are the args
+  bool first = true;
+  for (auto e : ctx->expr()) {
+    visit(e);
+    if (first) {
+      fExpr = visitedExpr;
+      first = false;
+    } else {
+      fArgs.push_back(visitedExpr);
+    }
+  }
+
+  visitedExpr = std::make_shared<ASTTernaryExpr>(fExpr, fArgs);
+
+  LOG_S(1) << "Built AST node " << *visitedExpr;
+
+  // Set source location
+  visitedExpr->setLocation(ctx->getStart()->getLine(),
+                           ctx->getStart()->getCharPositionInLine());
+  return "";
+}
