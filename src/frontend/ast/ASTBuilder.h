@@ -71,15 +71,15 @@ public:
   //NEW EXPR//
   Any visitArrayIndexExpr(TIPParser::ArrayIndexExprContext *ctx) override;
   Any visitNegExpr(TIPParser::NegExprContext *ctx) override;
-  // Any visitNotExpr(TIPParser::NotExprContext *ctx) override;
-  // Any visitLengthExpr(TIPParser::LengthExprContext *ctx) override;
+  Any visitNotExpr(TIPParser::NotExprContext *ctx) override;
+  Any visitLengthExpr(TIPParser::LengthExprContext *ctx) override;
   // Any visitTrueExpr(TIPParser::TrueExprContext *ctx) override;
   // Any visitFalseExpr(TIPParser::FalseExprContext *ctx) override;
   Any visitTernaryExpr(TIPParser::TernaryExprContext *ctx) override;
-  // Any visitArrayExpr(TIPParser::ArrayExprContext *ctx) override;
+  Any visitArrayExpr(TIPParser::ArrayExprContext *ctx) override;
 
   // //NEW STMT
-  // Any visitForStmt(TIPParser::ForStmtContext *ctx) override;
-  // Any visitForRangeStmt(TIPParser::ForRangeStmtContext *ctx) override;
-  // Any visitIncrementStmt(TIPParser::IncrementStmtContext *ctx) override;
+  Any visitForStmt(TIPParser::ForStmtContext *ctx) override;
+  Any visitForRangeStmt(TIPParser::ForRangeStmtContext *ctx) override;
+  Any visitIncrementStmt(TIPParser::IncrementStmtContext *ctx) override;
 };

@@ -74,24 +74,24 @@ public:
   virtual void endVisit(ASTArrayIndexExpr *element) {}
   virtual bool visit(ASTNegExpr *element) { return true; }
   virtual void endVisit(ASTNegExpr *element) {}
-  // virtual bool visit(ASTNotExpr *element) { return true; }
-  // virtual void endVisit(ASTNotExpr *element) {}
-  // virtual bool visit(ASTLengthExpr *element) { return true; }
-  // virtual void endVisit(ASTLengthExpr *element) {}
+  virtual bool visit(ASTNotExpr *element) { return true; }
+  virtual void endVisit(ASTNotExpr *element) {}
+  virtual bool visit(ASTLengthExpr *element) { return true; }
+  virtual void endVisit(ASTLengthExpr *element) {}
   // virtual bool visit(ASTTrueExpr *element) { return true; }
   // virtual void endVisit(ASTTrueExpr *element) {}
   // virtual bool visit(ASTFalseExpr *element) { return true; }
   // virtual void endVisit(ASTFalseExpr *element) {}
   virtual bool visit(ASTTernaryExpr *element) { return true; }
   virtual void endVisit(ASTTernaryExpr *element) {}
-  // virtual bool visit(ASTArrayExpr *element) { return true; }
-  // virtual void endVisit(ASTArrayExpr *element) {}
+  virtual bool visit(ASTArrayExpr *element) { return true; }
+  virtual void endVisit(ASTArrayExpr *element) {}
 
   //NEW STMT//
-//   virtual bool visit(ASTForStmt *element) { return true; }
-//   virtual void endVisit(ASTForStmt *element) {}
-//   virtual bool visit(ASTForRangeStmt *element) { return true; }
-//   virtual void endVisit(ASTForRangeStmt *element) {}
-//   virtual bool visit(ASTIncrementStmt *element) { return true; }
-//   virtual void endVisit(ASTIncrementStmt *element) {}
+  virtual bool visit(ASTForStmt *element) { return true; }
+  virtual void endVisit(ASTForStmt *element) {}
+  virtual bool visit(ASTForRangeStmt *element) { return true; }
+  virtual void endVisit(ASTForRangeStmt *element) {}
+  virtual bool visit(ASTIncrementStmt *element) { return true; }
+  virtual void endVisit(ASTIncrementStmt *element) {}
 };
