@@ -499,7 +499,41 @@ std::string ASTBuilder::generateSHA256(std::string tohash) {
   return picosha2::bytes_to_hex_string(hash.begin(), hash.end());
 }
 
+
+
+
+
 //NEW//
+Any ASTBuilder::visitArrayIndexExpr(TIPParser::ArrayIndexExprContext *ctx) {
+  visit(ctx->expr(0));
+  auto name = visitedExpr;
+  visit(ctx->expr(1));
+  auto index = visitedExpr;
+
+  visitedExpr = std::make_shared<ASTArrayIndexExpr>(name, index);
+
+  LOG_S(1) << "Built AST node " << *visitedExpr;
+
+  // Set source location
+  visitedExpr->setLocation(ctx->getStart()->getLine(),
+                           ctx->getStart()->getCharPositionInLine());
+  return "";
+}
+
+Any ASTBuilder::visitNegExpr(TIPParser::NegExprContext *ctx) {
+  visit(ctx->expr());
+  auto negate = visitedExpr;
+
+  visitedExpr = std::make_shared<ASTNegExpr>(negate);
+
+  LOG_S(1) << "Built AST node " << *visitedExpr;
+
+  // Set source location
+  visitedExpr->setLocation(ctx->getStart()->getLine(),
+                           ctx->getStart()->getCharPositionInLine());
+  return "";
+}
+
 Any ASTBuilder::visitTernaryExpr(TIPParser::TernaryExprContext *ctx) {
   visit(ctx->expr(0));
   auto cond = visitedExpr;

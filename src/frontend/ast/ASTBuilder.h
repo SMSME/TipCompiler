@@ -69,8 +69,8 @@ public:
 
 
   //NEW EXPR//
-  // Any visitArrayIndexExpr(TIPParser::ArrayIndexExprContext *ctx) override;
-  // Any visitNegExpr(TIPParser::NegExprContext *ctx) override;
+  Any visitArrayIndexExpr(TIPParser::ArrayIndexExprContext *ctx) override;
+  Any visitNegExpr(TIPParser::NegExprContext *ctx) override;
   // Any visitNotExpr(TIPParser::NotExprContext *ctx) override;
   // Any visitLengthExpr(TIPParser::LengthExprContext *ctx) override;
   // Any visitTrueExpr(TIPParser::TrueExprContext *ctx) override;

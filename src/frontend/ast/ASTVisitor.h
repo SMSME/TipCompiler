@@ -70,10 +70,10 @@ public:
   virtual void endVisit(ASTBlockStmt *element) {}
 
   //NEW EXPR//
-  // virtual bool visit(ASTArrayIndexExpr *element) { return true; }
-  // virtual void endVisit(ASTArrayIndexExpr *element) {}
-  // virtual bool visit(ASTNegExpr *element) { return true; }
-  // virtual void endVisit(ASTNegExpr *element) {}
+  virtual bool visit(ASTArrayIndexExpr *element) { return true; }
+  virtual void endVisit(ASTArrayIndexExpr *element) {}
+  virtual bool visit(ASTNegExpr *element) { return true; }
+  virtual void endVisit(ASTNegExpr *element) {}
   // virtual bool visit(ASTNotExpr *element) { return true; }
   // virtual void endVisit(ASTNotExpr *element) {}
   // virtual bool visit(ASTLengthExpr *element) { return true; }
