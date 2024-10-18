@@ -59,7 +59,13 @@ target_sources(
           ${CMAKE_CURRENT_SOURCE_DIR}/ASTVisitor.h
           ${CMAKE_CURRENT_SOURCE_DIR}/ASTBuilder.cpp
           ${CMAKE_CURRENT_SOURCE_DIR}/ASTBuilder.h
-          ${CMAKE_SOURCE_DIR}/externals/PicoSHA2/picosha2.h)
+          ${CMAKE_SOURCE_DIR}/externals/PicoSHA2/picosha2.h
+
+          
+          ${CMAKE_CURRENT_SOURCE_DIR}/treetypes/ASTTernaryExpr.h
+          ${CMAKE_CURRENT_SOURCE_DIR}/treetypes/ASTTernaryExpr.cpp
+          )
+
 target_include_directories(
   ast
   PRIVATE ${ANTLR_TIPGrammar_OUTPUT_DIR}

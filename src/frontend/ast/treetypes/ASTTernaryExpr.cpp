@@ -10,14 +10,14 @@ void ASTTernaryExpr::accept(ASTVisitor *visitor) {
     visitor->endVisit(this);
 }
 
-std::ostream &ASTIfStmt::print(std::ostream &out) const {
+std::ostream &ASTTernaryExpr::print(std::ostream &out) const {
     out << *getCondition() << "? ";
     out << *getTrue();
-    out << ": " *getFalse();
+    out << ": " << *getFalse(); //all this might need to be one line?? most likely not
     return out;
 }
 
-std::vector<std::shared_ptr<ASTNode>> ASTIfStmt::getChildren() {
+std::vector<std::shared_ptr<ASTNode>> ASTTernaryExpr::getChildren() {
     std::vector<std::shared_ptr<ASTNode>> children;
 
     children.push_back(COND);

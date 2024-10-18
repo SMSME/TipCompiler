@@ -501,22 +501,14 @@ std::string ASTBuilder::generateSHA256(std::string tohash) {
 
 //NEW//
 Any ASTBuilder::visitTernaryExpr(TIPParser::TernaryExprContext *ctx) {
-  std::shared_ptr<ASTExpr> fExpr = nullptr;
-  std::vector<std::shared_ptr<ASTExpr>> fArgs;
+  visit(ctx->expr(0));
+  auto cond = visitedExpr;
+  visit(ctx->expr(1));
+  auto True = visitedExpr;
+  visit(ctx->expr(2));
+  auto False = visitedExpr;
 
-  // First expression is the function, the rest are the args
-  bool first = true;
-  for (auto e : ctx->expr()) {
-    visit(e);
-    if (first) {
-      fExpr = visitedExpr;
-      first = false;
-    } else {
-      fArgs.push_back(visitedExpr);
-    }
-  }
-
-  visitedExpr = std::make_shared<ASTTernaryExpr>(fExpr, fArgs);
+  visitedExpr = std::make_shared<ASTTernaryExpr>(cond, True, False);
 
   LOG_S(1) << "Built AST node " << *visitedExpr;
 
