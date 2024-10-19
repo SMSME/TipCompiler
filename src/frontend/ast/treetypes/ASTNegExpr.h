@@ -2,7 +2,7 @@
 
 #include "ASTExpr.h"
 
-/*! \brief Class for array index expressions
+/*! \brief Class for negation expressions
  */
 class ASTNegExpr : public ASTExpr {
     std::shared_ptr<ASTExpr> NEGATE;

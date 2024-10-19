@@ -76,10 +76,10 @@ public:
   // Any visitTrueExpr(TIPParser::TrueExprContext *ctx) override;
   // Any visitFalseExpr(TIPParser::FalseExprContext *ctx) override;
   Any visitTernaryExpr(TIPParser::TernaryExprContext *ctx) override;
-  Any visitArrayExpr(TIPParser::ArrayExprContext *ctx) override;
+  // Any visitArrayExpr(TIPParser::ArrayExprContext *ctx) override;
 
-  // //NEW STMT
+  // // //NEW STMT
   Any visitForStmt(TIPParser::ForStmtContext *ctx) override;
-  Any visitForRangeStmt(TIPParser::ForRangeStmtContext *ctx) override;
-  Any visitIncrementStmt(TIPParser::IncrementStmtContext *ctx) override;
+  // Any visitForRangeStmt(TIPParser::ForRangeStmtContext *ctx) override;
+  // Any visitIncrementStmt(TIPParser::IncrementStmtContext *ctx) override;
 };

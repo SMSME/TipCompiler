@@ -534,6 +534,34 @@ Any ASTBuilder::visitNegExpr(TIPParser::NegExprContext *ctx) {
   return "";
 }
 
+Any ASTBuilder::visitNotExpr(TIPParser::NotExprContext *ctx) {
+  visit(ctx->expr());
+  auto notter = visitedExpr;
+
+  visitedExpr = std::make_shared<ASTNotExpr>(notter);
+
+  LOG_S(1) << "Built AST node " << *visitedExpr;
+
+  // Set source location
+  visitedExpr->setLocation(ctx->getStart()->getLine(),
+                           ctx->getStart()->getCharPositionInLine());
+  return "";
+}
+
+Any ASTBuilder::visitLengthExpr(TIPParser::LengthExprContext *ctx) {
+  visit(ctx->expr());
+  auto length = visitedExpr;
+
+  visitedExpr = std::make_shared<ASTLengthExpr>(length);
+
+  LOG_S(1) << "Built AST node " << *visitedExpr;
+
+  // Set source location
+  visitedExpr->setLocation(ctx->getStart()->getLine(),
+                           ctx->getStart()->getCharPositionInLine());
+  return "";
+}
+
 Any ASTBuilder::visitTernaryExpr(TIPParser::TernaryExprContext *ctx) {
   visit(ctx->expr(0));
   auto cond = visitedExpr;
@@ -551,3 +579,34 @@ Any ASTBuilder::visitTernaryExpr(TIPParser::TernaryExprContext *ctx) {
                            ctx->getStart()->getCharPositionInLine());
   return "";
 }
+
+Any ASTBuilder::visitForStmt(TIPParser::ForStmtContext *ctx) {
+  visit(ctx->expr(0));
+  auto item = visitedExpr;
+  visit(ctx->expr(1));
+  auto iterate = visitedExpr;
+  visit(ctx->statement());
+  auto thenBody = visitedStmt;
+
+  visitedStmt = std::make_shared<ASTForStmt>(item, iterate, thenBody);
+
+  LOG_S(1) << "Built AST node " << *visitedStmt;
+
+  // Set source location
+  visitedStmt->setLocation(ctx->getStart()->getLine(),
+                           ctx->getStart()->getCharPositionInLine());
+  return "";
+}
+
+// Any ASTBuilder::visitIncrementStmt(TIPParser::IncrementStmtContext *ctx, const std::string &op) { // maybe need to change this and every other unary op, maybe need unaryexpr
+//   visit(ctx->expr());
+//   auto lhs = visitedExpr;
+//   visitedStmt = std::make_shared<ASTIncrementStmt>(op, lhs);
+
+//   LOG_S(1) << "Built AST node " << *visitedStmt;
+
+//   // Set source location
+//   visitedStmt->setLocation(ctx->getStart()->getLine(),
+//                            ctx->getStart()->getCharPositionInLine());
+//   return "";
+// }

@@ -84,14 +84,14 @@ public:
   // virtual void endVisit(ASTFalseExpr *element) {}
   virtual bool visit(ASTTernaryExpr *element) { return true; }
   virtual void endVisit(ASTTernaryExpr *element) {}
-  virtual bool visit(ASTArrayExpr *element) { return true; }
-  virtual void endVisit(ASTArrayExpr *element) {}
+  // virtual bool visit(ASTArrayExpr *element) { return true; }
+  // virtual void endVisit(ASTArrayExpr *element) {}
 
-  //NEW STMT//
+  // //NEW STMT//
   virtual bool visit(ASTForStmt *element) { return true; }
   virtual void endVisit(ASTForStmt *element) {}
-  virtual bool visit(ASTForRangeStmt *element) { return true; }
-  virtual void endVisit(ASTForRangeStmt *element) {}
-  virtual bool visit(ASTIncrementStmt *element) { return true; }
-  virtual void endVisit(ASTIncrementStmt *element) {}
+  // virtual bool visit(ASTForRangeStmt *element) { return true; }
+  // virtual void endVisit(ASTForRangeStmt *element) {}
+  // virtual bool visit(ASTIncrementStmt *element) { return true; }
+  // virtual void endVisit(ASTIncrementStmt *element) {}
 };
