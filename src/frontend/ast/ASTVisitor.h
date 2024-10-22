@@ -70,28 +70,37 @@ public:
   virtual void endVisit(ASTBlockStmt *element) {}
 
   //NEW EXPR//
-  virtual bool visit(ASTArrayIndexExpr *element) { return true; }
+  virtual bool visit(ASTArrayIndexExpr *element) { return true; } // Array index
   virtual void endVisit(ASTArrayIndexExpr *element) {}
-  virtual bool visit(ASTNegExpr *element) { return true; }
+
+  virtual bool visit(ASTNegExpr *element) { return true; } // Negative expression
   virtual void endVisit(ASTNegExpr *element) {}
-  virtual bool visit(ASTNotExpr *element) { return true; }
+
+  virtual bool visit(ASTNotExpr *element) { return true; } // Not expression (boolean)
   virtual void endVisit(ASTNotExpr *element) {}
-  virtual bool visit(ASTLengthExpr *element) { return true; }
+
+  virtual bool visit(ASTLengthExpr *element) { return true; } // Length expressoin
   virtual void endVisit(ASTLengthExpr *element) {}
-  // virtual bool visit(ASTTrueExpr *element) { return true; }
+
+  // virtual bool visit(ASTTrueExpr *element) { return true; } // True Expression
   // virtual void endVisit(ASTTrueExpr *element) {}
-  // virtual bool visit(ASTFalseExpr *element) { return true; }
+
+  // virtual bool visit(ASTFalseExpr *element) { return true; } // False Expression
   // virtual void endVisit(ASTFalseExpr *element) {}
-  virtual bool visit(ASTTernaryExpr *element) { return true; }
+
+  virtual bool visit(ASTTernaryExpr *element) { return true; } // Ternary Expression
   virtual void endVisit(ASTTernaryExpr *element) {}
-  // virtual bool visit(ASTArrayExpr *element) { return true; }
+
+  // virtual bool visit(ASTArrayExpr *element) { return true; } // Array Expression
   // virtual void endVisit(ASTArrayExpr *element) {}
 
   // //NEW STMT//
-  virtual bool visit(ASTForStmt *element) { return true; }
+  virtual bool visit(ASTForStmt *element) { return true; } // For Statement
   virtual void endVisit(ASTForStmt *element) {}
-  // virtual bool visit(ASTForRangeStmt *element) { return true; }
+
+  // virtual bool visit(ASTForRangeStmt *element) { return true; } // For Range Statement
   // virtual void endVisit(ASTForRangeStmt *element) {}
-  // virtual bool visit(ASTIncrementStmt *element) { return true; }
+
+  // virtual bool visit(ASTIncrementStmt *element) { return true; } // Increment Statement
   // virtual void endVisit(ASTIncrementStmt *element) {}
 };
