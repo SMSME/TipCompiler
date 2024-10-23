@@ -56,7 +56,7 @@ expr : expr '(' (expr (',' expr)*)? ')' 	#funAppExpr
      | KINPUT					#inputExpr
      | KALLOC expr				#allocExpr
      | KNULL					#nullExpr
-     | (KTRUE | KFALSE)                    #booleanExpr
+     | BOOLEAN                    #booleanExpr
      | <assoc=right> expr '?' expr ':' expr          #ternaryExpr //added
      | recordExpr				#recordRule
      | arrayExpr                #arrayRule
@@ -126,6 +126,7 @@ LEN : '#';
 
 
 NUMBER : [0-9]+ ;
+BOOLEAN : KFALSE | KTRUE ;
 
 // Placing the keyword definitions first causes ANTLR4 to prioritize
 // their matching relative to IDENTIFIER (which comes later).

@@ -595,18 +595,16 @@ Any ASTBuilder::visitLengthExpr(TIPParser::LengthExprContext *ctx) {
 }
 
 Any ASTBuilder::visitBooleanExpr(TIPParser::BooleanExprContext *ctx) {
-    if (ctx->getText() == "true") {
-      bool op = true;
-      visitedExpr = std::make_shared<ASTBooleanExpr>(op);
 
-      LOG_S(1) << "Built AST node " << *visitedExpr;
-    }
-    else {
-      bool op = false;
-      visitedExpr = std::make_shared<ASTBooleanExpr>(op);
+  std::string op = ctx->BOOLEAN()->getText(); 
+  bool a = false;
+  if (op == "true") {
+    a = true;
+  }
+  visitedExpr = std::make_shared<ASTBooleanExpr>(a);
 
-      LOG_S(1) << "Built AST node " << *visitedExpr;
-    }
+
+  LOG_S(1) << "Built AST node " << *visitedExpr;
 
   // Set source location
   visitedExpr->setLocation(ctx->getStart()->getLine(),

@@ -8,9 +8,8 @@ class ASTBooleanExpr : public ASTExpr {
   bool OP;
 
 public:
-  ASTBooleanExpr(bool OP)
-      : OP(OP) {}
-  bool getOp() { return OP; }
+  ASTBooleanExpr(bool OP) : OP(OP) {}
+  bool getOp() const { return OP; }
   void accept(ASTVisitor *visitor) override;
   llvm::Value *codegen() override;
 
