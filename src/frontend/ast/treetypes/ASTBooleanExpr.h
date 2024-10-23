@@ -2,15 +2,18 @@
 
 #include "ASTExpr.h"
 
-/*! \brief Class for a true Expression.
+/*! \brief Class for a boolean expression.
  */
-class ASTTrueExpr : public ASTExpr {
+class ASTBooleanExpr : public ASTExpr {
+  bool OP;
+
 public:
-  ASTTrueExpr() {}
+  ASTBooleanExpr(bool OP)
+      : OP(OP) {}
+  bool getOp() { return OP; }
   void accept(ASTVisitor *visitor) override;
   llvm::Value *codegen() override;
 
 protected:
   std::ostream &print(std::ostream &out) const override;
 };
-

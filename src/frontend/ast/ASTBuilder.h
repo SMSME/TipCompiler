@@ -75,8 +75,10 @@ public:
   Any visitNegExpr(TIPParser::NegExprContext *ctx) override;
   Any visitNotExpr(TIPParser::NotExprContext *ctx) override;
   Any visitLengthExpr(TIPParser::LengthExprContext *ctx) override;
+  // template <typename T> void visitBooleanExpr(T *ctx, const std::string &op);
   // Any visitTrueExpr(TIPParser::TrueExprContext *ctx) override;
   // Any visitFalseExpr(TIPParser::FalseExprContext *ctx) override;
+  Any visitBooleanExpr(TIPParser::BooleanExprContext *ctx) override;
   Any visitTernaryExpr(TIPParser::TernaryExprContext *ctx) override;
   // Any visitArrayExpr(TIPParser::ArrayExprContext *ctx) override;
 

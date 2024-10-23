@@ -56,8 +56,7 @@ expr : expr '(' (expr (',' expr)*)? ')' 	#funAppExpr
      | KINPUT					#inputExpr
      | KALLOC expr				#allocExpr
      | KNULL					#nullExpr
-     | KTRUE                    #trueExpr
-     | KFALSE                   #falseExpr
+     | (KTRUE | KFALSE)                    #booleanExpr
      | <assoc=right> expr '?' expr ':' expr          #ternaryExpr //added
      | recordExpr				#recordRule
      | arrayExpr                #arrayRule
@@ -82,7 +81,6 @@ statement : blockStmt
     | forStmt //change start
     | forRangeStmt
     | incrementStmt
-    | decrementStmt
 ;
 
 assignStmt : expr '=' expr ';' ;
@@ -103,9 +101,7 @@ forStmt : KFOR '(' expr ':' expr ')' statement  ; // changes start
 
 forRangeStmt : KFOR '(' expr ':' expr  '..' expr ('by' expr)? ')' statement   ;
 
-incrementStmt : expr INCR ';' ;
-
-decrementStmt : expr DECR ';' ;
+incrementStmt : expr (INCR | DECR) ';' ;
 
 
 

@@ -2,6 +2,7 @@
 
 #include "AST.h"
 
+
 /*! \brief Base class for AST visitors.
  *
  * The AST visitor class abstracts the traversal of an AST.  It works
@@ -82,11 +83,8 @@ public:
   virtual bool visit(ASTLengthExpr *element) { return true; } // Length expressoin
   virtual void endVisit(ASTLengthExpr *element) {}
 
-  // virtual bool visit(ASTTrueExpr *element) { return true; } // True Expression
-  // virtual void endVisit(ASTTrueExpr *element) {}
-
-  // virtual bool visit(ASTFalseExpr *element) { return true; } // False Expression
-  // virtual void endVisit(ASTFalseExpr *element) {}
+  virtual bool visit(ASTBooleanExpr *element) { return true; }
+  virtual void endVisit(ASTBooleanExpr *element) {}
 
   virtual bool visit(ASTTernaryExpr *element) { return true; } // Ternary Expression
   virtual void endVisit(ASTTernaryExpr *element) {}

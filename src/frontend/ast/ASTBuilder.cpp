@@ -34,6 +34,26 @@ std::string ASTBuilder::opString(int op) {
   case TIPParser::NE:
     opStr = "!=";
     break;
+
+  //NEW//
+  case TIPParser::MOD:
+    opStr = "%";
+    break;
+  case TIPParser::LTE:
+    opStr = "<=";
+    break;
+  case TIPParser::GTE:
+    opStr = ">=";
+    break;
+  case TIPParser::LT:
+    opStr = "<";
+    break;
+  case TIPParser::KAND:
+    opStr = "and";
+    break;
+  case TIPParser::KOR:
+    opStr = "or";
+    break;
   default:
     throw std::runtime_error(
         "unknown operator :" +
@@ -573,6 +593,69 @@ Any ASTBuilder::visitLengthExpr(TIPParser::LengthExprContext *ctx) {
                            ctx->getStart()->getCharPositionInLine());
   return "";
 }
+
+Any ASTBuilder::visitBooleanExpr(TIPParser::BooleanExprContext *ctx) {
+    if (ctx->getText() == "true") {
+      bool op = true;
+      visitedExpr = std::make_shared<ASTBooleanExpr>(op);
+
+      LOG_S(1) << "Built AST node " << *visitedExpr;
+    }
+    else {
+      bool op = false;
+      visitedExpr = std::make_shared<ASTBooleanExpr>(op);
+
+      LOG_S(1) << "Built AST node " << *visitedExpr;
+    }
+
+  // Set source location
+  visitedExpr->setLocation(ctx->getStart()->getLine(),
+                           ctx->getStart()->getCharPositionInLine());
+  return "";
+} // LCOV_EXCL_LINE
+
+
+// Any ASTBuilder::visitBooleanExpr(TIPParser::BooleanExprContext *ctx) {
+//   if (ctx->KTRUE()->getText()) {
+//     std::string val = ctx->KTRUE()->getText();
+//     visitedExpr = std::make_shared<ASTNumberExpr>(val);
+
+//     LOG_S(1) << "Built AST node " << *visitedExpr;
+//   }
+//   else if (ctx->KFALSE()->getText()) {
+//     std::string val = (ctx->KFALSE()->getText());
+//     visitedExpr = std::make_shared<ASTNumberExpr>(val);
+
+//     LOG_S(1) << "Built AST node " << *visitedExpr;
+//   }
+
+//   // Set source location
+//   visitedExpr->setLocation(ctx->getStart()->getLine(),
+//                            ctx->getStart()->getCharPositionInLine());
+//   return "";
+// } // LCOV_EXCL_LINE
+
+// template <typename T>
+// void ASTBuilder::visitBooleanExpr(TIPParser::BooleanExprContext *ctx, const std::string &op) {
+//   visitedExpr = std::make_shared<ASTBooleanExpr>(op);
+
+//   LOG_S(1) << "Built AST node " << *visitedExpr;
+
+//   // Set source location
+//   visitedExpr->setLocation(ctx->getStart()->getLine(),
+//                            ctx->getStart()->getCharPositionInLine());
+//   return "";
+// }
+
+// Any ASTBuilder::visitTrueExpr(TIPParser::TrueExprContext *ctx) {
+//   visitBooleanExpr(ctx, opString(ctx->op->getType()));
+//   return "";
+// } // LCOV_EXCL_LINE
+
+// Any ASTBuilder::visitTrueExpr(TIPParser::FalseExprContext *ctx) {
+//   visitBooleanExpr(ctx, opString(ctx->op->getType()));
+//   return "";
+// } // LCOV_EXCL_LINE
 
 Any ASTBuilder::visitTernaryExpr(TIPParser::TernaryExprContext *ctx) {
   visit(ctx->expr(0));

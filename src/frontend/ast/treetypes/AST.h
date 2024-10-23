@@ -40,8 +40,7 @@
 #include "ASTNegExpr.h"
 #include "ASTNotExpr.h"
 #include "ASTLengthExpr.h"
-// #include "ASTTrueExpr.h"
-// #include "ASTFalseExpr.h"
+#include "ASTBooleanExpr.h"
 #include "ASTTernaryExpr.h" // needs pretty printer
 #include "ASTArrayExpr.h"
 
