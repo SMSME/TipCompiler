@@ -195,6 +195,18 @@ Any ASTBuilder::visitMultiplicativeExpr(
   return "";
 } // LCOV_EXCL_LINE
 
+Any ASTBuilder::visitAndExpr(
+    TIPParser::AndExprContext *ctx) {
+  visitBinaryExpr(ctx, opString(ctx->op->getType()));
+  return "";
+} // LCOV_EXCL_LINE
+
+Any ASTBuilder::visitOrExpr(
+    TIPParser::OrExprContext *ctx) {
+  visitBinaryExpr(ctx, opString(ctx->op->getType()));
+  return "";
+} // LCOV_EXCL_LINE
+
 Any ASTBuilder::visitEqualityExpr(TIPParser::EqualityExprContext *ctx) {
   visitBinaryExpr(ctx, opString(ctx->op->getType()));
   return "";

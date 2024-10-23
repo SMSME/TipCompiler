@@ -42,9 +42,11 @@ public:
   Any visitFunction(TIPParser::FunctionContext *ctx) override;
   Any visitNegNumber(TIPParser::NegNumberContext *ctx) override;
   Any visitAdditiveExpr(TIPParser::AdditiveExprContext *ctx) override;
-  Any visitRelationalExpr(TIPParser::RelationalExprContext *ctx) override;
-  Any visitMultiplicativeExpr(TIPParser::MultiplicativeExprContext *ctx) override;
+  Any visitRelationalExpr(TIPParser::RelationalExprContext *ctx) override; // edit
+  Any visitMultiplicativeExpr(TIPParser::MultiplicativeExprContext *ctx) override; // edit
   Any visitEqualityExpr(TIPParser::EqualityExprContext *ctx) override;
+  Any visitAndExpr(TIPParser::AndExprContext *ctx) override;
+  Any visitOrExpr(TIPParser::OrExprContext *ctx) override;
   Any visitParenExpr(TIPParser::ParenExprContext *ctx) override;
   Any visitNumExpr(TIPParser::NumExprContext *ctx) override;
   Any visitVarExpr(TIPParser::VarExprContext *ctx) override;
