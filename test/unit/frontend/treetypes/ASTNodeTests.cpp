@@ -456,17 +456,35 @@ TEST_CASE("ASTWhileStmtTest: Test methods of AST subtype.",
    Length expression X - should write an array in theory for the length to be tested on
    
    Negative expression X
-   Not expression
+   Not expression X
    
    True and False -- (not implemented)
    Decrement and Increment -- (not implemented)
    Ternary expression X
    
-   For statement 
+   For statement X🥸
    For range statement -- (not implemented)
 
    Relational expression (>=, <, <=, %, and, or)
 */
+TEST_CASE("ASTNotExpr: Test methods of AST subtype.",
+          "[ASTNodes]") {
+    std::stringstream stream;
+    stream << R"(
+      foo(x) {
+         var z;
+         x = not z;
+         return 0;
+      }
+    )";
+
+   auto ast = ASTHelper::build_ast(stream);
+   auto expr = ASTHelper::find_node<ASTNotExpr>(ast);
+
+   std::stringstream n;
+   n << *expr->getNot();
+   REQUIRE(n.str() == "z");
+}
 
 TEST_CASE("ASTLengthExpr: Test methods of AST subtype.",
           "[ASTNodes]") {
@@ -553,4 +571,31 @@ TEST_CASE("ASTNegExprTest: Test methods of AST subtype.",
    std::stringstream neg;
    neg << *expr->getNegate();
    REQUIRE(neg.str() == "x");
+}
+
+TEST_CASE("ASTForStmtTest: Test methods of AST subtype.",
+          "[ASTNodes]") {
+   std::stringstream stream;
+   stream << R"(
+      foo(x) {
+         var item, collection, x;
+         for (item : collection) item = x;
+         return 0;
+      }
+   )";
+
+   auto ast = ASTHelper::build_ast(stream);
+   auto stmt = ASTHelper::find_node<ASTForStmt>(ast);
+
+   std::stringstream item;
+   item << *stmt->getItem();
+   REQUIRE(item.str() == "item");
+
+   std::stringstream iterate;
+   iterate << *stmt->getIterate();
+   REQUIRE(iterate.str() == "collection");
+
+   std::stringstream then;
+   then << *stmt->getThen();
+   REQUIRE(then.str() == "item = x;");
 }
