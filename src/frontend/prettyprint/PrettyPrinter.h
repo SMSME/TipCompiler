@@ -56,7 +56,9 @@ public:
   virtual void endVisit(ASTErrorStmt *element) override;
 
   // new
-  virtual void endvisit(ASTArrayIndexExpr *element) override;
+
+  virtual void endVisit(ASTTernaryExpr *element) override;
+  virtual void endVisit(ASTArrayIndexExpr *element) override;
   
   // Any visitNegExpr(TIPParser::NegExprContext *ctx) override;
   // Any visitNotExpr(TIPParser::NotExprContext *ctx) override;

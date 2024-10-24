@@ -250,20 +250,55 @@ std::string PrettyPrinter::indent() const {
   return std::string(indentLevel * indentSize, indentChar);
 }
 
+/* New tests
+Ternary
+Array of
+Array mul
+Not 
+Negative
+Boolean
+Decrement
+Increment
+Array len
+Array index
+For loop
+For range
 
 
-void PrettyPrinter::endvisit(ASTArrayIndexExpr *element) {
+
+*/
+
+void PrettyPrinter::endVisit(ASTTernaryExpr *element) {
+  std::string falseString = visitResults.back();
+  visitResults.pop_back();
+
+
+  std::string trueString = visitResults.back();
+  visitResults.pop_back();
+
+  std::string condString = visitResults.back();
+  visitResults.pop_back();
+
+
+  std::string ternaryString =  condString + " ? " + trueString  + " : " + falseString;
+
+  visitResults.push_back(ternaryString);
+}
+
+
+
+void PrettyPrinter::endVisit(ASTArrayIndexExpr *element) {
   std::string arrayIndexString = visitResults.back();
   visitResults.pop_back();
 
 
-  std::string ifString = indent() + "if (" + condString + ") \n" + thenString;
+  // std::string arrayIndexString = indent() + "if (" +  + ") \n" + thenString;
 
-  if (element->getElse() != nullptr) {
-    ifString += "\n" + indent() + "else\n" + elseString;
-  }
+  // if (element->getElse() != nullptr) {
+  //   ifString += "\n" + indent() + "else\n" + elseString;
+  // }
 
-  visitResults.push_back(ifString);
+  // visitResults.push_back(ifString);
 }
 
 // void PrettyPrinter::visit(ASTNegExpr){
