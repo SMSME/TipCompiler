@@ -59,7 +59,8 @@ expr : expr '(' (expr (',' expr)*)? ')' 	#funAppExpr
      | BOOLEAN                    #booleanExpr
      | <assoc=right> expr '?' expr ':' expr          #ternaryExpr //added
      | recordExpr				#recordRule
-     | arrayExpr                #arrayRule
+     | arrayMulExpr                #arrayMulRule
+     | arrayOfExpr                #arrayOfRule
      | '(' expr ')'				#parenExpr
 ;
 
@@ -67,8 +68,8 @@ recordExpr : '{' (fieldExpr (',' fieldExpr)*)? '}' ;
 
 fieldExpr : IDENTIFIER ':' expr ;
 
-arrayExpr : '[' (expr (',' expr)*)? ']' 
-    | '[' expr 'of' expr ']'; //added
+arrayMulExpr : '[' (expr (',' expr)*)? ']';
+arrayOfExpr : '[' expr 'of' expr ']';
 
 ////////////////////// TIP Statements ////////////////////////// 
 

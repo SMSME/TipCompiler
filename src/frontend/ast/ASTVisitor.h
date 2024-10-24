@@ -89,8 +89,11 @@ public:
   virtual bool visit(ASTTernaryExpr *element) { return true; } // Ternary Expression
   virtual void endVisit(ASTTernaryExpr *element) {}
 
-  // virtual bool visit(ASTArrayExpr *element) { return true; } // Array Expression
-  // virtual void endVisit(ASTArrayExpr *element) {}
+  virtual bool visit(ASTArrayMulExpr *element) { return true; } // Array Expression
+  virtual void endVisit(ASTArrayMulExpr *element) {}
+
+  virtual bool visit(ASTArrayOfExpr *element) { return true; } // Array Expression
+  virtual void endVisit(ASTArrayOfExpr *element) {}
 
   // //NEW STMT//
   virtual bool visit(ASTForStmt *element) { return true; } // For Statement

@@ -42,7 +42,8 @@
 #include "ASTLengthExpr.h"
 #include "ASTBooleanExpr.h"
 #include "ASTTernaryExpr.h" // needs pretty printer
-#include "ASTArrayExpr.h"
+#include "ASTArrayMulExpr.h"
+#include "ASTArrayOfExpr.h"
 
 // // new statements
 #include "ASTForStmt.h"
