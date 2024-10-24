@@ -249,3 +249,35 @@ void PrettyPrinter::endVisit(ASTReturnStmt *element) {
 std::string PrettyPrinter::indent() const {
   return std::string(indentLevel * indentSize, indentChar);
 }
+
+
+
+void PrettyPrinter::endvisit(ASTArrayIndexExpr *element) {
+  std::string arrayIndexString = visitResults.back();
+  visitResults.pop_back();
+
+
+  std::string ifString = indent() + "if (" + condString + ") \n" + thenString;
+
+  if (element->getElse() != nullptr) {
+    ifString += "\n" + indent() + "else\n" + elseString;
+  }
+
+  visitResults.push_back(ifString);
+}
+
+// void PrettyPrinter::visit(ASTNegExpr){
+
+// }
+// Any visitNotExpr(TIPParser::NotExprContext *ctx) override;
+// Any visitLengthExpr(TIPParser::LengthExprContext *ctx) override;
+// Any visitBooleanExpr(TIPParser::BooleanExprContext *ctx) override;
+// Any visitTernaryExpr(TIPParser::TernaryExprContext *ctx) override;
+// Any visitArrayMulExpr(TIPParser::ArrayMulExprContext *ctx) override;
+// Any visitArrayOfExpr(TIPParser::ArrayOfExprContext *ctx) override;
+
+// // // //NEW STMT
+// Any visitForStmt(TIPParser::ForStmtContext *ctx) override;
+// Any visitForRangeStmt(TIPParser::ForRangeStmtContext *ctx) override;
+// Any visitIncrementStmt(TIPParser::IncrementStmtContext *ctx) override;
+// Any visitDecrementStmt(TIPParser::DecrementStmtContext *ctx) override;
