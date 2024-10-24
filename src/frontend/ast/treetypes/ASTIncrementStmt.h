@@ -1,22 +1,21 @@
-// #pragma once
+#pragma once
 
-// #include "ASTExpr.h"
+#include "ASTExpr.h"
+#include "ASTStmt.h"
 
-// /*! \brief Class for increment.
-//  */
-// class ASTIncrementStmt : public ASTStmt {
-//   std::shared_ptr<ASTExpr> LEFT;
-//   std::string OP;
+/*! \brief Class for increment.
+ */
+class ASTIncrementStmt : public ASTStmt {
+  std::shared_ptr<ASTExpr> LEFT;
 
-// public:
-//   std::vector<std::shared_ptr<ASTNode>> getChildren() override;
-//   ASTIncrementStmt(std::shared_ptr<ASTExpr> LEFT, const std::string &OP)
-//       : LEFT(LEFT), OP(OP) {}
-//   ASTExpr *getLeft() const { return LEFT.get(); }
-//   std::string getOp() const { return OP; }
-//   void accept(ASTVisitor *visitor) override;
-//   llvm::Value *codegen() override;
+public:
+  std::vector<std::shared_ptr<ASTNode>> getChildren() override;
+  ASTIncrementStmt(std::shared_ptr<ASTExpr> LEFT)
+      : LEFT(LEFT) {}
+  ASTExpr *getLeft() const { return LEFT.get(); }
+  void accept(ASTVisitor *visitor) override;
+  llvm::Value *codegen() override;
 
-// protected:
-//   std::ostream &print(std::ostream &out) const override;
-// };
+protected:
+  std::ostream &print(std::ostream &out) const override;
+};

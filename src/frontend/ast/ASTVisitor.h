@@ -99,9 +99,12 @@ public:
   virtual bool visit(ASTForStmt *element) { return true; } // For Statement
   virtual void endVisit(ASTForStmt *element) {}
 
-  // virtual bool visit(ASTForRangeStmt *element) { return true; } // For Range Statement
-  // virtual void endVisit(ASTForRangeStmt *element) {}
+  virtual bool visit(ASTForRangeStmt *element) { return true; } // For Range Statement
+  virtual void endVisit(ASTForRangeStmt *element) {}
 
-  // virtual bool visit(ASTIncrementStmt *element) { return true; } // Increment Statement
-  // virtual void endVisit(ASTIncrementStmt *element) {}
+  virtual bool visit(ASTIncrementStmt *element) { return true; } // Increment Statement
+  virtual void endVisit(ASTIncrementStmt *element) {}
+
+  virtual bool visit(ASTDecrementStmt *element) { return true; } // Increment Statement
+  virtual void endVisit(ASTDecrementStmt *element) {}
 };

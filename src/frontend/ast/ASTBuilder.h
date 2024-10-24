@@ -82,6 +82,8 @@ public:
 
   // // //NEW STMT
   Any visitForStmt(TIPParser::ForStmtContext *ctx) override;
-  // Any visitForRangeStmt(TIPParser::ForRangeStmtContext *ctx) override;
-  // Any visitIncrementStmt(TIPParser::IncrementStmtContext *ctx) override;
+  Any visitForRangeStmt(TIPParser::ForRangeStmtContext *ctx) override;
+  Any visitIncrementStmt(TIPParser::IncrementStmtContext *ctx) override;
+  Any visitDecrementStmt(TIPParser::DecrementStmtContext *ctx) override;
+  
 };

@@ -49,3 +49,4 @@
 #include "ASTForStmt.h"
 #include "ASTForRangeStmt.h"
 #include "ASTIncrementStmt.h"
+#include "ASTDecrementStmt.h"

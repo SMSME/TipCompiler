@@ -84,7 +84,9 @@ target_sources(
           ${CMAKE_CURRENT_SOURCE_DIR}/treetypes/ASTForRangeStmt.h
           ${CMAKE_CURRENT_SOURCE_DIR}/treetypes/ASTForRangeStmt.cpp
           ${CMAKE_CURRENT_SOURCE_DIR}/treetypes/ASTIncrementStmt.h
-          ${CMAKE_CURRENT_SOURCE_DIR}/treetypes/ASTIncrementStmt.h
+          ${CMAKE_CURRENT_SOURCE_DIR}/treetypes/ASTIncrementStmt.cpp
+          ${CMAKE_CURRENT_SOURCE_DIR}/treetypes/ASTDecrementStmt.h
+          ${CMAKE_CURRENT_SOURCE_DIR}/treetypes/ASTDecrementStmt.cpp
           )
 
 target_include_directories(

@@ -681,15 +681,56 @@ Any ASTBuilder::visitForStmt(TIPParser::ForStmtContext *ctx) {
   return "";
 }
 
-// Any ASTBuilder::visitIncrementStmt(TIPParser::IncrementStmtContext *ctx, const std::string &op) { // maybe need to change this and every other unary op, maybe need unaryexpr
-//   visit(ctx->expr());
-//   auto lhs = visitedExpr;
-//   visitedStmt = std::make_shared<ASTIncrementStmt>(op, lhs);
+Any ASTBuilder::visitForRangeStmt(TIPParser::ForRangeStmtContext *ctx) {
+  visit(ctx->expr(0));
+  auto iterator = visitedExpr;
+  visit(ctx->expr(1));
+  auto a = visitedExpr;
+  visit(ctx->expr(2));
+  auto b = visitedExpr;
 
-//   LOG_S(1) << "Built AST node " << *visitedStmt;
+  // amount is optional
+  std::shared_ptr<ASTExpr> amt = nullptr;
+  if (ctx->expr().size() == 4) {
+    visit(ctx->expr(3));
+    amt = visitedExpr;
+  }
 
-//   // Set source location
-//   visitedStmt->setLocation(ctx->getStart()->getLine(),
-//                            ctx->getStart()->getCharPositionInLine());
-//   return "";
-// }
+  visit(ctx->statement());
+  auto thenBody = visitedStmt;
+
+  visitedStmt = std::make_shared<ASTForRangeStmt>(iterator, a, b, amt, thenBody);
+
+  LOG_S(1) << "Built AST node " << *visitedStmt;
+
+  // Set source location
+  visitedStmt->setLocation(ctx->getStart()->getLine(),
+                           ctx->getStart()->getCharPositionInLine());
+  return "";
+}
+
+Any ASTBuilder::visitIncrementStmt(TIPParser::IncrementStmtContext *ctx) {
+  visit(ctx->expr());
+  auto lhs = visitedExpr;
+  visitedStmt = std::make_shared<ASTIncrementStmt>(lhs);
+
+  LOG_S(1) << "Built AST node " << *visitedStmt;
+
+  // Set source location
+  visitedStmt->setLocation(ctx->getStart()->getLine(),
+                           ctx->getStart()->getCharPositionInLine());
+  return "";
+}
+
+Any ASTBuilder::visitDecrementStmt(TIPParser::DecrementStmtContext *ctx) { 
+  visit(ctx->expr());
+  auto lhs = visitedExpr;
+  visitedStmt = std::make_shared<ASTDecrementStmt>(lhs);
+
+  LOG_S(1) << "Built AST node " << *visitedStmt;
+
+  // Set source location
+  visitedStmt->setLocation(ctx->getStart()->getLine(),
+                           ctx->getStart()->getCharPositionInLine());
+  return "";
+}
