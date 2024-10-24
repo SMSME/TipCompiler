@@ -451,22 +451,78 @@ TEST_CASE("ASTWhileStmtTest: Test methods of AST subtype.",
 
 /*
    New Added Tests:
-   Array expression -- (not implemented)
+   Array expression X
    Array index X
-   Length expression X - should write an array in theory for the length to be tested on
+   Length expression X 
    
    Negative expression X
    Not expression X
    
-   True and False -- (not implemented)
-   Decrement and Increment -- (not implemented)
+   True and False X
+   Decrement and Increment X
    Ternary expression X
    
-   For statement X🥸
-   For range statement -- (not implemented)
+   For statement X
+   For range statement X
 
-   Relational expression (>=, <, <=, %, and, or)
+   Relational expression (>=, <, <=, %, and, or) ?
 */
+
+TEST_CASE("ASTBooleanExprTest: Test methods of AST subtype.",
+          "[ASTNodes]") {
+    std::stringstream stream;
+    stream << R"(
+      foo() {
+         return true;
+      }
+    )";
+
+    auto ast = ASTHelper::build_ast(stream);
+    auto expr = ASTHelper::find_node<ASTBooleanExpr>(ast);
+
+    REQUIRE(expr->getOp() == true);
+}
+
+TEST_CASE("ASTDecrementStmt: Test methods of AST subtype.",
+          "[ASTNodes]") {
+    std::stringstream stream;
+    stream << R"(
+      foo(x) {
+         var z;
+         z = 12;
+         z--;
+         return 0;
+      }
+    )";
+
+   auto ast = ASTHelper::build_ast(stream);
+   auto stmt = ASTHelper::find_node<ASTDecrementStmt>(ast);
+
+   std::stringstream left;
+   left << *stmt->getLeft();
+   REQUIRE(left.str() == "z");
+}
+
+TEST_CASE("ASTIncrementStmt: Test methods of AST subtype.",
+          "[ASTNodes]") {
+    std::stringstream stream;
+    stream << R"(
+      foo(x) {
+         var z;
+         z = 12;
+         z++;
+         return 0;
+      }
+    )";
+
+   auto ast = ASTHelper::build_ast(stream);
+   auto stmt = ASTHelper::find_node<ASTIncrementStmt>(ast);
+
+   std::stringstream left;
+   left << *stmt->getLeft();
+   REQUIRE(left.str() == "z");
+}
+
 TEST_CASE("ASTNotExpr: Test methods of AST subtype.",
           "[ASTNodes]") {
     std::stringstream stream;
@@ -486,13 +542,74 @@ TEST_CASE("ASTNotExpr: Test methods of AST subtype.",
    REQUIRE(n.str() == "z");
 }
 
+TEST_CASE("ASTArrayMulExprMultiple: Test methods of AST subtype.",
+          "[ASTNodes]") {
+    std::stringstream stream;
+    stream << R"(
+      foo(x) {
+         var e1, e2, arr;
+         arr = []
+         return 0;
+      }
+    )";
+
+   auto ast = ASTHelper::build_ast(stream);
+   auto expr = ASTHelper::find_node<ASTArrayMulExpr>(ast);
+
+   auto exprs = expr->getExprs();
+   REQUIRE(exprs.size() == 0);
+}
+
+TEST_CASE("ASTArrayMulExprNone: Test methods of AST subtype.",
+          "[ASTNodes]") {
+    std::stringstream stream;
+    stream << R"(
+      foo(x) {
+         var e1, e2, e3, arr;
+         arr = [e1, e2, e3]
+         return 0;
+      }
+    )";
+
+   auto ast = ASTHelper::build_ast(stream);
+   auto expr = ASTHelper::find_node<ASTArrayMulExpr>(ast);
+
+   auto exprs = expr->getExprs();
+   REQUIRE(exprs.size() == 3);
+}
+
+TEST_CASE("ASTArrayOfExprDefault: Test methods of AST subtype.",
+          "[ASTNodes]") {
+    std::stringstream stream;
+    stream << R"(
+      foo(x) {
+         var e1, e2, arr;
+         arr = [e1 of e2]
+         return 0;
+      }
+    )";
+
+   auto ast = ASTHelper::build_ast(stream);
+   auto expr = ASTHelper::find_node<ASTArrayOfExpr>(ast);
+
+   std::stringstream left;
+   left << *expr->getLeft();
+   REQUIRE(left.str() == "e1");
+
+   std::stringstream right;
+   right << *expr->getRight();
+   REQUIRE(right.str() == "e2");
+}
+
+
 TEST_CASE("ASTLengthExpr: Test methods of AST subtype.",
           "[ASTNodes]") {
     std::stringstream stream;
     stream << R"(
       foo(x) {
-         var z;
-         x = #z;
+         var z, expr1;
+         z = [expr1];
+         a = #z
          return 0;
       }
     )";
@@ -598,4 +715,72 @@ TEST_CASE("ASTForStmtTest: Test methods of AST subtype.",
    std::stringstream then;
    then << *stmt->getThen();
    REQUIRE(then.str() == "item = x;");
+}
+
+TEST_CASE("ASTForRangeStmtTest: Test methods of AST subtype.",
+          "[ASTNodes]") {
+   std::stringstream stream;
+   stream << R"(
+      foo(x) {
+         var e1, e2, e3, stmt;
+         for (e1 : e2 .. e3) stmt = x;
+         return 0;
+      }
+   )";
+
+   auto ast = ASTHelper::build_ast(stream);
+   auto stmt = ASTHelper::find_node<ASTForRangeStmt>(ast);
+
+   std::stringstream iter;
+   iter << *stmt->getIterator();
+   REQUIRE(iter.str() == "e1");
+
+   std::stringstream a;
+   a << *stmt->getA();
+   REQUIRE(a.str() == "e2");
+
+   std::stringstream b;
+   b << *stmt->getB();
+   REQUIRE(b.str() == "e3");
+
+   REQUIRE(stmt->getAmt() == nullptr);
+
+   std::stringstream then;
+   then << *stmt->getThen();
+   REQUIRE(then.str() == "stmt = x;");
+}
+
+TEST_CASE("ASTForRangeStmtTestAmt: Test methods of AST subtype.",
+          "[ASTNodes]") {
+   std::stringstream stream;
+   stream << R"(
+      foo(x) {
+         var e1, e2, e3, stmt;
+         for (e1 : e2 .. e3 by 1) stmt = x;
+         return 0;
+      }
+   )";
+
+   auto ast = ASTHelper::build_ast(stream);
+   auto stmt = ASTHelper::find_node<ASTForRangeStmt>(ast);
+
+   std::stringstream iter;
+   iter << *stmt->getIterator();
+   REQUIRE(iter.str() == "e1");
+
+   std::stringstream a;
+   a << *stmt->getA();
+   REQUIRE(a.str() == "e2");
+
+   std::stringstream b;
+   b << *stmt->getB();
+   REQUIRE(b.str() == "e3");
+
+   std::stringstream amt;
+   amt << *stmt->getAmt();
+   REQUIRE(amt.str() == "1");
+
+   std::stringstream then;
+   then << *stmt->getThen();
+   REQUIRE(then.str() == "stmt = x;");
 }
