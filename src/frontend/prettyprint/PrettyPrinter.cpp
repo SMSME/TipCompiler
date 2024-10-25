@@ -336,18 +336,42 @@ void PrettyPrinter::endVisit(ASTLengthExpr *element) {
 }
 
 
-// void PrettyPrinter::visit(ASTNegExpr){
+void PrettyPrinter::endVisit(ASTNotExpr *element){
+  std::string notExpr = visitResults.back();
+  visitResults.pop_back();
 
-// }
-// Any visitNotExpr(TIPParser::NotExprContext *ctx) override;
-// Any visitLengthExpr(TIPParser::LengthExprContext *ctx) override;
-// Any visitBooleanExpr(TIPParser::BooleanExprContext *ctx) override;
-// Any visitTernaryExpr(TIPParser::TernaryExprContext *ctx) override;
-// Any visitArrayMulExpr(TIPParser::ArrayMulExprContext *ctx) override;
-// Any visitArrayOfExpr(TIPParser::ArrayOfExprContext *ctx) override;
+  std::string notExprString =  "not " + notExpr;
 
-// // // //NEW STMT
-// Any visitForStmt(TIPParser::ForStmtContext *ctx) override;
-// Any visitForRangeStmt(TIPParser::ForRangeStmtContext *ctx) override;
-// Any visitIncrementStmt(TIPParser::IncrementStmtContext *ctx) override;
-// Any visitDecrementStmt(TIPParser::DecrementStmtContext *ctx) override;
+  visitResults.push_back(notExprString);
+}
+
+void PrettyPrinter::endVisit(ASTNegExpr *element){
+  std::string negExpr = visitResults.back();
+  visitResults.pop_back();
+
+  std::string negExprString =  "-" + negExpr;
+
+  visitResults.push_back(negExprString);
+}
+
+void PrettyPrinter::endVisit(ASTBooleanExpr *element) {
+  visitResults.push_back(element->getOp() ? "true" : "false");
+}
+
+void PrettyPrinter::endVisit(ASTIncrementStmt *element) {
+  std::string expr = visitResults.back();
+  visitResults.pop_back();
+
+  std::string decExprString = indent() + expr + "++;"; 
+
+  visitResults.push_back(decExprString);
+}
+
+void PrettyPrinter::endVisit(ASTDecrementStmt *element) {
+  std::string expr = visitResults.back();
+  visitResults.pop_back();
+
+  std::string decrExprString = indent() + expr + "--;"; 
+
+  visitResults.push_back(decrExprString);
+}

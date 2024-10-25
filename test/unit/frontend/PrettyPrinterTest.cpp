@@ -260,7 +260,12 @@ main()
 2. Array of 
 3. Mul Array
 4. Array Expr
-5 Len Expr
+5. Len Expr
+6. Not Expr
+7. Neg Expr
+8. Boolean Expr
+9. Increment Stmt
+10. Decrement Stmt
 
 */
 
@@ -360,6 +365,111 @@ TEST_CASE("PrettyPrinter: Test array length expression print", "[PrettyPrinter]"
   var x;
   x = [2];
   y = #x;
+  return 0;
+}
+)";
+
+  std::stringstream pp;
+  auto ast = ASTHelper::build_ast(stream);
+  PrettyPrinter::print(ast.get(), pp, ' ', 2);
+  std::string ppString = GeneralHelper::removeTrailingWhitespace(pp.str());
+  expected = GeneralHelper::removeTrailingWhitespace(expected);
+  REQUIRE(ppString == expected);
+}
+
+TEST_CASE("PrettyPrinter: Test not expression print", "[PrettyPrinter]") {
+  std::stringstream stream;
+  stream
+      << R"(prog() { var x, e1; x = not e1; return 0; })";
+
+  std::string expected = R"(prog() 
+{
+  var x, e1;
+  x = not e1;
+  return 0;
+}
+)";
+
+  std::stringstream pp;
+  auto ast = ASTHelper::build_ast(stream);
+  PrettyPrinter::print(ast.get(), pp, ' ', 2);
+  std::string ppString = GeneralHelper::removeTrailingWhitespace(pp.str());
+  expected = GeneralHelper::removeTrailingWhitespace(expected);
+  REQUIRE(ppString == expected);
+}
+
+TEST_CASE("PrettyPrinter: Test neg expression print", "[PrettyPrinter]") {
+  std::stringstream stream;
+  stream
+      << R"(prog() { var x, y; y = -x; return 0; })";
+
+  std::string expected = R"(prog() 
+{
+  var x, y;
+  y = -x;
+  return 0;
+}
+)";
+
+  std::stringstream pp;
+  auto ast = ASTHelper::build_ast(stream);
+  PrettyPrinter::print(ast.get(), pp, ' ', 2);
+  std::string ppString = GeneralHelper::removeTrailingWhitespace(pp.str());
+  expected = GeneralHelper::removeTrailingWhitespace(expected);
+  REQUIRE(ppString == expected);
+}
+
+TEST_CASE("PrettyPrinter: Test boolean expression print", "[PrettyPrinter]") {
+  std::stringstream stream;
+  stream
+      << R"(prog() {var x; x = false; return 0; })";
+
+  std::string expected = R"(prog() 
+{
+  var x;
+  x = false;
+  return 0;
+}
+)";
+
+  std::stringstream pp;
+  auto ast = ASTHelper::build_ast(stream);
+  PrettyPrinter::print(ast.get(), pp, ' ', 2);
+  std::string ppString = GeneralHelper::removeTrailingWhitespace(pp.str());
+  expected = GeneralHelper::removeTrailingWhitespace(expected);
+  REQUIRE(ppString == expected);
+}
+
+TEST_CASE("PrettyPrinter: Test decrement expression print", "[PrettyPrinter]") {
+  std::stringstream stream;
+  stream
+      << R"(prog() {var x; x--; return 0; })";
+
+  std::string expected = R"(prog() 
+{
+  var x;
+  x--;
+  return 0;
+}
+)";
+
+  std::stringstream pp;
+  auto ast = ASTHelper::build_ast(stream);
+  PrettyPrinter::print(ast.get(), pp, ' ', 2);
+  std::string ppString = GeneralHelper::removeTrailingWhitespace(pp.str());
+  expected = GeneralHelper::removeTrailingWhitespace(expected);
+  REQUIRE(ppString == expected);
+}
+
+TEST_CASE("PrettyPrinter: Test increment expression print", "[PrettyPrinter]") {
+  std::stringstream stream;
+  stream
+      << R"(prog() {var x; x++; return 0; })";
+
+  std::string expected = R"(prog() 
+{
+  var x;
+  x++;
   return 0;
 }
 )";
