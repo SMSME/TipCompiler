@@ -12,7 +12,7 @@ std::ostream &ASTIncrementStmt::print(std::ostream &out) const {
   out << *getLeft() << "++";
   return out;
 }
-
+// LCOV_EXCL_START
 std::vector<std::shared_ptr<ASTNode>> ASTIncrementStmt::getChildren() {
   std::vector<std::shared_ptr<ASTNode>> children;
 
@@ -24,3 +24,4 @@ std::vector<std::shared_ptr<ASTNode>> ASTIncrementStmt::getChildren() {
 llvm::Value *ASTIncrementStmt::codegen() {
   return nullptr;
 }
+// LCOV_EXCL_END

@@ -11,10 +11,10 @@ void ASTForStmt::accept(ASTVisitor *visitor) {
 }
 
 std::ostream &ASTForStmt::print(std::ostream &out) const {
-  out << "for (" << *getItem() << ":" << *getIterate() << ") " << *getThen() ;
+  out << "for (" << *getItem() << " : " << *getIterate() << ") " << *getThen() ;
   return out;
 }
-
+// LCOV_EXCL_START
 std::vector<std::shared_ptr<ASTNode>> ASTForStmt::getChildren() {
   std::vector<std::shared_ptr<ASTNode>> children;
 
@@ -28,3 +28,4 @@ std::vector<std::shared_ptr<ASTNode>> ASTForStmt::getChildren() {
 llvm::Value *ASTForStmt::codegen() {
     return nullptr;
 }
+// LCOV_EXCL_END

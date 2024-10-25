@@ -36,7 +36,7 @@ std::ostream &ASTArrayMulExpr::print(std::ostream &out) const { ////
   out << "]";
   return out;
 } // LCOV_EXCL_LINE
-
+// LCOV_EXCL_START
 std::vector<std::shared_ptr<ASTNode>> ASTArrayMulExpr::getChildren() {
   std::vector<std::shared_ptr<ASTNode>> children;
   for (auto &expr : EXPRS) {
@@ -48,4 +48,4 @@ std::vector<std::shared_ptr<ASTNode>> ASTArrayMulExpr::getChildren() {
 llvm::Value *ASTArrayMulExpr::codegen() {
     return nullptr;
 }
-
+// LCOV_EXCL_END

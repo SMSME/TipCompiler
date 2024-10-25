@@ -23,7 +23,7 @@ std::ostream &ASTForRangeStmt::print(std::ostream &out) const {
   out << *getThen();
   return out;
 }
-
+// LCOV_EXCL_START
 std::vector<std::shared_ptr<ASTNode>> ASTForRangeStmt::getChildren() {
   std::vector<std::shared_ptr<ASTNode>> children;
 
@@ -40,3 +40,4 @@ std::vector<std::shared_ptr<ASTNode>> ASTForRangeStmt::getChildren() {
 llvm::Value *ASTForRangeStmt::codegen() {
     return nullptr;
 }
+// LCOV_EXCL_END

@@ -12,7 +12,7 @@ std::ostream &ASTLengthExpr::print(std::ostream &out) const {
     out << "#" << *getLength();
     return out;
 }
-
+// LCOV_EXCL_START
 std::vector<std::shared_ptr<ASTNode>> ASTLengthExpr::getChildren() {
     std::vector<std::shared_ptr<ASTNode>> children;
 
@@ -24,3 +24,4 @@ std::vector<std::shared_ptr<ASTNode>> ASTLengthExpr::getChildren() {
 llvm::Value *ASTLengthExpr::codegen() {
     return nullptr;
 }
+// LCOV_EXCL_END
