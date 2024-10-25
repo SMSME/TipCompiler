@@ -30,7 +30,7 @@ In summary we added the following nodes:
     - ASTNotExpr.h
 
 **And, Or, and Mod, Relational Exprs**
-- And, or, and mod were added under binary operators (a pre-existing file)
+- And, or, and mod were added under vistBinaryExpr in builder.cpp
 - Relational operators were added similarly, no new files created
 
 **Array Type**
@@ -90,7 +90,7 @@ After we finished the majority of the more difficult nodes to tackle (arrays and
 
 We then moved onto to the pretty printer, but this time incrementally testing as they were implemented as this section was easier to implement.
 
-The last part was just ensuring that our code had sufficient coverage, adding tests for the ASTPrinters, and in general adding tests where we thought was necessary.
+The last part was just ensuring that our code had sufficient coverage, adding tests for each nodes print methods in ASTNodeTests.cpp, and in general adding tests where we thought were necessary. For every new node we added, we exlcluded the get children and codegen methods, and we added tests for the accept and print methods in ASTNodeTests.cpp.
 
 ## Tricky Parts
 Though we started with pair programming, we did split off for the sake of efficiency. Testing someone else's code was a little tricky and implementing pretty printer methods on nodes that were not self implemented created some complications since there was a slight lack of understanding. 
