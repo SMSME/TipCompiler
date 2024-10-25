@@ -79,8 +79,7 @@ Implementations
 10. ASTDecrementStmt :: endVisit
 11. ASTForStmt :: endVisit + visit
 12. ASTForRangeStmt :: endVisit + visit
-
-The implementation for these followed 
+Visit methods were for nodes that needed some type of extra formatting/ indentation such as the for loops. The rest do not have visit methods since they did not need the formatting additions.
 
 ## Methodology 
 There were 2 main parts that we considered: creating the nodes themselves, creating the pretty printer methods, and then their respective tests. Our idea was to start with the more difficult parts, and then ease our way down, going from nodes -> testing -> pretty printer -> testing and more testing. 

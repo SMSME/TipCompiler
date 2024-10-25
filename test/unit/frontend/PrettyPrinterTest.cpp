@@ -312,6 +312,27 @@ TEST_CASE("PrettyPrinter: Test array expression print", "[PrettyPrinter]") {
   REQUIRE(ppString == expected);
 }
 
+TEST_CASE("PrettyPrinter: Test array empty expression print", "[PrettyPrinter]") {
+  std::stringstream stream;
+  stream
+      << R"(prog() { var arr; arr = []; return 0; })";
+
+  std::string expected = R"(prog() 
+{
+  var arr;
+  arr = [];
+  return 0;
+}
+)";
+
+  std::stringstream pp;
+  auto ast = ASTHelper::build_ast(stream);
+  PrettyPrinter::print(ast.get(), pp, ' ', 2);
+  std::string ppString = GeneralHelper::removeTrailingWhitespace(pp.str());
+  expected = GeneralHelper::removeTrailingWhitespace(expected);
+  REQUIRE(ppString == expected);
+}
+
 
 TEST_CASE("PrettyPrinter: Test array of expression print", "[PrettyPrinter]") {
   std::stringstream stream;
