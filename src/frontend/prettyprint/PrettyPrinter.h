@@ -70,8 +70,12 @@ public:
   virtual void endVisit(ASTIncrementStmt *element) override; // 
   virtual void endVisit(ASTDecrementStmt *element) override; // 
 
-  // virtual void endVisit(ASTForRangeStmt *element) override; // this is fucked
-  // virtual void endVisit(ASTForStmt *element) override; // this is fucked
+
+  virtual bool visit(ASTForStmt *element) override; // this is fucked
+  virtual void endVisit(ASTForStmt *element) override; // this is fucked
+  virtual bool visit(ASTForRangeStmt *element) override; // this is fucked
+  virtual void endVisit(ASTForRangeStmt *element) override; // this is fucked
+  
 
 
 
