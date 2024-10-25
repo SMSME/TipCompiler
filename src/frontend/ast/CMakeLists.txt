@@ -59,7 +59,36 @@ target_sources(
           ${CMAKE_CURRENT_SOURCE_DIR}/ASTVisitor.h
           ${CMAKE_CURRENT_SOURCE_DIR}/ASTBuilder.cpp
           ${CMAKE_CURRENT_SOURCE_DIR}/ASTBuilder.h
-          ${CMAKE_SOURCE_DIR}/externals/PicoSHA2/picosha2.h)
+          ${CMAKE_SOURCE_DIR}/externals/PicoSHA2/picosha2.h
+
+
+          ${CMAKE_CURRENT_SOURCE_DIR}/treetypes/ASTArrayIndexExpr.h
+          ${CMAKE_CURRENT_SOURCE_DIR}/treetypes/ASTArrayIndexExpr.cpp
+          ${CMAKE_CURRENT_SOURCE_DIR}/treetypes/ASTNegExpr.h
+          ${CMAKE_CURRENT_SOURCE_DIR}/treetypes/ASTNegExpr.cpp
+          ${CMAKE_CURRENT_SOURCE_DIR}/treetypes/ASTNotExpr.h
+          ${CMAKE_CURRENT_SOURCE_DIR}/treetypes/ASTNotExpr.cpp
+          ${CMAKE_CURRENT_SOURCE_DIR}/treetypes/ASTLengthExpr.h
+          ${CMAKE_CURRENT_SOURCE_DIR}/treetypes/ASTLengthExpr.cpp
+          ${CMAKE_CURRENT_SOURCE_DIR}/treetypes/ASTBooleanExpr.h
+          ${CMAKE_CURRENT_SOURCE_DIR}/treetypes/ASTBooleanExpr.cpp
+          ${CMAKE_CURRENT_SOURCE_DIR}/treetypes/ASTArrayMulExpr.h
+          ${CMAKE_CURRENT_SOURCE_DIR}/treetypes/ASTArrayMulExpr.cpp
+          ${CMAKE_CURRENT_SOURCE_DIR}/treetypes/ASTArrayOfExpr.h
+          ${CMAKE_CURRENT_SOURCE_DIR}/treetypes/ASTArrayOfExpr.cpp
+          ${CMAKE_CURRENT_SOURCE_DIR}/treetypes/ASTTernaryExpr.h
+          ${CMAKE_CURRENT_SOURCE_DIR}/treetypes/ASTTernaryExpr.cpp
+
+          ${CMAKE_CURRENT_SOURCE_DIR}/treetypes/ASTForStmt.h
+          ${CMAKE_CURRENT_SOURCE_DIR}/treetypes/ASTForStmt.cpp
+          ${CMAKE_CURRENT_SOURCE_DIR}/treetypes/ASTForRangeStmt.h
+          ${CMAKE_CURRENT_SOURCE_DIR}/treetypes/ASTForRangeStmt.cpp
+          ${CMAKE_CURRENT_SOURCE_DIR}/treetypes/ASTIncrementStmt.h
+          ${CMAKE_CURRENT_SOURCE_DIR}/treetypes/ASTIncrementStmt.cpp
+          ${CMAKE_CURRENT_SOURCE_DIR}/treetypes/ASTDecrementStmt.h
+          ${CMAKE_CURRENT_SOURCE_DIR}/treetypes/ASTDecrementStmt.cpp
+          )
+
 target_include_directories(
   ast
   PRIVATE ${ANTLR_TIPGrammar_OUTPUT_DIR}

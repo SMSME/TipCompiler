@@ -55,6 +55,36 @@ public:
   virtual void endVisit(ASTReturnStmt *element) override;
   virtual void endVisit(ASTErrorStmt *element) override;
 
+  // new
+
+  virtual void endVisit(ASTTernaryExpr *element) override;
+  virtual void endVisit(ASTArrayMulExpr *element) override;
+  virtual void endVisit(ASTArrayOfExpr *element) override;
+  virtual void endVisit(ASTArrayIndexExpr *element) override;
+  virtual void endVisit(ASTLengthExpr *element) override; 
+  
+  virtual void endVisit(ASTNotExpr *element) override;
+  virtual void endVisit(ASTNegExpr *element) override;
+  virtual void endVisit(ASTBooleanExpr *element) override; // idk about this one 
+
+  virtual void endVisit(ASTIncrementStmt *element) override; // 
+  virtual void endVisit(ASTDecrementStmt *element) override; // 
+
+
+  virtual bool visit(ASTForStmt *element) override; // this is fucked
+  virtual void endVisit(ASTForStmt *element) override; // this is fucked
+  virtual bool visit(ASTForRangeStmt *element) override; // this is fucked
+  virtual void endVisit(ASTForRangeStmt *element) override; // this is fucked
+  
+
+
+
+  // // // //NEW STMT
+  // Any visitForStmt(TIPParser::ForStmtContext *ctx) override;
+  // Any visitForRangeStmt(TIPParser::ForRangeStmtContext *ctx) override;
+  // Any visitIncrementStmt(TIPParser::IncrementStmtContext *ctx) override;
+  // Any visitDecrementStmt(TIPParser::DecrementStmtContext *ctx) override;
+
 private:
   std::string indent() const;
   int indentLevel = 0;

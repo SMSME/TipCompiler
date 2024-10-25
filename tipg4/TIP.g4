@@ -56,11 +56,11 @@ expr : expr '(' (expr (',' expr)*)? ')' 	#funAppExpr
      | KINPUT					#inputExpr
      | KALLOC expr				#allocExpr
      | KNULL					#nullExpr
-     | KTRUE                    #trueExpr
-     | KFALSE                   #falseExpr
+     | BOOLEAN                    #booleanExpr
      | <assoc=right> expr '?' expr ':' expr          #ternaryExpr //added
      | recordExpr				#recordRule
-     | arrayExpr                #arrayRule
+     | arrayMulExpr                #arrayMulRule
+     | arrayOfExpr                #arrayOfRule
      | '(' expr ')'				#parenExpr
 ;
 
@@ -68,8 +68,8 @@ recordExpr : '{' (fieldExpr (',' fieldExpr)*)? '}' ;
 
 fieldExpr : IDENTIFIER ':' expr ;
 
-arrayExpr : '[' (expr (',' expr)*)? ']' 
-    | '[' expr 'of' expr ']'; //added
+arrayMulExpr : '[' (expr (',' expr)*)? ']';
+arrayOfExpr : '[' expr 'of' expr ']';
 
 ////////////////////// TIP Statements ////////////////////////// 
 
@@ -82,6 +82,7 @@ statement : blockStmt
     | forStmt //change start
     | forRangeStmt
     | incrementStmt
+    | decrementStmt
 ;
 
 assignStmt : expr '=' expr ';' ;
@@ -102,7 +103,10 @@ forStmt : KFOR '(' expr ':' expr ')' statement  ; // changes start
 
 forRangeStmt : KFOR '(' expr ':' expr  '..' expr ('by' expr)? ')' statement   ;
 
-incrementStmt : expr (INCR | DECR) ';' ;
+incrementStmt : expr INCR ';' ;
+
+decrementStmt : expr DECR ';' ;
+
 
 
 
@@ -127,6 +131,7 @@ LEN : '#';
 
 
 NUMBER : [0-9]+ ;
+BOOLEAN : KFALSE | KTRUE ;
 
 // Placing the keyword definitions first causes ANTLR4 to prioritize
 // their matching relative to IDENTIFIER (which comes later).

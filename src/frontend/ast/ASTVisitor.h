@@ -2,6 +2,7 @@
 
 #include "AST.h"
 
+
 /*! \brief Base class for AST visitors.
  *
  * The AST visitor class abstracts the traversal of an AST.  It works
@@ -68,4 +69,42 @@ public:
   virtual void endVisit(ASTErrorStmt *element) {}
   virtual bool visit(ASTBlockStmt *element) { return true; }
   virtual void endVisit(ASTBlockStmt *element) {}
+
+  //NEW EXPR//
+  virtual bool visit(ASTArrayIndexExpr *element) { return true; } // Array index
+  virtual void endVisit(ASTArrayIndexExpr *element) {}
+
+  virtual bool visit(ASTNegExpr *element) { return true; } // Negative expression
+  virtual void endVisit(ASTNegExpr *element) {}
+
+  virtual bool visit(ASTNotExpr *element) { return true; } // Not expression (boolean)
+  virtual void endVisit(ASTNotExpr *element) {}
+
+  virtual bool visit(ASTLengthExpr *element) { return true; } // Length expressoin
+  virtual void endVisit(ASTLengthExpr *element) {}
+
+  virtual bool visit(ASTBooleanExpr *element) { return true; }
+  virtual void endVisit(ASTBooleanExpr *element) {}
+
+  virtual bool visit(ASTTernaryExpr *element) { return true; } // Ternary Expression
+  virtual void endVisit(ASTTernaryExpr *element) {}
+
+  virtual bool visit(ASTArrayMulExpr *element) { return true; } // Array Expression
+  virtual void endVisit(ASTArrayMulExpr *element) {}
+
+  virtual bool visit(ASTArrayOfExpr *element) { return true; } // Array Expression
+  virtual void endVisit(ASTArrayOfExpr *element) {}
+
+  // //NEW STMT//
+  virtual bool visit(ASTForStmt *element) { return true; } // For Statement
+  virtual void endVisit(ASTForStmt *element) {}
+
+  virtual bool visit(ASTForRangeStmt *element) { return true; } // For Range Statement
+  virtual void endVisit(ASTForRangeStmt *element) {}
+
+  virtual bool visit(ASTIncrementStmt *element) { return true; } // Increment Statement
+  virtual void endVisit(ASTIncrementStmt *element) {}
+
+  virtual bool visit(ASTDecrementStmt *element) { return true; } // Increment Statement
+  virtual void endVisit(ASTDecrementStmt *element) {}
 };

@@ -33,6 +33,12 @@
         "string": "cpp",
         "string_view": "cpp",
         "tuple": "cpp",
-        "typeinfo": "cpp"
+        "typeinfo": "cpp",
+        "ctime": "cpp",
+        "optional": "cpp",
+        "ratio": "cpp",
+        "variant": "cpp",
+        "regex": "cpp",
+        "sstream": "cpp"
     },
 }
