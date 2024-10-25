@@ -58,15 +58,17 @@ public:
   // new
 
   virtual void endVisit(ASTTernaryExpr *element) override;
+  virtual void endVisit(ASTArrayMulExpr *element) override;
+  virtual void endVisit(ASTArrayOfExpr *element) override;
   virtual void endVisit(ASTArrayIndexExpr *element) override;
+  virtual void endVisit(ASTLengthExpr *element) override; 
   
   // Any visitNegExpr(TIPParser::NegExprContext *ctx) override;
   // Any visitNotExpr(TIPParser::NotExprContext *ctx) override;
   // Any visitLengthExpr(TIPParser::LengthExprContext *ctx) override;
   // Any visitBooleanExpr(TIPParser::BooleanExprContext *ctx) override;
   // Any visitTernaryExpr(TIPParser::TernaryExprContext *ctx) override;
-  // Any visitArrayMulExpr(TIPParser::ArrayMulExprContext *ctx) override;
-  // Any visitArrayOfExpr(TIPParser::ArrayOfExprContext *ctx) override;
+
 
   // // // //NEW STMT
   // Any visitForStmt(TIPParser::ForStmtContext *ctx) override;

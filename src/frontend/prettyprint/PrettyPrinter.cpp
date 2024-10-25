@@ -14,7 +14,6 @@ void PrettyPrinter::print(ASTProgram *p, std::ostream &os, char c, int n) {
  *
  * the delimiter before the last skip items are not appended (e.g. to not add
  * trailing commas)
- *
  * returns the joined string
  */
 std::string joinWithDelim(std::vector<std::string> &visitResults,
@@ -285,21 +284,57 @@ void PrettyPrinter::endVisit(ASTTernaryExpr *element) {
   visitResults.push_back(ternaryString);
 }
 
+void PrettyPrinter::endVisit(ASTArrayMulExpr *element) {
+  const size_t numElements = element->getExprs().size();
+  std::string mulArrayStr = "[" + joinWithDelim(visitResults, ", ", numElements, 0) + "]";
+
+  if (numElements > 0) { // Remove extra commas and white space
+      size_t commaPos = mulArrayStr.size() - 3;
+      if (mulArrayStr[commaPos] == ',') {
+        mulArrayStr.erase(commaPos, 1);
+      }
+      if (mulArrayStr[commaPos] == ' ') {
+        mulArrayStr.erase(commaPos, 1);
+      }
+  }
+  visitResults.push_back(mulArrayStr);
+
+}
+
+void PrettyPrinter::endVisit(ASTArrayOfExpr *element) {
+  std::string rightString = visitResults.back();
+  visitResults.pop_back();
+
+  std::string leftString = visitResults.back();
+  visitResults.pop_back();
+
+  std::string arrayOfString = "[" + leftString + " of " + rightString + "]";
+
+  visitResults.push_back(arrayOfString);
+}
 
 
 void PrettyPrinter::endVisit(ASTArrayIndexExpr *element) {
-  std::string arrayIndexString = visitResults.back();
+  std::string indexString = visitResults.back();
   visitResults.pop_back();
 
+  std::string nameString = visitResults.back();
+  visitResults.pop_back();
 
-  // std::string arrayIndexString = indent() + "if (" +  + ") \n" + thenString;
+  std::string arrayIndexString =  nameString + "[" + indexString + "]";
 
-  // if (element->getElse() != nullptr) {
-  //   ifString += "\n" + indent() + "else\n" + elseString;
-  // }
-
-  // visitResults.push_back(ifString);
+  visitResults.push_back(arrayIndexString);
 }
+
+void PrettyPrinter::endVisit(ASTLengthExpr *element) {
+  std::string array = visitResults.back();
+  visitResults.pop_back();
+
+  std::string arrayLenExpr =  "#" + array;
+
+  visitResults.push_back(arrayLenExpr);
+}
+
 
 // void PrettyPrinter::visit(ASTNegExpr){
 
