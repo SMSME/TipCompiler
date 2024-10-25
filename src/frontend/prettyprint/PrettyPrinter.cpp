@@ -428,10 +428,11 @@ void PrettyPrinter::endVisit(ASTForRangeStmt *element) {
   std::string forRangeString = 
         indent() + "for (" + iteratorString + " : " + aString + " .. " + bString;
   if (element->getAmt() != nullptr) {
-    forRangeString += " by " + amtString + ")\n"; 
+    forRangeString += " by " + amtString + ")\n" + thenString; 
   }
-  
-  forRangeString += thenString;
+  else{
+    forRangeString += ")\n" + thenString;
+  }
 
   visitResults.push_back(forRangeString);
 }

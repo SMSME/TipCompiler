@@ -65,7 +65,22 @@ In summary we added the following nodes:
     - ASTForRangeStmt.cpp
     - ASTForRangeStmt.h
 
+## Pretty Printer Implementation (endVisit and visits)
+Implementations 
+1. ASTTernaryExpr :: endVisit
+2. ASTArrayOfExpr :: endVisit
+3. ASTArrayMulExpr :: endVisit
+4. ASTArrayIndexExpr :: endVisit
+5. ASTLengthExpr :: endVisit
+6. ASTNotExpr :: endVisit
+7. ASTNegExpr :: endVisit
+8. ASTBooleanExpr :: endVisit
+9. ASTIncrementStmt :: endVisit
+10. ASTDecrementStmt :: endVisit
+11. ASTForStmt :: endVisit + visit
+12. ASTForRangeStmt :: endVisit + visit
 
+The implementation for these followed 
 
 ## Methodology 
 There were 2 main parts that we considered: creating the nodes themselves, creating the pretty printer methods, and then their respective tests. Our idea was to start with the more difficult parts, and then ease our way down, going from nodes -> testing -> pretty printer -> testing and more testing. 
