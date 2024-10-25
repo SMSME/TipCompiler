@@ -58,15 +58,26 @@ public:
   // new
 
   virtual void endVisit(ASTTernaryExpr *element) override;
+  virtual void endVisit(ASTArrayMulExpr *element) override;
+  virtual void endVisit(ASTArrayOfExpr *element) override;
   virtual void endVisit(ASTArrayIndexExpr *element) override;
+  virtual void endVisit(ASTLengthExpr *element) override; 
   
-  // Any visitNegExpr(TIPParser::NegExprContext *ctx) override;
-  // Any visitNotExpr(TIPParser::NotExprContext *ctx) override;
-  // Any visitLengthExpr(TIPParser::LengthExprContext *ctx) override;
-  // Any visitBooleanExpr(TIPParser::BooleanExprContext *ctx) override;
-  // Any visitTernaryExpr(TIPParser::TernaryExprContext *ctx) override;
-  // Any visitArrayMulExpr(TIPParser::ArrayMulExprContext *ctx) override;
-  // Any visitArrayOfExpr(TIPParser::ArrayOfExprContext *ctx) override;
+  virtual void endVisit(ASTNotExpr *element) override;
+  virtual void endVisit(ASTNegExpr *element) override;
+  virtual void endVisit(ASTBooleanExpr *element) override; // idk about this one 
+
+  virtual void endVisit(ASTIncrementStmt *element) override; // 
+  virtual void endVisit(ASTDecrementStmt *element) override; // 
+
+
+  virtual bool visit(ASTForStmt *element) override; // this is fucked
+  virtual void endVisit(ASTForStmt *element) override; // this is fucked
+  virtual bool visit(ASTForRangeStmt *element) override; // this is fucked
+  virtual void endVisit(ASTForRangeStmt *element) override; // this is fucked
+  
+
+
 
   // // // //NEW STMT
   // Any visitForStmt(TIPParser::ForStmtContext *ctx) override;
