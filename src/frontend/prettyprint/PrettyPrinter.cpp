@@ -394,8 +394,7 @@ void PrettyPrinter::endVisit(ASTForStmt *element) {
   indentLevel--;
 
   std::string forString = 
-        indent() + "for (" + itemString + " : " + iterateString + ")\n" +
-        indent() + thenString;
+        indent() + "for (" + itemString + " : " + iterateString + ")\n" + thenString;
   visitResults.push_back(forString);
 }
 
