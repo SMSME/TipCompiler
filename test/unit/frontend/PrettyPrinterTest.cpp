@@ -259,13 +259,15 @@ main()
 1. Ternary
 2. Array of 
 3. Mul Array
-4. Array Expr
+4. Array Index
 5. Len Expr
 6. Not Expr
 7. Neg Expr
 8. Boolean Expr
 9. Increment Stmt
 10. Decrement Stmt
+11. For range
+12. For loop
 
 */
 

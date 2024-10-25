@@ -1,58 +1,88 @@
 Deliverable 2:
 =========
 
-## AST Node Implementation
-**True and False**
-- Added 'KTRUE' and 'KFALSE' keyword definitions 
+## AST Node Implementation (AST[].cpp and .h files)
 
-**Unary Operator**
-- KNOT : 'not' ..added under lexicon
-- KNOT expr  //added
+In summary we added the following nodes:
+1. ASTTernaryExpr
+2. ASTArrayOfExpr
+3. ASTArrayMulExpr
+4. ASTArrayIndexExpr
+5. ASTLengthExpr
+6. ASTNotExpr
+7. ASTNegExpr
+8. ASTBooleanExpr
+9. ASTIncrementStmt
+10. ASTDecrementStmt
+11. ASTForStmt
+12. ASTForRangeStmt
 
-**Non-short Cicruit Binary  Operators**
-- KAND and KOR // added under keywords
-- expr op=(KAND | KOR) expr        #orExpr // added under expressions
+**True and False --> Boolean Expression**
+- Added Boolean node to handle true and false keywords
+    - ASTBooleanExpr.cpp
+    - ASTBooleanExpr.h
+
+**Not and Negative Expressions**
+- Two files and headers added to handle new node type not and "-" (negative) expressions
+    - ASTNegExpr.cpp
+    - ASTNegExpr.h
+    - ASTNotExpr.cpp
+    - ASTNotExpr.h
+
+**And, Or, and Mod, Relational Exprs**
+- And, or, and mod were added under binary operators (a pre-existing file)
+- Relational operators were added similarly, no new files created
 
 **Array Type**
-- arrayExpr : '[' (expr (',' expr)*)? ']' 
-    | '[' expr 'of' expr ']'; //added
+- split into Array Of and Array Mul (more than one expr)
+    - ASTArrayOfExpr.cpp
+    - ASTArrayOfExpr.h
+    - ASTArrayMulExpr.cpp
+    - ASTArrayMulExpr.h
+- array operator nodes were also added:
+    - ASTArrayIndexExpr.cpp
+    - ASTArrayIndexExpr.h
+    - ASTLengthExpr.cpp
+    - ASTLengthExpr.h
 
-**Arithmetic Operator Extension**
-- expr op=(MUL | DIV | MOD) expr - modulo addeded to multiplicative
-- SUB expr                 #negExpr // added
-
-**Relational Operator Extension**
-- LT  : '<' ; //  added in lexicon
-- GTE : '>=' ; 
-- LTE : '<=' ; 
-- expr op=(GT | LT | GTE | LTE) expr  // added in expressions
 
 **Increment and Decrement Statements**
-- INCR : '++' ;
-- DECR : '--' ; // added in lexicon
-- incrementStmt : expr (INCR | DECR) ';' ; // statements added
+- These were implemented as two separate nodes for ease
+    - ASTIncrementStmt.cpp
+    - ASTIncrementStmt.h
+    - ASTDecrementStmt.cpp
+    - ASTDecrementStmt.h
 
-**Ternary Conditional Expression**
-- <assoc=right> expr '?' expr ':' expr  // expression added
+**Ternary Expression**
+- Single node implemented
+    - ASTTernaryExpr.cpp
+    - ASTTernaryExpr.h
 
-**For Loop Iterator**
-- forStmt : KFOR '(' expr ':' expr ')' statement  ; // statement added
+**For Loops**
+- Separated into two types: for range and traditional 
+    - ASTForStmt.cpp
+    - ASTForStmt.h
+    - ASTForRangeStmt.cpp
+    - ASTForRangeStmt.h
 
-**For Loop Range**
-- forRangeStmt : KFOR '(' expr ':' expr  '..' expr ('by' expr)? ')' statement   ; // statement added
 
-## Testing
-For each new addition, we decided that we would write base test cases and then after ensuring that these don't fail, we would write more. For example in the for array creation, we had a basic test for an empty array, one item, and then multiple items. Then we extended the tests, adding new test cases that tried statements within the array instead of using expressions to ensure that it failed. Afterwards we tested the additional functionality such as indexing our base cases with the '#' operator. 
 
-After we established tests for all of our new code, we went through it again with more failing test cases to ensure that there wasn't anything weird that could possibly pass such as the multitude of failing tests for the ternary expression where we considered taking away each of the parts until it became redundant.
+## Methodology 
+There were 2 main parts that we considered: creating the nodes themselves, creating the pretty printer methods, and then their respective tests. Our idea was to start with the more difficult parts, and then ease our way down, going from nodes -> testing -> pretty printer -> testing and more testing. 
 
-In terms of the actual style for test cases, we first wrote them individually. For example, there was one test case for passing relational operators "<", "<=", ">=", but after going through the TIP tests again we thought we should consolidate them, making them easier to find and read since there was significantly less text. So this lead to us having larger test cases, covering more. However, we primarily left failing test cases by themselves for the sake of finding bugs more easily in cases where our grammar should not pass.
+We initially planned to create and test incrementally, tackling each node one at a time. However, we found that our approach to creating the nodes improved as time went on. This led us to realize that our earlier nodes could benefit from modifications and so testing each node as we went would have required constantly updating all our previous tests to align with these changes, which was rather complicated due to the number of files involved. 
+
+After we finished the majority of the more difficult nodes to tackle (arrays and for loops), we began testing them starting with base cases for each type, and then adding more for cases that weren't covered originally such as writing an array empty array vs a filled array. 
+
+We then moved onto to the pretty printer, but this time incrementally testing as they were implemented as this section was easier to implement.
+
+The last part was just ensuring that our code had sufficient coverage, adding tests for the ASTPrinters, and in general adding tests where we thought was necessary.
 
 ## Tricky Parts
-There was a lot of back and forth on where certain elements should go. For example, reference and dereference were used as literals within the expression, and similarly the length operator, #, could have also been put as a literal in the expression. The same could be said for the increments and decrements, however we did run into many issues where on one computer a version would work and one wouldn't so we ended up going with a statement such as "expr (INCR | DECR)". We also implemented "and" and "or" as keywords specifically, but expressed them such as "expr op=(KAND | KOR) expr" to show how they are used as operators as well. This was to clarify they shouldn't be used as identifiers, but also that they are logical operators.
+Though we started with pair programming, we did split off for the sake of efficiency. Testing someone else's code was a little tricky and implementing pretty printer methods on nodes that were not self implemented created some complications since there was a slight lack of understanding. 
 
-Finally, after class discussions about left recursions and associativity we also contemplated how to write the ternary expression such that no problems would occur.
+Additionally, simply deciding the nature of the nodes was rather difficult. For example the boolean was implemented similar to a number expression, but there was debate on how it should be implemented and why as well. We ultimately had to decide what was feasible for now, and accept the consequences of difficulties later (such as putting increment and decrement separately). Some nodes were also split into two, while others were condensed after much contemplation.
 
 
 ## Design Changes
-We considering grouping the booleans together. For example, we considered having the true and false expressions under a condtional expression. However, we decided against this to make the divide more clear between the two options, but in the future there if structuring the grammar like this has errors when it comes to typing them, then we will deal with it then. Additionally, we were looking at a c precedence the entire time while structuring our expressions (https://en.cppreference.com/w/c/language/operator_precedence) which we used as a general guide, essentially keeping expressions within the groups. For example, function calls, subscripting arrays and accessing identifiers were grouped at the top together, but not necessarily in that order similar to how division, multiplication, and mod are at the same group level, but under the function and field accessing group.
+The main design changes dealt with node implementation. Attempts were made to create one node for the for loop statement, however this ended being too complex and so we split them up. The same goes for the arrays as well. Boolean was the main special case that we debated the design of. Unlike the rest of the nodes, true and false had special meaning in the language as they were types themselves so the implementation was tricky. Ultimately we decided that having one node for the sake of types and later ease would be best.
