@@ -11,11 +11,11 @@ void ASTTernaryExpr::accept(ASTVisitor *visitor) {
 }
 
 std::ostream &ASTTernaryExpr::print(std::ostream &out) const {
-    out << *getCondition() << "? ";
+    out << *getCondition() << " ? ";
     out << *getTrue();
-    out << ": " << *getFalse(); //all this might need to be one line?? most likely not
+    out << " : " << *getFalse();
     return out;
-}
+} 
 
 std::vector<std::shared_ptr<ASTNode>> ASTTernaryExpr::getChildren() {
     std::vector<std::shared_ptr<ASTNode>> children;

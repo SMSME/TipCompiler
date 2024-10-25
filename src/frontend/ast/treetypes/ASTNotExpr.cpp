@@ -9,7 +9,7 @@ void ASTNotExpr::accept(ASTVisitor *visitor) {
 }
 
 std::ostream &ASTNotExpr::print(std::ostream &out) const {
-    out << "not" << *getNot();
+    out << "not " << *getNot();
     return out;
 }
 

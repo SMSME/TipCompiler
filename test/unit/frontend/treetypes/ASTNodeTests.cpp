@@ -481,6 +481,10 @@ TEST_CASE("ASTBooleanExprTest: Test methods of AST subtype.",
     auto expr = ASTHelper::find_node<ASTBooleanExpr>(ast);
 
     REQUIRE(expr->getOp() == true);
+
+    std::stringstream ptest;
+    ptest << *expr;
+    REQUIRE(ptest.str() == "1");
 }
 
 TEST_CASE("ASTDecrementStmt: Test methods of AST subtype.",
@@ -501,6 +505,10 @@ TEST_CASE("ASTDecrementStmt: Test methods of AST subtype.",
    std::stringstream left;
    left << *stmt->getLeft();
    REQUIRE(left.str() == "z");
+
+   std::stringstream ptest;
+   ptest << *stmt;
+   REQUIRE(ptest.str() == "z--");
 }
 
 TEST_CASE("ASTIncrementStmt: Test methods of AST subtype.",
@@ -521,6 +529,10 @@ TEST_CASE("ASTIncrementStmt: Test methods of AST subtype.",
    std::stringstream left;
    left << *stmt->getLeft();
    REQUIRE(left.str() == "z");
+
+   std::stringstream ptest;
+   ptest << *stmt;
+   REQUIRE(ptest.str() == "z++");
 }
 
 TEST_CASE("ASTNotExpr: Test methods of AST subtype.",
@@ -540,6 +552,10 @@ TEST_CASE("ASTNotExpr: Test methods of AST subtype.",
    std::stringstream n;
    n << *expr->getNot();
    REQUIRE(n.str() == "z");
+
+   std::stringstream ptest;
+   ptest << *expr;
+   REQUIRE(ptest.str() == "not z");
 }
 
 TEST_CASE("ASTArrayMulExprMultiple: Test methods of AST subtype.",
@@ -558,6 +574,10 @@ TEST_CASE("ASTArrayMulExprMultiple: Test methods of AST subtype.",
 
    auto exprs = expr->getExprs();
    REQUIRE(exprs.size() == 0);
+
+   std::stringstream ptest;
+   ptest << *expr;
+   REQUIRE(ptest.str() == "[]");
 }
 
 TEST_CASE("ASTArrayMulExprNone: Test methods of AST subtype.",
@@ -576,6 +596,10 @@ TEST_CASE("ASTArrayMulExprNone: Test methods of AST subtype.",
 
    auto exprs = expr->getExprs();
    REQUIRE(exprs.size() == 3);
+
+   std::stringstream ptest;
+   ptest << *expr;
+   REQUIRE(ptest.str() == "[e1,e2,e3]");
 }
 
 TEST_CASE("ASTArrayOfExprDefault: Test methods of AST subtype.",
@@ -671,6 +695,11 @@ TEST_CASE("ASTTernaryExpr: Test methods of AST subtype.",
     std::stringstream o3;
     o3 << *expr->getFalse();
     REQUIRE(o3.str() == "4");
+
+    std::stringstream ptest;
+    ptest << *expr;
+    REQUIRE(ptest.str() == "(1>2) ? 3 : 4");
+
 }
 
 TEST_CASE("ASTNegExprTest: Test methods of AST subtype.",
