@@ -55,7 +55,11 @@ public:
   void endVisit(ASTRecordExpr *element) override;
   void endVisit(ASTRefExpr *element) override;
   void endVisit(ASTWhileStmt *element) override;
+
+  //NEw//
   void endVisit(ASTBooleanExpr *element) override;
+  // void endVisit(ASTArrayOfExpr *element) override;
+  // void endVisit(ASTArrayMulExpr *element) override;
 
 protected:
   std::shared_ptr<ConstraintHandler> constraintHandler;

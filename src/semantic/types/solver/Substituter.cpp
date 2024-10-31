@@ -95,3 +95,9 @@ void Substituter::endVisit(TipAlpha *element) {
         std::make_shared<TipAlpha>(element->getNode(), element->getName()));
   }
 }
+
+
+void Substituter::endVisit(TipBoolean *element) {
+  // Zero element in visitedTypes (a special case of Cons)
+  visitedTypes.push_back(std::make_shared<TipBoolean>());
+}

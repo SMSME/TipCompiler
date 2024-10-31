@@ -7,6 +7,7 @@
 #include "TipRef.h"
 #include "TipVar.h"
 #include "TipBoolean.h"
+#include "TipArray.h"
 
 TypeConstraintVisitor::TypeConstraintVisitor(
     SymbolTable *st, std::shared_ptr<ConstraintHandler> handler)
@@ -294,11 +295,33 @@ void TypeConstraintVisitor::endVisit(ASTErrorStmt *element) {
                             std::make_shared<TipInt>());
 }
 
+
+//NEW//
 /*! \brief Type constraints for boolean.
  *
  * Type rules for "B":
- *   [[B]] = boolean
+ *   [[B]] = bool
  */
 void TypeConstraintVisitor::endVisit(ASTBooleanExpr *element) {
   constraintHandler->handle(astToVar(element), std::make_shared<TipBoolean>());
 }
+
+// /*! \brief Type constraints for array mul.
+//  *
+//  * Type Rules for "[e1, e2, ..., en]":
+//  *   ?
+//  */
+// void TypeConstraintVisitor::endVisit(ASTArrayMulExpr *element) {
+//   constraintHandler->handle(
+//       astToVar(element), std::make_shared<TipArray>());
+// }
+
+// /*! \brief Type constraints for array of.
+//  *
+//  * Type Rules for "[e1 of e2]":
+//  *   ?
+//  */
+// void TypeConstraintVisitor::endVisit(ASTArrayOfExpr *element) {
+//   constraintHandler->handle(
+//       astToVar(element), std::make_shared<TipArray>());
+// }
