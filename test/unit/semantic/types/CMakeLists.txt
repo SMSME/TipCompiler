@@ -12,6 +12,11 @@ target_sources(
     ${CMAKE_CURRENT_SOURCE_DIR}/concrete/TipAbsentFieldTest.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/concrete/TipRefTest.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/concrete/TipVarTest.cpp
+
+
+    ${CMAKE_CURRENT_SOURCE_DIR}/concrete/TipBooleanTest.cpp
+
+
     ${CMAKE_CURRENT_SOURCE_DIR}/constraints/TypeConstraintCollectTest.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/constraints/PolyTypeConstraintCollectTest.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/constraints/TypeConstraintTest.cpp

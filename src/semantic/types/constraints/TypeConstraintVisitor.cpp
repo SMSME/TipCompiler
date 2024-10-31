@@ -6,6 +6,7 @@
 #include "TipRecord.h"
 #include "TipRef.h"
 #include "TipVar.h"
+#include "TipBoolean.h"
 
 TypeConstraintVisitor::TypeConstraintVisitor(
     SymbolTable *st, std::shared_ptr<ConstraintHandler> handler)
@@ -291,4 +292,13 @@ void TypeConstraintVisitor::endVisit(ASTAccessExpr *element) {
 void TypeConstraintVisitor::endVisit(ASTErrorStmt *element) {
   constraintHandler->handle(astToVar(element->getArg()),
                             std::make_shared<TipInt>());
+}
+
+/*! \brief Type constraints for boolean.
+ *
+ * Type rules for "B":
+ *   [[B]] = boolean
+ */
+void TypeConstraintVisitor::endVisit(ASTBooleanExpr *element) {
+  constraintHandler->handle(astToVar(element), std::make_shared<TipBoolean>());
 }

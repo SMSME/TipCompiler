@@ -5,6 +5,7 @@
 #include "Unifier.h"
 #include "TipFunction.h"
 #include "TipRef.h"
+#include "TipBoolean.h"
 
 
 #include <catch2/catch_test_macros.hpp>
@@ -454,3 +455,28 @@ main() {
     auto r1Type = std::make_shared<TipVar>(symbols->getLocal("r1", fDecl));
     REQUIRE(*unifier.inferred(r1Type) == *TypeHelper::intType());
 }
+
+//NEW//
+// TEST_CASE("TypeConstraintVisitor: boolean", "[TypeConstraintVisitor]") {
+//   std::stringstream program;
+//   program << R"(
+//      // [[test]] = [[x]] = () -> bool
+//       test() {
+//         var x;
+//         x = true;
+//         return x;
+//       }
+//     )";
+
+//     auto unifierSymbols = collectAndSolve(program);
+//     auto unifier = unifierSymbols.first;
+//     auto symbols = unifierSymbols.second;
+//     std::vector<std::shared_ptr<TipType>> oneBoolean{std::make_shared<TipBoolean>()};
+
+//     auto fDecl = symbols->getFunction("test");
+//     auto fType = std::make_shared<TipVar>(fDecl);
+//     REQUIRE(*unifier.inferred(fType) == *TypeHelper::funType(oneBoolean, std::make_shared<TipBoolean>()));
+
+//     auto xType = std::make_shared<TipVar>(symbols->getLocal("x", fDecl));
+//     REQUIRE(*unifier.inferred(xType) == *std::make_shared<TipBoolean>());
+// }
