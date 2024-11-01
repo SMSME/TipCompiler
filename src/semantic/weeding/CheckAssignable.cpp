@@ -66,3 +66,27 @@ void CheckAssignable::check(ASTProgram *p) {
   CheckAssignable visitor;
   p->accept(&visitor);
 }
+
+void CheckAssignable::endVisit(ASTIncrementStmt *element) {
+  LOG_S(1) << "Checking assignability of " << *element;
+
+  if (isAssignable(element->getLeft()))
+    return;
+
+  std::ostringstream oss;
+  oss << "Address of error on line " << element->getLine() << ": ";
+  oss << *element->getLeft() << " not an l-value\n";
+  throw SemanticError(oss.str());
+}
+
+void CheckAssignable::endVisit(ASTDecrementStmt *element) {
+  LOG_S(1) << "Checking assignability of " << *element;
+
+  if (isAssignable(element->getLeft()))
+    return;
+
+  std::ostringstream oss;
+  oss << "Address of error on line " << element->getLine() << ": ";
+  oss << *element->getLeft() << " not an l-value\n";
+  throw SemanticError(oss.str());
+}
