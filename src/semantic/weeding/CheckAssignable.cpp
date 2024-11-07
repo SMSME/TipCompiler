@@ -116,3 +116,4 @@ void CheckAssignable::endVisit(ASTNegExpr *element) {
   throw SemanticError(oss.str());
 }
 
+

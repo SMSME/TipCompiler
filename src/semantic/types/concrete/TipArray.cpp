@@ -1,5 +1,7 @@
 #include "TipArray.h"
 #include "TipTypeVisitor.h"
+TipArray::TipArray() 
+    : TipCons(std::vector<std::shared_ptr<TipType>>{}), arr_of(false) {}
 
 TipArray::TipArray(std::vector<std::shared_ptr<TipType>> inits)
     : TipCons(inits) {arr_of = false;}

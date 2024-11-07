@@ -16,7 +16,7 @@ TEST_CASE("TipArray: test TipArray default - getters"
 
   TipArray tipArr(inits);
 
-  REQUIRE(3 == tipArr.getInits().size());
+  REQUIRE(inits.size() == tipArr.getInits().size());
 }
 
 TEST_CASE("TipArray: test TipArray, array of - getters"
@@ -29,10 +29,10 @@ TEST_CASE("TipArray: test TipArray, array of - getters"
     REQUIRE(2 == tipArr.getInits().size());
 }
 
-// TEST_CASE("TipBoolean: test args is empty", "[tip_bool]") {
-//   TipBoolean t;
-//   REQUIRE(t.getArguments().empty());
-// }
+TEST_CASE("TipArray: test empty TipArray", "[TipArray]") {
+    TipArray tipArr;
+    REQUIRE(0 == tipArr.getInits().size());
+}
 
 // TEST_CASE("TipBoolean: test toString returns bool", "[tip_bool]") {
 //   TipBoolean t;
