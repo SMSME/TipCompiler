@@ -45,5 +45,5 @@ public:
 
   //NEW//
   virtual void endVisit(TipBoolean *element) override;
-  // virtual void endVisit(TipArray *element) override;
+  virtual void endVisit(TipArray *element) override;
 };

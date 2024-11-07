@@ -3,12 +3,13 @@
 
 TipArray::TipArray(std::vector<std::shared_ptr<TipType>> inits)
     : TipCons(inits) {arr_of = false;}
-TipArray::TipArray(std::shared_ptr<TipType> expr1, std::shared_ptr<TipType> expr2):
-TipCons(combine(expr1, expr2)) {arr_of = true;}
+
+TipArray::TipArray(std::shared_ptr<TipType> expr1, std::shared_ptr<TipType> expr2)
+    : TipCons(combine(expr1, expr2)) {arr_of = true;}
 
 std::vector<std::shared_ptr<TipType>>
 TipArray::combine(std::shared_ptr<TipType> expr1, std::shared_ptr<TipType> expr2) {
-    std::vector<std::shared_ptr<TipType>> combined;
+                    std::vector<std::shared_ptr<TipType>> combined;
     combined.push_back(std::move(expr1));
     combined.push_back(std::move(expr2));
     return combined;
@@ -26,12 +27,23 @@ bool TipArray::operator==(const TipType &other) const {
         }
     
     if (arr_of && otherTipArray->arr_of){
-        for (int i = 0; i < arity(); i++) {
-            if (*(arguments.at(i)) != *(otherTipArray->arguments.at(i))) {
-                return false;
-            }
+        if (*(arguments.at(1)) != *(otherTipArray->arguments.at(1))) {
+            return false;
         }
     }
+
+    if (arr_of){
+        if (*(arguments.at(1)) != *(otherTipArray->arguments.at(0))){
+            return false;
+        }
+    }
+
+    if (otherTipArray->arr_of){
+        if (*(arguments.at(0)) != *(otherTipArray->arguments.at(1))){
+            return false;
+            }
+        }
+
 
     for (int i = 0; i < arity(); i++) {
         if (*(arguments.at(i)) != *(otherTipArray->arguments.at(i))) {

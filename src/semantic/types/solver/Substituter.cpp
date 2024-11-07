@@ -101,3 +101,8 @@ void Substituter::endVisit(TipBoolean *element) {
   // Zero element in visitedTypes (a special case of Cons)
   visitedTypes.push_back(std::make_shared<TipBoolean>());
 }
+
+void Substituter::endVisit(TipArray *element) {
+  // Zero element in visitedTypes (a special case of Cons)
+  visitedTypes.push_back(std::make_shared<TipArray>());
+}
