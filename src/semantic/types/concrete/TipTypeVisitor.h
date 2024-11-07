@@ -43,6 +43,6 @@ public:
   //NEW//
   virtual bool visit(TipBoolean *element) { return true; }
   virtual void endVisit(TipBoolean *element) {}
-  // virtual bool visit(TipArray *element) { return true; }
-  // virtual void endVisit(TipArray *element) {}
+  virtual bool visit(TipArray *element) { return true; }
+  virtual void endVisit(TipArray *element) {}
 };

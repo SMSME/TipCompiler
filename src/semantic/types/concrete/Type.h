@@ -20,4 +20,4 @@
 
 //NEW//
 #include "TipBoolean.h"
-// #include "TipArray.h"
+#include "TipArray.h"
