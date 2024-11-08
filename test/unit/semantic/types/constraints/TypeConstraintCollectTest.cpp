@@ -481,3 +481,4 @@ TEST_CASE("TypeConstraintVisitor: bool", "[TypeConstraintVisitor]") {
     auto xType = std::make_shared<TipVar>(symbols->getLocal("x", fDecl));
     REQUIRE(*unifier.inferred(xType) == *std::make_shared<TipBoolean>());
 }
+
