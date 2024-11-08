@@ -102,39 +102,33 @@ void TypeConstraintVisitor::endVisit(ASTBinaryExpr *element) {
   auto op = element->getOp();
   auto intType = std::make_shared<TipInt>();
   auto boolType = std::make_shared<TipBoolean>();
-  bool booreturn = true;
 
   if (op == ">=" || op == ">" || op == "<=" || op == "<"){
     // operands should be ints
     constraintHandler->handle(astToVar(element->getLeft()), intType);
     constraintHandler->handle(astToVar(element->getRight()), intType);
+    constraintHandler->handle(astToVar(element), boolType);
   }
 
   else if (op == "and" || op == "or"){
     // operands should be boolean
     constraintHandler->handle(astToVar(element->getLeft()), boolType);
     constraintHandler->handle(astToVar(element->getRight()), boolType);
+    constraintHandler->handle(astToVar(element), boolType);
   }
 
   else if (op != "==" && op != "!=") {
     // operands are integer
     constraintHandler->handle(astToVar(element->getLeft()), intType);
     constraintHandler->handle(astToVar(element->getRight()), intType);
-    booreturn = false;
+    constraintHandler->handle(astToVar(element), intType);
   } 
 
   else {
     // operands have the same type
     constraintHandler->handle(astToVar(element->getLeft()),
                               astToVar(element->getRight()));
-    booreturn = false;
-  }
-
-  if (booreturn) {// result type is integer
     constraintHandler->handle(astToVar(element), boolType);
-  }
-  else if (!booreturn) {// result type is integer
-    constraintHandler->handle(astToVar(element), intType);
   }
 }
 
@@ -231,11 +225,11 @@ void TypeConstraintVisitor::endVisit(ASTAssignStmt *element) {
 /*! \brief Type constraints for while loop.
  *
  * Type rules for "while (E) S":
- *   [[E]] = int
+ *   [[E]] = bool
  */
 void TypeConstraintVisitor::endVisit(ASTWhileStmt *element) {
   constraintHandler->handle(astToVar(element->getCondition()),
-                            std::make_shared<TipInt>());
+                            std::make_shared<TipBoolean>());
 }
 
 /*! \brief Type constraints for if statement.
@@ -245,7 +239,7 @@ void TypeConstraintVisitor::endVisit(ASTWhileStmt *element) {
  */
 void TypeConstraintVisitor::endVisit(ASTIfStmt *element) {
   constraintHandler->handle(astToVar(element->getCondition()),
-                            std::make_shared<TipInt>());
+                            std::make_shared<TipBoolean>());
 }
 
 /*! \brief Type constraints for output statement.
@@ -464,7 +458,7 @@ void TypeConstraintVisitor::endVisit(ASTLengthExpr *element) {
 void TypeConstraintVisitor::endVisit(ASTArrayIndexExpr *element) {
   constraintHandler->handle(astToVar(element->getName()), std::make_shared<TipArray>());
   constraintHandler->handle(astToVar(element->getIndex()), std::make_shared<TipInt>());
-  constraintHandler->handle(astToVar(element), std::make_shared<TipAlpha>());
+  // constraintHandler->handle(astToVar(element), std::make_shared<TipVar>());
 }
 
 /*! \brief Type constraints for ternary expression.
@@ -489,7 +483,7 @@ void TypeConstraintVisitor::endVisit(ASTTernaryExpr *element) {
  */
 void TypeConstraintVisitor::endVisit(ASTForStmt *element) {
     constraintHandler->handle(astToVar(element->getIterate()), 
-        std::make_shared<TipArray>(std::make_shared<TipType>(), astToVar(element->getItem())));
+    std::make_shared<TipArray>(astToVar(element->getItem()), astToVar(element->getItem())));
 }
 
 /*! \brief Type constraints for a for range expression.
