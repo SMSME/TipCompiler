@@ -297,6 +297,7 @@ void TypeConstraintVisitor::endVisit(ASTErrorStmt *element) {
 
 
 //NEW//
+
 /*! \brief Type constraints for boolean.
  *
  * Type rules for "B":

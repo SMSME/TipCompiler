@@ -140,8 +140,9 @@ TEST_CASE("TipArray: Test equality "
     SECTION("Not equal with different types of ") {
         auto expr1 = std::make_shared<TipInt>();
         auto expr2 = std::make_shared<TipInt>();
+        TipArray tipArrayB(expr1, expr2);
 
-        REQUIRE(tipArrayC != tipArrayA);
+        REQUIRE(tipArrayC != tipArrayB);
         }
     
     SECTION("Not equal where other array is of ") {
