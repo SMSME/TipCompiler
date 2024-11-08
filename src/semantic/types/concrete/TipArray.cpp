@@ -24,6 +24,19 @@ bool TipArray::operator==(const TipType &other) const {
         return false;
         }
     
+        // Checks that the if either is empty than the other one is fine
+    if (otherTipArray->empty){
+        if (!empty){
+            return false;
+        }
+    }
+
+    if (empty){
+        if (!otherTipArray->empty){
+            return false;
+        }
+    }
+    
     // both arrays are "of" arrays
     else if (arr_of && otherTipArray->arr_of){ 
         if (*(arguments.at(1)) != *(otherTipArray->arguments.at(1))) {
@@ -56,19 +69,6 @@ bool TipArray::operator==(const TipType &other) const {
                 return false;
                 }
             }
-        
-        // Checks that the if either is empty than the other one is fine
-        if (otherTipArray->empty){
-            if (!empty){
-                return false;
-            }
-        }
-
-        if (empty){
-            if (!otherTipArray->empty){
-                return false;
-            }
-        }
     }
     return true;
 }
@@ -79,24 +79,27 @@ bool TipArray::operator!=(const TipType &other) const {
 
 
 std::ostream &TipArray::print(std::ostream &out) const {
-if (arr_of){
-    out << "[";
-
+    if (arr_of) {
+        out << "[";
+        out << *(arguments.at(0)) << " of " << *(arguments.at(1));
+        out << "]";
+        return out;
+    }
+    else{
+        out << "[";
+        bool first = true;
+        for (auto &init : arguments) {
+            if (first) {
+                out << *init;
+                first = false;
+                continue;
+            }
+        out << "," << *init;
+        }
+        out << "]";
+        return out;
+        }
 }
-    out << "[";
-    bool first = true;
-    int i = 0;
-    for (auto &init : arguments) {
-    if (first) {
-        out << *init;
-        first = false;
-        continue;
-    }
-    out << "," << *init;
-    }
-    out << "]";
-    return out;
-    }
 
 std::vector<std::shared_ptr<TipType>> &TipArray::getInits() {
   return arguments;
