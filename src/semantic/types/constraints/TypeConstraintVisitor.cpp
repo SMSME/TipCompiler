@@ -311,23 +311,19 @@ void TypeConstraintVisitor::endVisit(ASTBooleanExpr *element) {
  * Type Rules for "[e1, e2, ..., en]":
  *   ?
  */
-void TypeConstraintVisitor::endVisit(ASTArrayMulExpr *element) {
-
-
-//   std::vector<std::shared_ptr<TipType>> inits;
-//   for (auto &f : allFields) {
-//     if (f == element->getField()) {
-//       fieldTypes.push_back(astToVar(element));
-//     } else {
-//       fieldTypes.push_back(std::make_shared<TipAlpha>(element, f));
+// void TypeConstraintVisitor::endVisit(ASTArrayMulExpr *element) {
+//   std::vector<std::shared_ptr<TipType>> arrItems;
+//   if (!element->getChildren().empty()){
+//     auto type = element->getChildren().at(0);
+//     for (auto &a : element->getChildren()) {
+//       arrItems.push_back(astToVar(a));
+//       constraintHandler->handle(type, astToVar(a));
 //     }
 //   }
-//   constraintHandler->handle(astToVar(element->getRecord()),
-//                             std::make_shared<TipRecord>(fieldTypes, allFields));
+//   constraintHandler->handle(astToVar(element),
+//                               std::make_shared<TipArray> (vals));
 // }
-//   constraintHandler->handle(
-//       astToVar(element), std::make_shared<TipArray>());
-}
+
 
 
 /*! \brief Type constraints for array of.
