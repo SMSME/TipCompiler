@@ -38,7 +38,7 @@ target_include_directories(
           ${CMAKE_SOURCE_DIR}/test/unit/matchers)
 target_link_libraries(
   typeinference_unit_tests
-  PRIVATE antlr4_static
+  PRIVATE ast antlr4_static
           ${llvm_libs}
           ast
           types
