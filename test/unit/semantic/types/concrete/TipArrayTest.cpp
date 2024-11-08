@@ -19,7 +19,7 @@ TEST_CASE("TipArray: Test TipArray default - getters"
   REQUIRE(inits.size() == tipArr.getInits().size());
 
   SECTION("Array of getter") {
-        auto expr1 = std::make_shared<TipBoolean>();
+        auto expr1 = std::make_shared<TipInt>();
         auto expr2 = std::make_shared<TipBoolean>();
 
         TipArray tipArr(expr1, expr2);
@@ -142,6 +142,10 @@ TEST_CASE("TipArray: Test equality "
         auto expr2 = std::make_shared<TipInt>();
 
         REQUIRE(tipArrayC != tipArrayA);
+        }
+    
+    SECTION("Not equal where other array is of ") {
+        REQUIRE(tipArrayA != tipArrayC);
         }
 
     SECTION("Not equal with different types ") {
