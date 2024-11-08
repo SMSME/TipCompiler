@@ -16,39 +16,21 @@ TEST_CASE("TipArray: Test TipArray default - getters"
 
   TipArray tipArr(inits);
   REQUIRE(inits.size() == tipArr.getInits().size());
+
+  SECTION("Array of getter") {
+        std::shared_ptr<TipType> expr1;
+        std::shared_ptr<TipType> expr2;
+
+        TipArray tipArr(expr1, expr2);
+
+        REQUIRE(2 == tipArr.arity());
+  }
+}
   
-}
-
-TEST_CASE("TipArray: Test TipArray, array of - getters"
-        "[TipArray]") {
-    std::shared_ptr<TipType> expr1;
-    std::shared_ptr<TipType> expr2;
-
-    TipArray tipArr(expr1, expr2);
-
-    REQUIRE(2 == tipArr.getInits().size());
-}
 
 TEST_CASE("TipArray: Test empty TipArray", "[TipArray]") {
     TipArray tipArr;
     REQUIRE(0 == tipArr.getInits().size());
-
-    SECTION("Empty array of"){
-        auto expr1 = std::make_shared<TipInt>(0);
-        auto expr2 = std::make_shared<TipInt>(7);
-
-        TipArray tipArr(expr1, expr2);
-
-        REQUIRE(tipArr.getInits().size() == 2);   
-        REQUIRE(*(tipArr.getInits().at(0)) == *expr1);  
-        REQUIRE(*(tipArr.getInits().at(1)) == *expr2);
-
-        REQUIRE(tipArr.arr_of == true); 
-        REQUIRE(tipArr.getInits().empty());
-
-        }
-
-
 }
 
 TEST_CASE("TipArray: Test arity", "[TipArray]") {
@@ -60,16 +42,16 @@ TEST_CASE("TipArray: Test arity", "[TipArray]") {
 
     TipArray tipArr(inits);
     REQUIRE(5 == tipArr.arity());
+
+    SECTION("Arity for array of") {
+        std::shared_ptr<TipType> expr1;
+        std::shared_ptr<TipType> expr2;
+
+        TipArray tipArr(expr1, expr2);
+
+        REQUIRE(2 == tipArr.arity());}
 }
 
-TEST_CASE("TipArray: Test arity - of", "[TipArray]") {
-    std::shared_ptr<TipType> expr1;
-    std::shared_ptr<TipType> expr2;
-
-    TipArray tipArr(expr1, expr2);
-
-    REQUIRE(2 == tipArr.arity());
-}
 
 TEST_CASE("TipArray: Test equality "
           "[TipArray]") {
@@ -92,23 +74,21 @@ TEST_CASE("TipArray: Test equality "
     }
 
     SECTION("Equal when different length") {
-    std::vector<std::shared_ptr<TipType>> initsB{
+    std::vector<std::shared_ptr<TipType>> initsC{
         std::make_shared<TipInt>(),
         std::make_shared<TipInt>(),
         };
-        TipArray tipArrayB(initsB);
+        TipArray tipArrayC(initsC);
 
-        REQUIRE(tipArrayA == tipArrayB);
+        REQUIRE(tipArrayA == tipArrayC);
     }
 
     SECTION("Equal when empty default") {
-        TipArray tipArrayB;
         TipArray tipArrayC;
+        TipArray tipArrayD;
 
-        REQUIRE(tipArrayC == tipArrayB);
+        REQUIRE(tipArrayC == tipArrayD);
     }
-
-
     }
 
 

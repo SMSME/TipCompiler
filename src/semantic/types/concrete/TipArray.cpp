@@ -1,13 +1,13 @@
 #include "TipArray.h"
 #include "TipTypeVisitor.h"
 TipArray::TipArray() 
-    : TipCons(std::vector<std::shared_ptr<TipType>>{}), arr_of(false) {}
+    : TipCons(std::vector<std::shared_ptr<TipType>>{}), arr_of(false), empty(true){}
 
 TipArray::TipArray(std::vector<std::shared_ptr<TipType>> inits)
-    : TipCons(inits) {arr_of = false;}
+    : TipCons(inits) {arr_of = false, empty = false;}
 
 TipArray::TipArray(std::shared_ptr<TipType> expr1, std::shared_ptr<TipType> expr2)
-    : TipCons(combine(expr1, expr2)) {arr_of = true;}
+    : TipCons(combine(expr1, expr2)) {arr_of = true, empty = false;}
 
 std::vector<std::shared_ptr<TipType>>
 TipArray::combine(std::shared_ptr<TipType> expr1, std::shared_ptr<TipType> expr2) {
@@ -25,39 +25,53 @@ bool TipArray::operator==(const TipType &other) const {
         }
     
     // both arrays are "of" arrays
-    if (arr_of && otherTipArray->arr_of){ 
+    else if (arr_of && otherTipArray->arr_of){ 
         if (*(arguments.at(1)) != *(otherTipArray->arguments.at(1))) {
             return false;
         }
     }
 
     // initial array is "of" 
-    if (arr_of){
+    else if (arr_of){
         if (*(arguments.at(1)) != *(otherTipArray->arguments.at(0))){
             return false;
         }
     }
 
     // other array is "of" 
-    if (otherTipArray->arr_of){
+    else if (otherTipArray->arr_of){
         if (*(arguments.at(0)) != *(otherTipArray->arguments.at(1))){
             return false;
             }
         // if 0 of and not empty
         if (arguments.size() == 0 && otherTipArray->arguments.at(0) != 0) {
             return false;
-        }
+            }
         }
 
     // both arrays are default
-    for (int i = 0; i < otherTipArray->arity(); i++) {
-        if (*(arguments.at(0)) != *(otherTipArray->arguments.at(i))) {
-            return false;
+    else{
+        for (int i = 0; i < otherTipArray->arity(); i++) {
+            if (*(arguments.at(0)) != *(otherTipArray->arguments.at(i))) {
+                return false;
+                }
+            }
+        
+        // Checks that the if either is empty than the other one is fine
+        if (otherTipArray->empty){
+            if (!empty){
+                return false;
+            }
         }
-    
-    return true;
+
+        if (empty){
+            if (!otherTipArray->empty){
+                return false;
+            }
         }
     }
+    return true;
+}
 
 bool TipArray::operator!=(const TipType &other) const {
   return !(*this == other);

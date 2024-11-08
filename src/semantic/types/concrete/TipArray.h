@@ -14,6 +14,7 @@
 class TipArray : public TipCons {
 public:
     bool arr_of;
+    bool empty;
     TipArray();
     TipArray(std::vector<std::shared_ptr<TipType>> inits);
     TipArray(std::shared_ptr<TipType> expr1,std::shared_ptr<TipType> expr2);
