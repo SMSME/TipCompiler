@@ -105,7 +105,7 @@ std::vector<std::shared_ptr<TipType>> &TipArray::getInits() {
 
 void TipArray::accept(TipTypeVisitor *visitor) {
   if (visitor->visit(this)) {
-    for (auto a : arguments) {
+    for (auto &a : arguments) {
       a->accept(visitor);
     }
   }
