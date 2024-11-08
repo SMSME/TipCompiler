@@ -24,37 +24,39 @@ bool TipArray::operator==(const TipType &other) const {
         return false;
         }
     
-    if (arity() != otherTipArray->arity()) {
-        return false;
-        }
-    
-    if (arr_of && otherTipArray->arr_of){
+    // both arrays are "of" arrays
+    if (arr_of && otherTipArray->arr_of){ 
         if (*(arguments.at(1)) != *(otherTipArray->arguments.at(1))) {
             return false;
         }
     }
 
+    // initial array is "of" 
     if (arr_of){
         if (*(arguments.at(1)) != *(otherTipArray->arguments.at(0))){
             return false;
         }
     }
 
+    // other array is "of" 
     if (otherTipArray->arr_of){
         if (*(arguments.at(0)) != *(otherTipArray->arguments.at(1))){
             return false;
             }
-        }
-
-
-    for (int i = 0; i < arity(); i++) {
-        if (*(arguments.at(i)) != *(otherTipArray->arguments.at(i))) {
+        // if 0 of and not empty
+        if (arguments.size() == 0 && otherTipArray->arguments.at(0) != 0) {
             return false;
         }
-    }
+        }
 
+    // both arrays are default
+    for (int i = 0; i < otherTipArray->arity(); i++) {
+        if (*(arguments.at(0)) != *(otherTipArray->arguments.at(i))) {
+            return false;
+        }
     
     return true;
+        }
     }
 
 bool TipArray::operator!=(const TipType &other) const {
