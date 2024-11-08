@@ -56,11 +56,7 @@ bool TipArray::operator==(const TipType &other) const {
         if (*(arguments.at(0)) != *(otherTipArray->arguments.at(1))){
             return false;
             }
-        // if 0 of and not empty
-        if (arguments.size() == 0 && otherTipArray->arguments.at(0) != 0) {
-            return false;
-            }
-        }
+    }
 
     // both arrays are default
     else{
@@ -72,6 +68,7 @@ bool TipArray::operator==(const TipType &other) const {
     }
     return true;
 }
+
 
 bool TipArray::operator!=(const TipType &other) const {
   return !(*this == other);

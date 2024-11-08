@@ -312,9 +312,23 @@ void TypeConstraintVisitor::endVisit(ASTBooleanExpr *element) {
  *   ?
  */
 void TypeConstraintVisitor::endVisit(ASTArrayMulExpr *element) {
-  constraintHandler->handle(
-      astToVar(element), std::make_shared<TipArray>());
+
+
+//   std::vector<std::shared_ptr<TipType>> inits;
+//   for (auto &f : allFields) {
+//     if (f == element->getField()) {
+//       fieldTypes.push_back(astToVar(element));
+//     } else {
+//       fieldTypes.push_back(std::make_shared<TipAlpha>(element, f));
+//     }
+//   }
+//   constraintHandler->handle(astToVar(element->getRecord()),
+//                             std::make_shared<TipRecord>(fieldTypes, allFields));
+// }
+//   constraintHandler->handle(
+//       astToVar(element), std::make_shared<TipArray>());
 }
+
 
 /*! \brief Type constraints for array of.
  *
