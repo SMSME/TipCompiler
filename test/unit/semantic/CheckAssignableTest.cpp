@@ -117,3 +117,19 @@ TEST_CASE("Check Assignable: address of expr", "[Symbol]") {
   REQUIRE_THROWS_MATCHES(CheckAssignable::check(ast.get()), SemanticError,
                          ContainsWhat("(y*y) not an l-value"));
 }
+
+//NEW//
+TEST_CASE("Check Assignable: array index pass", "[Symbol]") {
+  std::stringstream stream;
+  stream << R"(increment() { var x, y; x = [3 of 2]; x[0] = 0; return 0; })";
+  auto ast = ASTHelper::build_ast(stream);
+  REQUIRE_NOTHROW(CheckAssignable::check(ast.get()));
+}
+
+TEST_CASE("Check Assignable: array index throw", "[Symbol]") {
+  std::stringstream stream;
+  stream << R"(increment() { var x, y; 0[0] = 0; return 0; })";
+  auto ast = ASTHelper::build_ast(stream);
+  REQUIRE_THROWS_MATCHES(CheckAssignable::check(ast.get()), SemanticError,
+                         ContainsWhat("0 not an l-value"));
+}

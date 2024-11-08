@@ -22,6 +22,8 @@ bool isAssignable(ASTExpr *e) {
       return false;
     }
   }
+  if (dynamic_cast<ASTArrayIndexExpr *>(e))
+    return true;
   return false;
 }
 
@@ -68,30 +70,6 @@ void CheckAssignable::check(ASTProgram *p) {
 }
 
 //NEW//
-void CheckAssignable::endVisit(ASTIncrementStmt *element) {
-  LOG_S(1) << "Checking assignability of " << *element;
-
-  if (isAssignable(element->getLeft()))
-    return;
-
-  std::ostringstream oss;
-  oss << "Address of error on line " << element->getLine() << ": ";
-  oss << *element->getLeft() << " not an l-value\n";
-  throw SemanticError(oss.str());
-}
-
-void CheckAssignable::endVisit(ASTDecrementStmt *element) {
-  LOG_S(1) << "Checking assignability of " << *element;
-
-  if (isAssignable(element->getLeft()))
-    return;
-
-  std::ostringstream oss;
-  oss << "Address of error on line " << element->getLine() << ": ";
-  oss << *element->getLeft() << " not an l-value\n";
-  throw SemanticError(oss.str());
-}
-
 void CheckAssignable::endVisit(ASTArrayIndexExpr *element) {
   LOG_S(1) << "Checking assignability of " << *element;
 
@@ -103,16 +81,3 @@ void CheckAssignable::endVisit(ASTArrayIndexExpr *element) {
   oss << *element->getName() << " not an l-value\n";
   throw SemanticError(oss.str());
 }
-
-void CheckAssignable::endVisit(ASTNegExpr *element) {
-  LOG_S(1) << "Checking assignability of " << *element;
-
-  if (isAssignable(element->getNegate()))
-    return;
-
-  std::ostringstream oss;
-  oss << "Address of error on line " << element->getLine() << ": ";
-  oss << *element->getNegate() << " not an l-value\n";
-  throw SemanticError(oss.str());
-}
-
