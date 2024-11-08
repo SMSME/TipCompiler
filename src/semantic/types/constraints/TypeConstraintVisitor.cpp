@@ -311,20 +311,24 @@ void TypeConstraintVisitor::endVisit(ASTBooleanExpr *element) {
  * Type Rules for "[e1, e2, ..., en]":
  *   ?
  */
-// void TypeConstraintVisitor::endVisit(ASTArrayMulExpr *element) {
-//   std::vector<std::shared_ptr<TipType>> arrItems;
-//   if (!element->getChildren().empty()){
-//     auto type = element->getChildren().at(0);
-//     for (auto &a : element->getChildren()) {
-//       arrItems.push_back(astToVar(a));
-//       constraintHandler->handle(type, astToVar(a));
-//     }
-//   }
-//   constraintHandler->handle(astToVar(element),
-//                               std::make_shared<TipArray> (vals));
-// }
+void TypeConstraintVisitor::endVisit(ASTArrayMulExpr *element) {
+  std::vector<std::shared_ptr<TipType>> arrItems;
 
-
+  if (!element->getExprs().empty()) {
+      auto firstType = astToVar(element->getExprs().at(0));
+      for (auto &child : element->getExprs()) {
+        auto currentType = astToVar(child);
+        arrItems.push_back(currentType);
+    
+        constraintHandler->handle(firstType, currentType);
+    }
+  }
+  
+  constraintHandler->handle(
+    astToVar(element),
+    std::make_shared<TipArray>(arrItems)
+  );
+}
 
 /*! \brief Type constraints for array of.
  *
@@ -332,6 +336,13 @@ void TypeConstraintVisitor::endVisit(ASTBooleanExpr *element) {
  *   ?
  */
 void TypeConstraintVisitor::endVisit(ASTArrayOfExpr *element) {
+  auto size = astToVar(element->getLeft());
   constraintHandler->handle(
-      astToVar(element), std::make_shared<TipArray>());
+      size, std::make_shared<TipInt>());
+
+  auto arrayType = std::make_shared<TipArray>(
+        size,     
+        astToVar(element->getRight())
+    );
+  constraintHandler->handle(astToVar(element), arrayType);
 }
