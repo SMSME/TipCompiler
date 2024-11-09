@@ -459,7 +459,7 @@ void TypeConstraintVisitor::endVisit(ASTLengthExpr *element) {
 void TypeConstraintVisitor::endVisit(ASTArrayIndexExpr *element) {
   auto elementType = std::make_shared<TipVar>(); // Type variable for the array element type
 
-  constraintHandler->handle(astToVar(element->getName()), astToVar(element->getName()));
+  constraintHandler->handle(astToVar(element->getName()), std::make_shared<TipArray>(std::make_shared<TipInt>(), astToVar(element), true));
   //std::make_shared<TipArray>(std::make_shared<TipInt>(), astToVar(element->getName()), true)
   constraintHandler->handle(astToVar(element->getIndex()), std::make_shared<TipInt>()); // Index is an int
   // constraintHandler->handle(astToVar(element), elementType); // Return the same for the array elements

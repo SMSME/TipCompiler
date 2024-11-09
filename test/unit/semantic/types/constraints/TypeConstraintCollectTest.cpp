@@ -949,7 +949,7 @@ TEST_CASE("TypeConstraintVisitor: array index",
     auto xType = std::make_shared<TipVar>(symbols->getLocal("x", fDecl));
     REQUIRE(*unifier.inferred(xType) == *std::make_shared<TipArray>(std::make_shared<TipInt>(), std::make_shared<TipInt>(), false));
 
-    // auto yType = std::make_shared<TipVar>(symbols->getLocal("y", fDecl));
-    // REQUIRE(*unifier.inferred(yType) == *TypeHelper::intType());
+    auto yType = std::make_shared<TipVar>(symbols->getLocal("y", fDecl));
+    REQUIRE(*unifier.inferred(yType) == *TypeHelper::intType());
 }
 
