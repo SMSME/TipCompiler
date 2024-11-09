@@ -9,22 +9,17 @@
 #include <sstream>
 #include <string>
 
-TEST_CASE("TipArray: Test TipArray default - getters"
+TEST_CASE("TipArray: Test TipArray default - arity"
           "[TipArray]") {
-  std::vector<std::shared_ptr<TipType>> inits{std::make_shared<TipInt>(),
-                                               std::make_shared<TipInt>(),
-                                               std::make_shared<TipInt>()};
+    auto expr1 = std::make_shared<TipInt>();
+    auto expr2 = std::make_shared<TipBoolean>();
 
-  TipArray tipArr(inits, false);
-  REQUIRE(inits.size() == tipArr.getInits().size());
+  TipArray tipArr(expr1, expr2, false);
+  REQUIRE(2 == tipArr.arity());
 
   SECTION("Array of getter") {
-        auto expr1 = std::make_shared<TipInt>();
-        auto expr2 = std::make_shared<TipBoolean>();
-
-        TipArray tipArrA(expr1, expr2, true);
-
-        REQUIRE(2 == tipArrA.arity());
+        TipArray tipArrO(expr1, expr2, true);
+        REQUIRE(2 == tipArrO.arity());
   }
 }
   
@@ -34,127 +29,79 @@ TEST_CASE("TipArray: Test empty TipArray", "[TipArray]") {
     REQUIRE(tipArr.getInits().empty());
 }
 
-TEST_CASE("TipArray: Test arity", "[TipArray]") {
-    std::vector<std::shared_ptr<TipType>> inits{
-        std::make_shared<TipInt>(), std::make_shared<TipInt>(),
-        std::make_shared<TipInt>(), std::make_shared<TipInt>(),
-        std::make_shared<TipInt>(),
-    };
-
-    TipArray tipArr(inits, false);
-    REQUIRE(5 == tipArr.arity());
-
-    SECTION("Arity for array of") {
-        std::shared_ptr<TipType> expr1;
-        std::shared_ptr<TipType> expr2;
-
-        TipArray tipArrO(expr1, expr2, true);
-
-        REQUIRE(2 == tipArrO.arity());}
-}
 
 
 TEST_CASE("TipArray: Test equality "
           "[TipArray]") {
-    std::vector<std::shared_ptr<TipType>> initsA{
-        std::make_shared<TipInt>(),
-        std::make_shared<TipInt>(),
-        std::make_shared<TipInt>()
-        };
-    TipArray tipArrayA(initsA, false); // Base array A for comparison
-
     auto expr1 = std::make_shared<TipInt>();
-    auto expr2 = std::make_shared<TipInt>();
+    auto expr2 = std::make_shared<TipBoolean>();
 
-    TipArray tipArrayO(expr1, expr2, true); // Base "array of" O for comparison
+    TipArray tipArr(expr1, expr2, false); // Base array - standard
+    TipArray tipArrO(expr1, expr2, true); // Base "array of" O for comparison
+    TipArray tipArr1; // Base empty array
 
-    SECTION("Equal when types are the same and same length") {
-        std::vector<std::shared_ptr<TipType>> initsB{
-            std::make_shared<TipInt>(),
-            std::make_shared<TipInt>(),
-            std::make_shared<TipInt>()
-            };
-        TipArray tipArrayB(initsB, false);
-
-        REQUIRE(tipArrayA == tipArrayB);
+    SECTION("Equal when types are the same") {
+        REQUIRE(tipArr == tipArrO);
     }
 
-    SECTION("Equal when different length") {
-        std::vector<std::shared_ptr<TipType>> initsC{
-            std::make_shared<TipInt>(),
-            std::make_shared<TipInt>(),
-            };
-        TipArray tipArrayC(initsC, false);
+    SECTION("Equal when both empty") {
+        TipArray tipArr2;
 
-        REQUIRE(tipArrayA == tipArrayC);
+        REQUIRE(tipArr1 == tipArr2);
     }
 
-    SECTION("Equal when empty") {
-        TipArray tipArrayD;
-        TipArray tipArrayE;
-
-        REQUIRE(tipArrayE == tipArrayD);
+    SECTION("Equal when one empty - 1") {
+        REQUIRE(tipArr == tipArr1);
     }
+
+    SECTION("Equal when one empty - 2") {
+        REQUIRE(tipArrO == tipArr1);
+    }
+
 
     SECTION("Equal two array of"){
-        auto expr4 = std::make_shared<TipInt>();
-        auto expr5 = std::make_shared<TipInt>();
+        auto expr3 = std::make_shared<TipInt>();
+        auto expr4 = std::make_shared<TipBoolean>();
 
-        TipArray tipArrayO1(expr4, expr5, true);
+        TipArray tipArrO1(expr3, expr4, true);
 
-        REQUIRE(tipArrayO == tipArrayO1);
+        REQUIRE(tipArrO == tipArrO1);
     }
 
     SECTION("Not equal when other value is not an array 1") {
         TipVar expr;
-        REQUIRE(tipArrayA != expr);
+        REQUIRE(tipArr != expr);
     }
 
     SECTION("Not equal when other value is not an array 2") {
-        TipVar expr;
-        REQUIRE(tipArrayO != expr);
-    }
-
-    SECTION("Not equal when one empty") {
-        TipArray tipArrayF;
-        REQUIRE(tipArrayF != tipArrayA);
+        TipVar expr1;
+        REQUIRE(tipArrO != expr1);
     }
 
     SECTION("Not equal with different types - default") {
-        std::vector<std::shared_ptr<TipType>> initsG{
-            std::make_shared<TipRef>(std::make_shared<TipInt>()),
-            std::make_shared<TipRef>(std::make_shared<TipInt>()),
-            std::make_shared<TipRef>(std::make_shared<TipInt>())
-            };
-        TipArray tipArrayG(initsG, false);
+        auto expr5 = std::make_shared<TipInt>();
+        TipArray tipArr1(expr1, expr5, false);
 
-        REQUIRE(tipArrayG != tipArrayA);
+        REQUIRE(tipArr1 != tipArr);
     }
 
     SECTION("Not equal with different types - array of ") {
         auto expr6 = std::make_shared<TipInt>();
-        auto expr7 = std::make_shared<TipBoolean>();
-        TipArray tipArrayO2(expr6, expr7, true);
+        TipArray tipArr2(expr1, expr6, true);
 
-        REQUIRE(tipArrayO != tipArrayO2);
+        REQUIRE(tipArrO != tipArr2);
     }
 }
 
 TEST_CASE("TipArray: Test output stream"
     "[TipArray]") {
-    std::vector<std::shared_ptr<TipType>> initsA{
-        std::make_shared<TipInt>(),
-        std::make_shared<TipInt>(),
-        std::make_shared<TipInt>()
-        };
-    TipArray tipArrayA(initsA, false);
-
-    auto expr1 = std::make_shared<TipBoolean>();
+    auto expr1 = std::make_shared<TipInt>();
     auto expr2 = std::make_shared<TipBoolean>();
+    TipArray tipArrayA(expr1, expr2, false);
 
     TipArray tipArrayC(expr1, expr2, true);
 
-    auto expectedValue = "[int,int,int]";
+    auto expectedValue = "[int,bool]";
     std::stringstream stream;
     stream << tipArrayA;
     std::string actualValue = stream.str();
@@ -162,7 +109,7 @@ TEST_CASE("TipArray: Test output stream"
     REQUIRE(expectedValue == actualValue);
 
     SECTION("Array of output") {
-        auto expectedValue2 = "[bool of bool]";
+        auto expectedValue2 = "[int of bool]";
         std::stringstream stream2;
         stream2 << tipArrayC;
         std::string actualValue2 = stream2.str();

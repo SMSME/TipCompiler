@@ -1,14 +1,14 @@
 #include "TipArray.h"
 #include "TipTypeVisitor.h"
 
-TipArray::TipArray(std::vector<std::shared_ptr<TipType>> inits, bool arr_of_init)
-    : TipCons(inits), array_of(arr_of_init), is_empty(false) {}
+// TipArray::TipArray(std::vector<std::shared_ptr<TipType>> inits, bool arr_of_init)
+//     : TipCons(inits), array_of(arr_of_init), is_empty(false) {}
 
 TipArray::TipArray(std::shared_ptr<TipType> expr1, std::shared_ptr<TipType> expr2, bool arr_of_init)
     : TipCons(combine(expr1, expr2)), array_of(arr_of_init), is_empty(false) {}
 
 TipArray::TipArray()
-    : TipCons(std::vector<std::shared_ptr<TipType>>{}) {
+    : TipCons(std::vector<std::shared_ptr<TipType>>{}) { // empty array
     array_of = false; is_empty = true;
 }
 
@@ -18,37 +18,34 @@ bool TipArray::operator==(const TipType &other) const {
         return false;
     }
 
-    // If either array is empty, they must both be empty to be equal
-    if (arguments.empty() != otherTipArray->arguments.empty()) {
-        return false;
-    }
-
-    if (arguments.empty() && otherTipArray->arguments.empty()) {
+    // Either empty is true 
+    if (arguments.empty() || otherTipArray->arguments.empty()) {
         return true;
     }
 
-    if (array_of != otherTipArray->array_of) { // Check array types when one is an array of
-        if (array_of){
-            for (auto arg: otherTipArray->arguments) {
-                if (*(arguments.at(1)) != *(arg)){
-                    return false;
-                }}}
-        else {
-            for (auto arg: arguments) {
-                if (*(arg) != *(otherTipArray->arguments.at(1))){
-                    return false;
-                }}}
-    }
 
-    else if (array_of && otherTipArray->array_of) {
-        if (*(arguments.at(1)) != *(otherTipArray->arguments.at(1))) {
-            return false;
-        }
-    }
+    // if (array_of != otherTipArray->array_of) { // Check array types when one is an array of
+    //     if (array_of){
+    //         if (*(arguments.at(1)) != *(otherTipArray->arguments.at(1))) {
+    //             return false;
+    //         }
+            
+    //     else {
+    //         for (auto arg: arguments) {
+    //             if (*(arg) != *(otherTipArray->arguments.at(1))){
+    //                 return false;
+    //             }}}
+    // }
 
-    else if (*(arguments.at(0)) != *(otherTipArray->arguments.at(0))) {
+    // else if (array_of && otherTipArray->array_of) {
+    if (*(arguments.at(1)) != *(otherTipArray->arguments.at(1))) {
         return false;
     }
+    
+
+    // else if (*(arguments.at(0)) != *(otherTipArray->arguments.at(0))) {
+    //     return false;
+    // }
 
     return true;
 }
