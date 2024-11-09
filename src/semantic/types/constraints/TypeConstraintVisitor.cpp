@@ -314,15 +314,15 @@ void TypeConstraintVisitor::endVisit(ASTErrorStmt *element) {
 
 //NEW//
 /*
-1. increment X
-2. decrement X
+1. increment X X
+2. decrement X X
 
-3. modulo - X
-4. gte - binary X 
-5. gt - X
-6. lte - X
-9. and - X
-10. or - X
+3. modulo - X X
+4. gte - X X 
+5. gt - X  X
+6. lte - X X 
+9. and - X X
+10. or - X X
 
 7. negative X
 8. not X
