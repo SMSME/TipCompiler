@@ -26,6 +26,6 @@ public:
   virtual void endVisit(ASTArrayIndexExpr *element) override;
   virtual void endVisit(ASTIncrementStmt *element) override;
   virtual void endVisit(ASTDecrementStmt *element) override;
-  // virtual void endVisit(ASTForRangeStmt *element) override;
-  // virtual void endVisit(ASTForStmt *element) override;
+  virtual void endVisit(ASTForRangeStmt *element) override;
+  virtual void endVisit(ASTForStmt *element) override;
 };

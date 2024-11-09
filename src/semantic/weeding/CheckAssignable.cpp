@@ -24,14 +24,6 @@ bool isAssignable(ASTExpr *e) {
   }
   if (dynamic_cast<ASTArrayIndexExpr *>(e))
     return true;
-  if (dynamic_cast<ASTIncrementStmt *>(e))
-    return true;
-  if (dynamic_cast<ASTDecrementStmt *>(e))
-    return true;
-  // if (dynamic_cast<ASTForRangeStmt *>(e))
-  //   return true;
-  // if (dynamic_cast<ASTForStmt *>(e))
-  //   return true;
   return false;
 }
 
@@ -111,5 +103,29 @@ void CheckAssignable::endVisit(ASTDecrementStmt *element) {
   std::ostringstream oss;
   oss << "Address of error on line " << element->getLine() << ": ";
   oss << *element->getLeft() << " not an l-value\n";
+  throw SemanticError(oss.str());
+}
+
+void CheckAssignable::endVisit(ASTForStmt *element) {
+  LOG_S(1) << "Checking assignability of " << *element;
+
+  if (isAssignable(element->getItem()))
+    return;
+
+  std::ostringstream oss;
+  oss << "Address of error on line " << element->getLine() << ": ";
+  oss << *element->getItem() << " not an l-value\n";
+  throw SemanticError(oss.str());
+}
+
+void CheckAssignable::endVisit(ASTForRangeStmt *element) {
+  LOG_S(1) << "Checking assignability of " << *element;
+
+  if (isAssignable(element->getIterator()))
+    return;
+
+  std::ostringstream oss;
+  oss << "Address of error on line " << element->getLine() << ": ";
+  oss << *element->getIterator() << " not an l-value\n";
   throw SemanticError(oss.str());
 }
