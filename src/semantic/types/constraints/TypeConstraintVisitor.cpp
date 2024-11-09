@@ -456,7 +456,7 @@ void TypeConstraintVisitor::endVisit(ASTLengthExpr *element) {
  *  E1 = E[1]
  */
 void TypeConstraintVisitor::endVisit(ASTArrayIndexExpr *element) {
-  constraintHandler->handle(astToVar(element->getName()), std::make_shared<TipArray>());
+  constraintHandler->handle(astToVar(element->getName()), std::make_shared<TipArray>(astToVar(element), astToVar(element)));
   constraintHandler->handle(astToVar(element->getIndex()), std::make_shared<TipInt>());
   // constraintHandler->handle(astToVar(element), std::make_shared<TipVar>());
 }
