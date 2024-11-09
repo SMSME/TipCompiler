@@ -6,6 +6,7 @@
 #include "TipFunction.h"
 #include "TipRef.h"
 #include "TipBoolean.h"
+#include "TipArray.h"
 
 
 #include <catch2/catch_test_macros.hpp>
@@ -13,6 +14,9 @@
 #include <iostream>
 #include <set>
 #include <sstream>
+
+#include "TipInt.h"
+
 
 /*
  * Run the front-end on the program, collect the type constraints, solve the constraints
@@ -453,6 +457,7 @@ main() {
     REQUIRE(*unifier.inferred(nType) == *TypeHelper::recType(twoAbsentsPtrRecInt, fieldNames));
 
     auto r1Type = std::make_shared<TipVar>(symbols->getLocal("r1", fDecl));
+
     REQUIRE(*unifier.inferred(r1Type) == *TypeHelper::intType());
 }
 
@@ -460,7 +465,7 @@ main() {
 TEST_CASE("TypeConstraintVisitor: bool", "[TypeConstraintVisitor]") {
   std::stringstream program;
   program << R"(
-     // [[test]] -> int, [[x]] = () -> bool
+     // [[test]] ()->int, [[x]] = bool
       test() {
         var x;
         x = true;
@@ -480,6 +485,38 @@ TEST_CASE("TypeConstraintVisitor: bool", "[TypeConstraintVisitor]") {
 
     auto xType = std::make_shared<TipVar>(symbols->getLocal("x", fDecl));
     REQUIRE(*unifier.inferred(xType) == *std::make_shared<TipBoolean>());
+}
+
+TEST_CASE("TypeConstraintVisitor: array", "[TypeConstraintVisitor]") {
+    std::stringstream program;
+    program << R"(
+     // [[test]] ()-> int, [[x]] = arr
+      test() {
+        var x;
+        x = [1,2,3];
+        return 0;
+      }
+    )";
+
+    auto unifierSymbols = collectAndSolve(program);
+    auto unifier = unifierSymbols.first;
+    auto symbols = unifierSymbols.second;
+
+    std::vector<std::shared_ptr<TipType>> threeInts{std::make_shared<TipInt>(),
+        std::make_shared<TipInt>(),
+        std::make_shared<TipInt>()};
+
+    auto fDecl = symbols->getFunction("test");
+    auto fType = std::make_shared<TipVar>(fDecl);
+
+    auto xType = std::make_shared<TipVar>(symbols->getLocal("x", fDecl));
+
+    auto inferredType = unifier.inferred(xType);
+    auto expectedType = std::make_shared<TipArray>(threeInts, false);
+
+
+    REQUIRE(*unifier.inferred(xType) == *std::make_shared<TipArray>(threeInts, false));
+
 }
 
 TEST_CASE("TypeConstraintVisitor: modulo",

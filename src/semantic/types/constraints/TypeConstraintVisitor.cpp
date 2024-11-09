@@ -361,23 +361,24 @@ void TypeConstraintVisitor::endVisit(ASTArrayMulExpr *element) {
 
   if (element->getExprs().empty()){
       constraintHandler->handle(
-      astToVar(element),
-      std::make_shared<TipRef>(std::make_shared<TipAlpha>(element)));
+        astToVar(element),
+        std::make_shared<TipRef>(std::make_shared<TipAlpha>(element)));
+    return;
   }
 
-  else if (!element->getExprs().empty()) {
-      auto firstType = astToVar(element->getExprs().at(0));
-      for (auto &child : element->getExprs()) {
-        auto currentType = astToVar(child);
-        arrItems.push_back(currentType);
-    
-        constraintHandler->handle(firstType, currentType);
-    }
+  auto elementType = astToVar(element->getExprs().at(0)); // Type of first element
+  arrItems.push_back(astToVar(element->getExprs().at(0)));
+
+    // Everything must match the first type
+  for (size_t i = 1; i < element->getExprs().size(); i++) {
+    constraintHandler->handle(elementType, astToVar(element->getExprs().at(i)));
+    arrItems.push_back(astToVar(element->getExprs().at(i)));
   }
-  
+
+
   constraintHandler->handle(
-    astToVar(element),
-    std::make_shared<TipArray>(arrItems)
+      astToVar(element),
+      std::make_shared<TipArray>(arrItems, false)
   );
 }
 
@@ -393,7 +394,7 @@ void TypeConstraintVisitor::endVisit(ASTArrayOfExpr *element) {
 
   auto arrayType = std::make_shared<TipArray>(
         size,     
-        astToVar(element->getRight())
+        astToVar(element->getRight()), true
     );
   constraintHandler->handle(astToVar(element), arrayType);
 }
@@ -456,10 +457,14 @@ void TypeConstraintVisitor::endVisit(ASTLengthExpr *element) {
  *  E1 = E[1]
  */
 void TypeConstraintVisitor::endVisit(ASTArrayIndexExpr *element) {
-  constraintHandler->handle(astToVar(element->getName()), std::make_shared<TipArray>(astToVar(element), astToVar(element)));
-  constraintHandler->handle(astToVar(element->getIndex()), std::make_shared<TipInt>());
-  // constraintHandler->handle(astToVar(element), std::make_shared<TipVar>());
+  auto elementType = std::make_shared<TipVar>(); // Type variable for the array element type
+
+  constraintHandler->handle(astToVar(element->getName()), std::make_shared<TipArray>());
+  constraintHandler->handle(astToVar(element->getIndex()), std::make_shared<TipInt>()); // Index is an int
+  constraintHandler->handle(astToVar(element), elementType); // Return the same for the array elements
 }
+
+
 
 /*! \brief Type constraints for ternary expression.
  *
@@ -483,7 +488,7 @@ void TypeConstraintVisitor::endVisit(ASTTernaryExpr *element) {
  */
 void TypeConstraintVisitor::endVisit(ASTForStmt *element) {
     constraintHandler->handle(astToVar(element->getIterate()), 
-    std::make_shared<TipArray>(astToVar(element->getItem()), astToVar(element->getItem())));
+    std::make_shared<TipArray>(std::make_shared<TipInt>(), astToVar(element->getItem()), false));
 }
 
 /*! \brief Type constraints for a for range expression.
