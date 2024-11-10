@@ -117,3 +117,79 @@ TEST_CASE("Check Assignable: address of expr", "[Symbol]") {
   REQUIRE_THROWS_MATCHES(CheckAssignable::check(ast.get()), SemanticError,
                          ContainsWhat("(y*y) not an l-value"));
 }
+
+//NEW//
+TEST_CASE("Check Assignable: array index pass", "[Symbol]") {
+  std::stringstream stream;
+  stream << R"(increment() { var x, y; x = [3 of 2]; x[0] = 1; return 0; })";
+  auto ast = ASTHelper::build_ast(stream);
+  REQUIRE_NOTHROW(CheckAssignable::check(ast.get()));
+}
+
+TEST_CASE("Check Assignable: array index throw", "[Symbol]") {
+  std::stringstream stream;
+  stream << R"(increment() { var x, y; 0[1] = 1; return 0; })";
+  auto ast = ASTHelper::build_ast(stream);
+  REQUIRE_THROWS_MATCHES(CheckAssignable::check(ast.get()), SemanticError,
+                         ContainsWhat("0 not an l-value"));
+}
+
+TEST_CASE("Check Assignable: incr  pass", "[Symbol]") {
+  std::stringstream stream;
+  stream << R"(increment() { var x, y; x = 0; x++; return 0; })";
+  auto ast = ASTHelper::build_ast(stream);
+  REQUIRE_NOTHROW(CheckAssignable::check(ast.get()));
+}
+
+TEST_CASE("Check Assignable: incr throw", "[Symbol]") {
+  std::stringstream stream;
+  stream << R"(increment() { var x, y; 0++; return 0; })";
+  auto ast = ASTHelper::build_ast(stream);
+  REQUIRE_THROWS_MATCHES(CheckAssignable::check(ast.get()), SemanticError,
+                         ContainsWhat("0 not an l-value"));
+}
+
+TEST_CASE("Check Assignable: decr  pass", "[Symbol]") {
+  std::stringstream stream;
+  stream << R"(increment() { var x, y; x = 0; x--; return 0; })";
+  auto ast = ASTHelper::build_ast(stream);
+  REQUIRE_NOTHROW(CheckAssignable::check(ast.get()));
+}
+
+TEST_CASE("Check Assignable: decr throw", "[Symbol]") {
+  std::stringstream stream;
+  stream << R"(increment() { var x, y; 0--; return 0; })";
+  auto ast = ASTHelper::build_ast(stream);
+  REQUIRE_THROWS_MATCHES(CheckAssignable::check(ast.get()), SemanticError,
+                         ContainsWhat("0 not an l-value"));
+}
+
+TEST_CASE("Check Assignable: for pass", "[Symbol]") {
+  std::stringstream stream;
+  stream << R"(increment() { var x, i; x = [3 of 2]; for (i : x) { i = 0; } return 0; })";
+  auto ast = ASTHelper::build_ast(stream);
+  REQUIRE_NOTHROW(CheckAssignable::check(ast.get()));
+}
+
+TEST_CASE("Check Assignable: for throw", "[Symbol]") {
+  std::stringstream stream;
+  stream << R"(increment() { var x, y; y = 1; x = [3 of 2]; for (0 : x) { y = 2; } return 0; })";
+  auto ast = ASTHelper::build_ast(stream);
+  REQUIRE_THROWS_MATCHES(CheckAssignable::check(ast.get()), SemanticError,
+                         ContainsWhat("0 not an l-value"));
+}
+
+TEST_CASE("Check Assignable: for range pass", "[Symbol]") {
+  std::stringstream stream;
+  stream << R"(increment() { var x, i;  for (i : 0 .. 3 by 1) { x = i; } return 0; })";
+  auto ast = ASTHelper::build_ast(stream);
+  REQUIRE_NOTHROW(CheckAssignable::check(ast.get()));
+}
+
+TEST_CASE("Check Assignable: for range throw", "[Symbol]") {
+  std::stringstream stream;
+  stream << R"(increment() { var x;  for (0 : 0 .. 3 by 1) { x = 0; } return 0; })";
+  auto ast = ASTHelper::build_ast(stream);
+  REQUIRE_THROWS_MATCHES(CheckAssignable::check(ast.get()), SemanticError,
+                         ContainsWhat("0 not an l-value"));
+}

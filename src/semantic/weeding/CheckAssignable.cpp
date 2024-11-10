@@ -22,6 +22,8 @@ bool isAssignable(ASTExpr *e) {
       return false;
     }
   }
+  if (dynamic_cast<ASTArrayIndexExpr *>(e))
+    return true;
   return false;
 }
 
@@ -65,4 +67,65 @@ void CheckAssignable::check(ASTProgram *p) {
   LOG_S(1) << "Checking assignability";
   CheckAssignable visitor;
   p->accept(&visitor);
+}
+
+//NEW//
+void CheckAssignable::endVisit(ASTArrayIndexExpr *element) {
+  LOG_S(1) << "Checking assignability of " << *element;
+
+  if (isAssignable(element->getName()))
+    return;
+
+  std::ostringstream oss;
+  oss << "Address of error on line " << element->getLine() << ": ";
+  oss << *element->getName() << " not an l-value\n";
+  throw SemanticError(oss.str());
+}
+
+void CheckAssignable::endVisit(ASTIncrementStmt *element) {
+  LOG_S(1) << "Checking assignability of " << *element;
+
+  if (isAssignable(element->getLeft()))
+    return;
+
+  std::ostringstream oss;
+  oss << "Address of error on line " << element->getLine() << ": ";
+  oss << *element->getLeft() << " not an l-value\n";
+  throw SemanticError(oss.str());
+}
+
+void CheckAssignable::endVisit(ASTDecrementStmt *element) {
+  LOG_S(1) << "Checking assignability of " << *element;
+
+  if (isAssignable(element->getLeft()))
+    return;
+
+  std::ostringstream oss;
+  oss << "Address of error on line " << element->getLine() << ": ";
+  oss << *element->getLeft() << " not an l-value\n";
+  throw SemanticError(oss.str());
+}
+
+void CheckAssignable::endVisit(ASTForStmt *element) {
+  LOG_S(1) << "Checking assignability of " << *element;
+
+  if (isAssignable(element->getItem()))
+    return;
+
+  std::ostringstream oss;
+  oss << "Address of error on line " << element->getLine() << ": ";
+  oss << *element->getItem() << " not an l-value\n";
+  throw SemanticError(oss.str());
+}
+
+void CheckAssignable::endVisit(ASTForRangeStmt *element) {
+  LOG_S(1) << "Checking assignability of " << *element;
+
+  if (isAssignable(element->getIterator()))
+    return;
+
+  std::ostringstream oss;
+  oss << "Address of error on line " << element->getLine() << ": ";
+  oss << *element->getIterator() << " not an l-value\n";
+  throw SemanticError(oss.str());
 }
