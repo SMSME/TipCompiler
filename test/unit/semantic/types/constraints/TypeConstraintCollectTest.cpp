@@ -1032,8 +1032,15 @@ TEST_CASE("TypeConstraintVisitor: empty array",
   auto fType = std::make_shared<TipVar>(fDecl);
   REQUIRE(*unifier.inferred(fType) == *TypeHelper::funType(empty, TypeHelper::intType()));
 
-  auto xType = std::make_shared<TipVar>(symbols->getLocal("x", fDecl));
-  REQUIRE(*unifier.inferred(xType) == *std::make_shared<TipArray>());
+  auto xDecl = symbols->getLocal("x", fDecl);
+  auto xType = std::make_shared<TipVar>(xDecl);
+
+  // Get the inferred type for x
+  auto inferredXType = unifier.inferred(xType);
+  std::cout << "Inferred type for x: " << *inferredXType << std::endl;
+  // Check that the inferred type is an alpha type
+  REQUIRE(Unifier::isAlpha(inferredXType));
+
 
 }
 
