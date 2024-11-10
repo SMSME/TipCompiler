@@ -1010,14 +1010,17 @@ TEST_CASE("TypeConstraintVisitor: array of",
 
 }
 
-TEST_CASE("TypeConstraintVisitor: empty array",
+
+TEST_CASE("TypeConstraintVisitor: empty array followed by non empty",
           "[TypeConstraintVisitor]") {
   std::stringstream program;
   program << R"(
-            // [[x]] = arr, [[y]] = int, [[test]] = () -> int
+            // [[x]] = arr, [[y]] = arr, [[test]] = () -> int
             test() {
-              var x;
+              var x, y, z;
               x = [];
+              y = [1, 2, 3];
+              z = y[0];
               return 0;
             }
          )";
@@ -1032,15 +1035,8 @@ TEST_CASE("TypeConstraintVisitor: empty array",
   auto fType = std::make_shared<TipVar>(fDecl);
   REQUIRE(*unifier.inferred(fType) == *TypeHelper::funType(empty, TypeHelper::intType()));
 
-  auto xDecl = symbols->getLocal("x", fDecl);
-  auto xType = std::make_shared<TipVar>(xDecl);
-
-  // Get the inferred type for x
-  auto inferredXType = unifier.inferred(xType);
-  std::cout << "Inferred type for x: " << *inferredXType << std::endl;
-  // Check that the inferred type is an alpha type
-  REQUIRE(Unifier::isAlpha(inferredXType));
-
+  auto zType = std::make_shared<TipVar>(symbols->getLocal("z", fDecl));
+  REQUIRE(*unifier.inferred(zType) == *TypeHelper::intType());
 
 }
 
