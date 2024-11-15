@@ -23,6 +23,29 @@
 
 #include "loguru.hpp"
 
+//TODO//
+/* 1st x is implemented, second is tested, working is tested with an actual tip program
+1. increment X     WORKING
+2. decrement X     WORKING
+3. modulo X        WORKING
+4. gte  X          WORKING
+5. lt  X           WORKING
+6. lte  X          WORKING
+9. and  X          WORKING
+10. or  X          WORKING
+15. boolean X      WORKING
+7. negative X      WORKING
+8. not X           WORKING
+
+14. ternary 
+11. for range 
+12. for loop 
+
+13. Array length 
+16. array index 
+17. array default
+18. array of
+*/
 namespace {
 
 llvm::LLVMContext llvmContext;
@@ -440,10 +463,24 @@ llvm::Value *ASTBinaryExpr::codegen() {
     return irBuilder.CreateMul(L, R, "multmp");
   } else if (getOp() == "/") {
     return irBuilder.CreateSDiv(L, R, "divtmp");
+  } else if (getOp() == "%") {
+    return irBuilder.CreateSRem(L, R, "remtmp");
   } else if (getOp() == ">") {
     auto *cmp = irBuilder.CreateICmpSGT(L, R, "_gttmp");
     return irBuilder.CreateIntCast(
         cmp, llvm::IntegerType::getInt64Ty(llvmContext), false, "gttmp");
+  } else if (getOp() == "<") {
+    auto *cmp = irBuilder.CreateICmpSLT(L, R, "_lttmp");
+    return irBuilder.CreateIntCast(
+        cmp, llvm::IntegerType::getInt64Ty(llvmContext), false, "lttmp");
+  } else if (getOp() == ">=") {
+    auto *cmp = irBuilder.CreateICmpSGE(L, R, "_gtetmp");
+    return irBuilder.CreateIntCast(
+        cmp, llvm::IntegerType::getInt64Ty(llvmContext), false, "getmp");
+  } else if (getOp() == "<=") {
+    auto *cmp = irBuilder.CreateICmpSLE(L, R, "_ltetmp");
+    return irBuilder.CreateIntCast(
+        cmp, llvm::IntegerType::getInt64Ty(llvmContext), false, "letmp");
   } else if (getOp() == "==") {
     auto *cmp = irBuilder.CreateICmpEQ(L, R, "_eqtmp");
     return irBuilder.CreateIntCast(
@@ -452,6 +489,14 @@ llvm::Value *ASTBinaryExpr::codegen() {
     auto *cmp = irBuilder.CreateICmpNE(L, R, "_neqtmp");
     return irBuilder.CreateIntCast(
         cmp, llvm::IntegerType::getInt64Ty(llvmContext), false, "neqtmp");
+  } else if (getOp() == "and") {
+  auto *cmp = irBuilder.CreateAnd(L, R, "_andtmp");
+  return irBuilder.CreateIntCast(
+      cmp, llvm::IntegerType::getInt64Ty(llvmContext), false, "andtmp");
+  } else if (getOp() == "or") {
+  auto *cmp = irBuilder.CreateOr(L, R, "_ortmp");
+  return irBuilder.CreateIntCast(
+      cmp, llvm::IntegerType::getInt64Ty(llvmContext), false, "ortmp");
   } else {
     throw InternalError("Invalid binary operator: " + OP);
   }
@@ -1054,3 +1099,129 @@ llvm::Value *ASTReturnStmt::codegen() {
   llvm::Value *argVal = getArg()->codegen();
   return irBuilder.CreateRet(argVal);
 }
+
+// NEW//
+llvm::Value *ASTBooleanExpr::codegen() {
+  LOG_S(1) << "Generating code for " << *this;
+
+  return llvm::ConstantInt::get(llvm::Type::getInt64Ty(llvmContext),
+                                getOp());
+} // LCOV_EXCL_LINE
+
+llvm::Value *ASTIncrementStmt::codegen() {
+  LOG_S(1) << "Generating code for " << *this;
+
+  // trigger code generation for l-value expressions
+  lValueGen = true;
+  llvm::Value *lValue = getLeft()->codegen();
+  lValueGen = false;
+
+  if (lValue == nullptr) {
+    throw InternalError(
+        "failed to generate bitcode for the lhs of the assignment");
+  }
+
+  llvm::Value *currentValue = irBuilder.CreateLoad(llvm::Type::getInt64Ty(llvmContext), lValue);
+  llvm::Value *incrementedValue = irBuilder.CreateAdd(currentValue, llvm::ConstantInt::get(llvm::Type::getInt64Ty(llvmContext), 1));
+  irBuilder.CreateStore(incrementedValue, lValue);
+  return incrementedValue;
+} // LCOV_EXCL_LINE
+
+llvm::Value *ASTDecrementStmt::codegen() {
+  LOG_S(1) << "Generating code for " << *this;
+
+  // trigger code generation for l-value expressions
+  lValueGen = true;
+  llvm::Value *lValue = getLeft()->codegen();
+  lValueGen = false;
+
+  if (lValue == nullptr) {
+    throw InternalError(
+        "failed to generate bitcode for the lhs of the assignment");
+  }
+  llvm::Value *currentValue = irBuilder.CreateLoad(llvm::Type::getInt64Ty(llvmContext), lValue);
+  llvm::Value *decrementedValue = irBuilder.CreateSub(currentValue, llvm::ConstantInt::get(llvm::Type::getInt64Ty(llvmContext), 1));
+  irBuilder.CreateStore(decrementedValue, lValue);
+  return decrementedValue;
+} // LCOV_EXCL_LINE
+
+llvm::Value *ASTNegExpr::codegen() {
+  LOG_S(1) << "Generating code for " << *this;
+  llvm::Value *negated = getNegate()->codegen();
+  llvm::Value *negVal = irBuilder.CreateNeg(negated, "negtmp");
+
+  return negVal;
+} // LCOV_EXCL_LINE
+
+llvm::Value *ASTNotExpr::codegen() {
+  LOG_S(1) << "Generating code for " << *this;
+  llvm::Value *notted = getNot()->codegen();
+  llvm::Value* notVal = irBuilder.CreateICmpEQ(notted, llvm::ConstantInt::getFalse(llvmContext), "nottmp");
+
+  return notVal;
+} // LCOV_EXCL_LINE
+
+// llvm::Value *ASTTernaryExpr::codegen() {
+//   LOG_S(1) << "Generating code for " << *this;
+//   llvm::Value *CondV = getCondition()->codegen();
+//   llvm::Value *True = getTrue()->codegen();
+//   llvm::Value *False = getFalse()->codegen();
+//   if (CondV == nullptr) {
+//     throw InternalError(
+//         "failed to generate bitcode for the condition of the if statement");
+//   }
+//   CondV = irBuilder.CreateICmpNE(
+//       CondV, llvm::ConstantInt::get(CondV->getType(), 0), "ifcond");
+
+//   llvm::Function *TheFunction = irBuilder.GetInsertBlock()->getParent();
+
+//   /*
+//    * Create blocks for the then and else cases.  The then block is first, so
+//    * it is inserted in the function in the constructor. The rest of the blocks
+//    * need to be inserted explicitly into the functions basic block list
+//    * (via a push_back() call).
+//    *
+//    * Blocks don't need to be contiguous or ordered in
+//    * any particular way because we will explicitly branch between them.
+//    * This can be optimized to fall through behavior by later passes.
+//    */
+//   labelNum++; // create shared labels for these BBs
+//   llvm::BasicBlock *TrueBB = llvm::BasicBlock::Create(
+//       llvmContext, std::to_string(labelNum), TheFunction);
+//   llvm::BasicBlock *FalseBB =
+//       llvm::BasicBlock::Create(llvmContext, std::to_string(labelNum));
+//   llvm::BasicBlock *MergeBB = llvm::BasicBlock::Create(
+//       llvmContext, "ifmerge" + std::to_string(labelNum));
+
+//   irBuilder.CreateCondBr(CondV, TrueBB, FalseBB);
+
+//   // Emit then block.
+//   {
+//     irBuilder.SetInsertPoint(TrueBB);
+
+//     llvm::Value *TrueV = getTrue()->codegen();
+//     if (TrueV == nullptr) {
+//       throw InternalError(                                  // LCOV_EXCL_LINE
+//           "failed to generate bitcode for the true block"); // LCOV_EXCL_LINE
+//     }
+
+//     irBuilder.CreateBr(MergeBB);
+//   }
+
+//   // Emit else block.
+//   {
+//     TheFunction->insert(TheFunction->end(), FalseBB);
+
+//     irBuilder.SetInsertPoint(FalseBB);
+
+//     // if there is no ELSE then exist emit a "nop"
+//     llvm::Value *FalseV;
+//     FalseV = getFalse()->codegen();
+//     if (FalseV == nullptr) {
+//       throw InternalError(                                  // LCOV_EXCL_LINE
+//           "failed to generate bitcode for the false block"); // LCOV_EXCL_LINE
+//       }
+
+//     irBuilder.CreateBr(MergeBB);
+//   }
+// }
