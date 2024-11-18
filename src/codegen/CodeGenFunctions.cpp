@@ -37,7 +37,7 @@
 7. negative X      WORKING
 8. not X           WORKING
 
-14. ternary 
+14. ternary X      WORKING
 11. for range 
 12. for loop 
 
@@ -1161,67 +1161,132 @@ llvm::Value *ASTNotExpr::codegen() {
   return notVal;
 } // LCOV_EXCL_LINE
 
-// llvm::Value *ASTTernaryExpr::codegen() {
-//   LOG_S(1) << "Generating code for " << *this;
-//   llvm::Value *CondV = getCondition()->codegen();
-//   llvm::Value *True = getTrue()->codegen();
-//   llvm::Value *False = getFalse()->codegen();
-//   if (CondV == nullptr) {
-//     throw InternalError(
-//         "failed to generate bitcode for the condition of the if statement");
-//   }
-//   CondV = irBuilder.CreateICmpNE(
-//       CondV, llvm::ConstantInt::get(CondV->getType(), 0), "ifcond");
+llvm::Value *ASTTernaryExpr::codegen() {
+  LOG_S(1) << "Generating code for " << *this;
 
-//   llvm::Function *TheFunction = irBuilder.GetInsertBlock()->getParent();
+  llvm::Value *CondV = getCondition()->codegen();
+  if (CondV == nullptr) {
+    throw InternalError(
+        "failed to generate bitcode for the condition of the if statement");
+  }
 
-//   /*
-//    * Create blocks for the then and else cases.  The then block is first, so
-//    * it is inserted in the function in the constructor. The rest of the blocks
-//    * need to be inserted explicitly into the functions basic block list
-//    * (via a push_back() call).
-//    *
-//    * Blocks don't need to be contiguous or ordered in
-//    * any particular way because we will explicitly branch between them.
-//    * This can be optimized to fall through behavior by later passes.
-//    */
-//   labelNum++; // create shared labels for these BBs
-//   llvm::BasicBlock *TrueBB = llvm::BasicBlock::Create(
-//       llvmContext, std::to_string(labelNum), TheFunction);
-//   llvm::BasicBlock *FalseBB =
-//       llvm::BasicBlock::Create(llvmContext, std::to_string(labelNum));
-//   llvm::BasicBlock *MergeBB = llvm::BasicBlock::Create(
-//       llvmContext, "ifmerge" + std::to_string(labelNum));
+  // Convert condition to a bool by comparing non-equal to 0.
+  CondV = irBuilder.CreateICmpNE(
+      CondV, llvm::ConstantInt::get(CondV->getType(), 0), "ifcond");
 
-//   irBuilder.CreateCondBr(CondV, TrueBB, FalseBB);
+  llvm::Function *TheFunction = irBuilder.GetInsertBlock()->getParent();
 
-//   // Emit then block.
-//   {
-//     irBuilder.SetInsertPoint(TrueBB);
+  labelNum++; // create shared labels for these BBs
+  llvm::BasicBlock *ThenBB = llvm::BasicBlock::Create(
+      llvmContext, "then" + std::to_string(labelNum), TheFunction);
+  llvm::BasicBlock *ElseBB =
+      llvm::BasicBlock::Create(llvmContext, "else" + std::to_string(labelNum));
+  llvm::BasicBlock *MergeBB = llvm::BasicBlock::Create(
+      llvmContext, "ifmerge" + std::to_string(labelNum));
 
-//     llvm::Value *TrueV = getTrue()->codegen();
-//     if (TrueV == nullptr) {
-//       throw InternalError(                                  // LCOV_EXCL_LINE
-//           "failed to generate bitcode for the true block"); // LCOV_EXCL_LINE
-//     }
+  irBuilder.CreateCondBr(CondV, ThenBB, ElseBB);
 
-//     irBuilder.CreateBr(MergeBB);
-//   }
+  // Emit then block.
+  irBuilder.SetInsertPoint(ThenBB);
 
-//   // Emit else block.
-//   {
-//     TheFunction->insert(TheFunction->end(), FalseBB);
+  llvm::Value *ThenV = getTrue()->codegen();
+  if (ThenV == nullptr) {
+    throw InternalError(                                  // LCOV_EXCL_LINE
+        "failed to generate bitcode for the then block"); // LCOV_EXCL_LINE
+  }
 
-//     irBuilder.SetInsertPoint(FalseBB);
+  irBuilder.CreateBr(MergeBB);
+  ThenBB = irBuilder.GetInsertBlock();
+  
+  // Emit else block.
+  TheFunction->insert(TheFunction->end(), ElseBB);
 
-//     // if there is no ELSE then exist emit a "nop"
-//     llvm::Value *FalseV;
-//     FalseV = getFalse()->codegen();
-//     if (FalseV == nullptr) {
-//       throw InternalError(                                  // LCOV_EXCL_LINE
-//           "failed to generate bitcode for the false block"); // LCOV_EXCL_LINE
-//       }
+  irBuilder.SetInsertPoint(ElseBB);
 
-//     irBuilder.CreateBr(MergeBB);
-//   }
-// }
+  // if there is no ELSE then exist emit a "nop"
+  llvm::Value *ElseV;
+  ElseV = getFalse()->codegen();
+  if (ElseV == nullptr) {
+    throw InternalError(                                  // LCOV_EXCL_LINE
+        "failed to generate bitcode for the else block"); // LCOV_EXCL_LINE
+  }
+  irBuilder.CreateBr(MergeBB);
+  ElseBB = irBuilder.GetInsertBlock();
+
+  // Emit merge block.
+  TheFunction->insert(TheFunction->end(), MergeBB);
+  irBuilder.SetInsertPoint(MergeBB);
+
+  llvm::PHINode* phiNode = irBuilder.CreatePHI(ThenV->getType(), 2, "ternary.result");
+  phiNode->addIncoming(ThenV, ThenBB);
+  phiNode->addIncoming(ElseV, ElseBB);
+  return phiNode;
+}
+
+llvm::Value *ASTForRangeStmt::codegen() {
+  LOG_S(1) << "Generating code for " << *this;
+
+
+  llvm::Value *Iterate = getIterator()->codegen();
+  if (!Iterate) {
+      throw InternalError("Failed to generate bitcode for A expression");
+  }
+  
+  llvm::Function *TheFunction = irBuilder.GetInsertBlock()->getParent();
+
+  labelNum++; // create shared labels for these BBs
+  llvm::BasicBlock *HeaderBB = llvm::BasicBlock::Create(
+      llvmContext, "header" + std::to_string(labelNum), TheFunction);
+  llvm::BasicBlock *BodyBB =
+      llvm::BasicBlock::Create(llvmContext, "body" + std::to_string(labelNum));
+  llvm::BasicBlock *ExitBB =
+      llvm::BasicBlock::Create(llvmContext, "exit" + std::to_string(labelNum));
+
+  // Add an explicit branch from the current BB to the header
+  irBuilder.CreateBr(HeaderBB);
+
+  // Emit loop header
+  irBuilder.SetInsertPoint(HeaderBB);
+
+  llvm::Value *A = getA()->codegen();
+  if (!A) {
+      throw InternalError("Failed to generate bitcode for A expression");
+  }
+  llvm::Value *B = getB()->codegen();
+  if (!B) {
+      throw InternalError("Failed to generate bitcode for B expression");
+  }
+  llvm::Value *Amt = getAmt()->codegen();
+  if (!Amt) {
+      throw InternalError("Failed to generate bitcode for Amt expression");
+  }
+  llvm::PHINode *Iterator = irBuilder.CreatePHI(Iterate->getType(), 2, "iterator");
+  Iterator->addIncoming(A, &TheFunction->getEntryBlock());
+
+
+  // Convert condition to a bool by comparing non-equal to 0.
+  llvm::Value *CondV = irBuilder.CreateICmpSLE(Iterator, B, "loopcond");
+  irBuilder.CreateCondBr(CondV, BodyBB, ExitBB);
+
+  // Emit loop body
+  {
+    TheFunction->insert(TheFunction->end(), BodyBB);
+    irBuilder.SetInsertPoint(BodyBB);
+
+    llvm::Value *BodyV = getThen()->codegen();
+    if (BodyV == nullptr) {
+      throw InternalError(                                 // LCOV_EXCL_LINE
+          "failed to generate bitcode for the loop body"); // LCOV_EXCL_LINE
+    }
+
+    llvm::Value *NextVal = irBuilder.CreateAdd(Iterator, Amt, "nextval");
+    Iterator->addIncoming(NextVal, BodyBB);
+    irBuilder.CreateBr(HeaderBB);
+  }
+
+  // Emit loop exit block.
+  TheFunction->insert(TheFunction->end(), ExitBB);
+  irBuilder.SetInsertPoint(ExitBB);
+  return irBuilder.CreateCall(nop);
+} // LCOV_EXCL_LINE
+
