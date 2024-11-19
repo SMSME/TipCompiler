@@ -1227,10 +1227,10 @@ llvm::Value *ASTForRangeStmt::codegen() {
   LOG_S(1) << "Generating code for " << *this;
 
 
-  llvm::Value *Iterate = getIterator()->codegen();
-  if (!Iterate) {
-      throw InternalError("Failed to generate bitcode for A expression");
-  }
+  // llvm::Value *Iterate = getIterator()->codegen();
+  // if (!Iterate) {
+  //     throw InternalError("Failed to generate bitcode for A expression");
+  // }
   
   llvm::Function *TheFunction = irBuilder.GetInsertBlock()->getParent();
 
@@ -1252,17 +1252,23 @@ llvm::Value *ASTForRangeStmt::codegen() {
   if (!A) {
       throw InternalError("Failed to generate bitcode for A expression");
   }
+
   llvm::Value *B = getB()->codegen();
   if (!B) {
       throw InternalError("Failed to generate bitcode for B expression");
   }
-  llvm::Value *Amt = getAmt()->codegen();
-  if (!Amt) {
-      throw InternalError("Failed to generate bitcode for Amt expression");
-  }
-  llvm::PHINode *Iterator = irBuilder.CreatePHI(Iterate->getType(), 2, "iterator");
-  Iterator->addIncoming(A, &TheFunction->getEntryBlock());
 
+  llvm::Value *Amt = nullptr;
+  if (getAmt()) { 
+      Amt = getAmt()->codegen(); 
+  }
+  if (!Amt) {
+      Amt = llvm::ConstantInt::get(llvm::Type::getInt64Ty(llvmContext), 1);
+  }
+
+  // create a phi node and set the starting value to be A
+  llvm::PHINode *Iterator = irBuilder.CreatePHI(A->getType(), 2, "iterator");
+  Iterator->addIncoming(A, &TheFunction->getEntryBlock());
 
   // Convert condition to a bool by comparing non-equal to 0.
   llvm::Value *CondV = irBuilder.CreateICmpSLE(Iterator, B, "loopcond");
@@ -1279,6 +1285,7 @@ llvm::Value *ASTForRangeStmt::codegen() {
           "failed to generate bitcode for the loop body"); // LCOV_EXCL_LINE
     }
 
+    // add the increment amount to the phi node
     llvm::Value *NextVal = irBuilder.CreateAdd(Iterator, Amt, "nextval");
     Iterator->addIncoming(NextVal, BodyBB);
     irBuilder.CreateBr(HeaderBB);
