@@ -119,17 +119,34 @@ TEST_CASE("CodegenFunction: ASTFunAppExpr throws InternalError on FUN codegen "
   REQUIRE_THROWS_AS(funAppExpr.codegen(), InternalError);
 }
 
-//NEW//
+
+
+// NEW Tests//
+/* BooleanExpr X
+ * Increment X
+ * Decrement X
+ * Negative Expr X
+ * Not Expr X
+ * Ternary X
+ * Array Expr
+ * Array of Expr
+ * Array Index
+ * Array Len
+ * For Each
+ * For Range
+ */
+
+
 // TEST_CASE("CodegenFunction: ASTBooleanExpr generates correct boolean constant",
 //           "[CodegenFunctions]") {
 //   llvm::LLVMContext llvmContext; // Needed to create LLVM constants
-
+//
 //   SECTION("Generates true constant") {
 //     ASTBooleanExpr trueExpr(true); // Initialize with true
 //     auto result = trueExpr.codegen(); // Generate LLVM code
 //     REQUIRE(result != nullptr);
 //   }
-
+//
 //   SECTION("Generates false constant") {
 //     ASTBooleanExpr falseExpr(false); // Initialize with false
 //     auto result = falseExpr.codegen(); // Generate LLVM code

@@ -1,8 +1,8 @@
 main() {
     var x, y, z, i;
     x = 0;
-    for (i : 3 .. 10 by 2) {
-        x = 1;
+    for (i : 1 .. 10 by 1) {
+        x = x + 1;
     }
     return x;
 }
