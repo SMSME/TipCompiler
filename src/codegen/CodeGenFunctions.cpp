@@ -1242,38 +1242,59 @@ llvm::Value *ASTForRangeStmt::codegen() {
 
   llvm::Function *TheFunction = irBuilder.GetInsertBlock()->getParent();
   labelNum++; // Create shared labels for these BBs
+    std::cout << "T1";
 
   // Create basic blocks for the loop
   llvm::BasicBlock *HeaderBB = llvm::BasicBlock::Create(
       llvmContext, "for.header" + std::to_string(labelNum), TheFunction);
-  llvm::BasicBlock *BodyBB =
-      llvm::BasicBlock::Create(llvmContext, "for.body" + std::to_string(labelNum));
-  llvm::BasicBlock *StepBB =
-      llvm::BasicBlock::Create(llvmContext, "for.step" + std::to_string(labelNum));
-  llvm::BasicBlock *ExitBB =
-      llvm::BasicBlock::Create(llvmContext, "for.exit" + std::to_string(labelNum));
+  llvm::BasicBlock *BodyBB = llvm::BasicBlock::Create(
+      llvmContext, "for.body" + std::to_string(labelNum));
+  llvm::BasicBlock *StepBB = llvm::BasicBlock::Create(
+      llvmContext, "for.step" + std::to_string(labelNum));
+  llvm::BasicBlock *ExitBB = llvm::BasicBlock::Create(
+      llvmContext, "for.exit" + std::to_string(labelNum));
+    std::cout << "T2";
 
-  // Branch to the header
-  irBuilder.CreateBr(HeaderBB);
+  // Create an alloca for the iterator at the start of the function
+  llvm::IRBuilder<> TmpBuilder(&TheFunction->getEntryBlock(),
+                              TheFunction->getEntryBlock().begin());
+    std::cout << "T3";
+  llvm::AllocaInst *IteratorAlloca = TmpBuilder.CreateAlloca(
+      llvm::Type::getInt64Ty(llvmContext), nullptr, "iterator.addr");
+    std::cout << "T4";
 
-  // Emit loop header
-  llvm::Value *Iterator = getIterator()->codegen();
+  // Generate range values
   llvm::Value *Start = getA()->codegen();
   llvm::Value *End = getB()->codegen();
   llvm::Value *Step = getAmt() ? getAmt()->codegen()
                                : llvm::ConstantInt::get(llvm::Type::getInt64Ty(llvmContext), 1);
+  std::cout << "T5";
 
-  if (!Iterator || !Start || !End || !Step) {
+  if (!Start || !End || !Step) {
     throw InternalError("Failed to generate bitcode for for-range components");
   }
 
-  // Initialize the iterator
+  // Branch to the header
+  // Branch to the loop header
+  irBuilder.CreateBr(HeaderBB);
+
+  // Emit pre-loop code
+  // Initialize the iterator once
+  irBuilder.SetInsertPoint(TheFunction->getEntryBlock().getTerminator());
+  irBuilder.CreateStore(Start, IteratorAlloca);
+
+  // Emit loop header
   irBuilder.SetInsertPoint(HeaderBB);
-  irBuilder.CreateStore(Start, Iterator);
-  // Compare iterator with End
-  llvm::Value *Current = irBuilder.CreateLoad(llvm::Type::getInt64Ty(llvmContext), Iterator);
-  llvm::Value *Cond = irBuilder.CreateICmpSLT(Current, End, "forcond");
+
+  // Load the current value from the iterator
+  llvm::Value *Current = irBuilder.CreateLoad(llvm::Type::getInt64Ty(llvmContext),
+                                              IteratorAlloca,
+                                              "current");
+
+  // Compare the current value with the end condition ***idk if its inclusive or naur
+  llvm::Value *Cond = irBuilder.CreateICmpSLE(Current, End, "forcond");
   irBuilder.CreateCondBr(Cond, BodyBB, ExitBB);
+
 
   // Emit loop body
   TheFunction->insert(TheFunction->end(), BodyBB);
@@ -1286,12 +1307,16 @@ llvm::Value *ASTForRangeStmt::codegen() {
 
   irBuilder.CreateBr(StepBB);
 
-  // Emit increment (step) block
+  // Emit increment block
   TheFunction->insert(TheFunction->end(), StepBB);
   irBuilder.SetInsertPoint(StepBB);
 
+  // Load current value for increment
+  Current = irBuilder.CreateLoad(llvm::Type::getInt64Ty(llvmContext),
+                               IteratorAlloca,
+                               "current.step");
   llvm::Value *NextVal = irBuilder.CreateAdd(Current, Step, "nextval");
-  irBuilder.CreateStore(NextVal, Iterator);
+  irBuilder.CreateStore(NextVal, IteratorAlloca);
   irBuilder.CreateBr(HeaderBB);
 
   // Emit exit block
@@ -1299,6 +1324,5 @@ llvm::Value *ASTForRangeStmt::codegen() {
   irBuilder.SetInsertPoint(ExitBB);
 
   return irBuilder.CreateCall(nop);
-
-} // LCOV_EXCL_LINE
+}
 

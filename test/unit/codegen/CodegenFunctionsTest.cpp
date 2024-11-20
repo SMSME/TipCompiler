@@ -135,6 +135,20 @@ TEST_CASE("CodegenFunction: ASTFunAppExpr throws InternalError on FUN codegen "
  * For Each
  * For Range
  */
+TEST_CASE("CodegenFunction: ASTForRangeStmt basic codegen test", "[CodegenFunctions]") {
+  // Create the basic components
+  auto iterator = std::make_shared<ASTVariableExpr>("i");
+  auto start = std::make_shared<ASTNumberExpr>(0);
+  auto end = std::make_shared<ASTNumberExpr>(5);
+  auto step = std::make_shared<ASTNumberExpr>(1);
+  auto body = std::make_shared<ASTOutputStmt>(iterator);
+
+  // Create the for range statement
+  ASTForRangeStmt forStmt(iterator, start, end, step, body);
+  forStmt.codegen();
+  // This will let you set a breakpoint and step through codegen()
+  REQUIRE_NOTHROW(forStmt.codegen());
+}
 
 
 // TEST_CASE("CodegenFunction: ASTBooleanExpr generates correct boolean constant",
