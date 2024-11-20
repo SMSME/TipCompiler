@@ -508,7 +508,7 @@ TEST_CASE("TypeConstraintVisitor: array", "[TypeConstraintVisitor]") {
 
     auto xType = std::make_shared<TipVar>(symbols->getLocal("x", fDecl));
 
-    REQUIRE(*unifier.inferred(xType) == *std::make_shared<TipArray>(std::make_shared<TipInt>(), std::make_shared<TipInt>(), false));
+    REQUIRE(*unifier.inferred(xType) == *std::make_shared<TipArray>(std::make_shared<TipInt>(), false));
 
 }
 
@@ -886,7 +886,7 @@ TEST_CASE("TypeConstraintVisitor: for",
     REQUIRE(*unifier.inferred(fType) == *TypeHelper::funType(empty, TypeHelper::intType()));
 
     auto xType = std::make_shared<TipVar>(symbols->getLocal("x", fDecl));
-    REQUIRE(*unifier.inferred(xType) == *std::make_shared<TipArray>(std::make_shared<TipInt>(), std::make_shared<TipInt>(), false));
+    REQUIRE(*unifier.inferred(xType) == *std::make_shared<TipArray>(std::make_shared<TipInt>(), false));
     //somehow check if i type = x[0] type?
     auto iType = std::make_shared<TipVar>(symbols->getLocal("i", fDecl));
     REQUIRE(*unifier.inferred(iType) == *TypeHelper::intType());
@@ -947,7 +947,7 @@ TEST_CASE("TypeConstraintVisitor: array index",
     REQUIRE(*unifier.inferred(fType) == *TypeHelper::funType(empty, TypeHelper::intType()));
 
     auto xType = std::make_shared<TipVar>(symbols->getLocal("x", fDecl));
-    REQUIRE(*unifier.inferred(xType) == *std::make_shared<TipArray>(std::make_shared<TipInt>(), std::make_shared<TipInt>(), false));
+    REQUIRE(*unifier.inferred(xType) == *std::make_shared<TipArray>(std::make_shared<TipInt>(), false));
 
     auto yType = std::make_shared<TipVar>(symbols->getLocal("y", fDecl));
     REQUIRE(*unifier.inferred(yType) == *TypeHelper::intType());
@@ -960,7 +960,7 @@ TEST_CASE("TypeConstraintVisitor: array length",
             // [[x]] = arr, [[y]] = int, [[test]] = () -> int
             test() {
               var x, y;
-              x = [true, false, false];
+              x = [true, false, true];
               y = #x;
               return 0;
             }
@@ -977,7 +977,7 @@ TEST_CASE("TypeConstraintVisitor: array length",
   REQUIRE(*unifier.inferred(fType) == *TypeHelper::funType(empty, TypeHelper::intType()));
 
   auto xType = std::make_shared<TipVar>(symbols->getLocal("x", fDecl));
-  REQUIRE(*unifier.inferred(xType) == *std::make_shared<TipArray>(std::make_shared<TipInt>(), std::make_shared<TipBoolean>(), false));
+  REQUIRE(*unifier.inferred(xType) == *std::make_shared<TipArray>(std::make_shared<TipBoolean>(), false));
 
   auto yType = std::make_shared<TipVar>(symbols->getLocal("y", fDecl));
   REQUIRE(*unifier.inferred(yType) == *TypeHelper::intType());
@@ -1006,7 +1006,7 @@ TEST_CASE("TypeConstraintVisitor: array of",
   REQUIRE(*unifier.inferred(fType) == *TypeHelper::funType(empty, TypeHelper::intType()));
 
   auto xType = std::make_shared<TipVar>(symbols->getLocal("x", fDecl));
-  REQUIRE(*unifier.inferred(xType) == *std::make_shared<TipArray>(std::make_shared<TipInt>(), std::make_shared<TipBoolean>(), false));
+  REQUIRE(*unifier.inferred(xType) == *std::make_shared<TipArray>(std::make_shared<TipBoolean>(), false));
 
 }
 

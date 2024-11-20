@@ -1,16 +1,18 @@
 #include "TipArray.h"
 #include "TipTypeVisitor.h"
 
-// TipArray::TipArray(std::vector<std::shared_ptr<TipType>> inits, bool arr_of_init)
-//     : TipCons(inits), array_of(arr_of_init), is_empty(false) {}
 
-TipArray::TipArray(std::shared_ptr<TipType> expr1, std::shared_ptr<TipType> expr2, bool arr_of_init)
-    : TipCons(combine(expr1, expr2)), array_of(arr_of_init), is_empty(false) {}
 
-TipArray::TipArray()
-    : TipCons(std::vector<std::shared_ptr<TipType>>{}) { // empty array
-    array_of = false; is_empty = true;
-}
+TipArray::TipArray(std::shared_ptr<TipType> elementType, bool isEmptyInit)
+    : TipCons({std::move(elementType)}), isEmpty(isEmptyInit) {}
+
+// std::vector<std::shared_ptr<TipType>>
+// TipArray::combine(std::shared_ptr<TipType> expr1, std::shared_ptr<TipType> expr2) {
+//     std::vector<std::shared_ptr<TipType>> combined;
+//     combined.push_back(expr1);
+//     combined.push_back(expr2);
+//     return combined;
+// }
 
 bool TipArray::operator==(const TipType &other) const {
     auto otherTipArray = dynamic_cast<const TipArray *>(&other);
@@ -19,45 +21,18 @@ bool TipArray::operator==(const TipType &other) const {
     }
 
     // Either empty is true 
-    if (arguments.empty() || otherTipArray->arguments.empty()) {
+    if ( isEmpty || otherTipArray->isEmpty) {
         return true;
     }
 
-
-    // if (array_of != otherTipArray->array_of) { // Check array types when one is an array of
-    //     if (array_of){
-    //         if (*(arguments.at(1)) != *(otherTipArray->arguments.at(1))) {
-    //             return false;
-    //         }
-            
-    //     else {
-    //         for (auto arg: arguments) {
-    //             if (*(arg) != *(otherTipArray->arguments.at(1))){
-    //                 return false;
-    //             }}}
-    // }
-
-    // else if (array_of && otherTipArray->array_of) {
-    if (*(arguments.at(1)) != *(otherTipArray->arguments.at(1))) {
+    // Array contains one element which is its type, check that its the same  {
+    if (*(arguments.at(0)) != *(otherTipArray->arguments.at(0))) {
         return false;
     }
-    
-
-    // else if (*(arguments.at(0)) != *(otherTipArray->arguments.at(0))) {
-    //     return false;
-    // }
 
     return true;
 }
 
-
-std::vector<std::shared_ptr<TipType>>
-TipArray::combine(std::shared_ptr<TipType> expr1, std::shared_ptr<TipType> expr2) {
-    std::vector<std::shared_ptr<TipType>> combined;
-    combined.push_back(std::move(expr1));
-    combined.push_back(std::move(expr2));
-    return combined;
-}
 
 bool TipArray::operator!=(const TipType &other) const {
   return !(*this == other);
@@ -65,24 +40,14 @@ bool TipArray::operator!=(const TipType &other) const {
 
 
 std::ostream &TipArray::print(std::ostream &out) const {
-    if (array_of) {
+    if (!isEmpty) {
         out << "[";
-        out << *(arguments.at(0)) << " of " << *(arguments.at(1));
+        out << *(arguments.at(0));
         out << "]";
         return out;
     }
     else{
-        out << "[";
-        bool first = true;
-        for (auto &init : arguments) {
-            if (first) {
-                out << *init;
-                first = false;
-                continue;
-            }
-        out << "," << *init;
-        }
-        out << "]";
+        out << "[]";
         return out;
         }
 }
