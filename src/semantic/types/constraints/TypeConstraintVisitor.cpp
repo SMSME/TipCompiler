@@ -359,26 +359,29 @@ void TypeConstraintVisitor::endVisit(ASTBooleanExpr *element) {
 void TypeConstraintVisitor::endVisit(ASTArrayMulExpr *element) {
   std::vector<std::shared_ptr<TipType>> arrItems;
 
-  if (element->getExprs().empty()){
-      constraintHandler->handle(
-        astToVar(element),
-        std::make_shared<TipRef>(std::make_shared<TipAlpha>(element)));
+  if (element->getExprs().empty()) {
+    // Empty array gets an alpha type
+    constraintHandler->handle(
+      astToVar(element),
+      std::make_shared<TipArray>(std::make_shared<TipAlpha>(element), false)
+    );
     return;
   }
 
-  auto elementType = astToVar(element->getExprs().at(0)); // Type of first element
-  arrItems.push_back(astToVar(element->getExprs().at(0)));
+  // Get type of first element
+  auto elementType = astToVar(element->getExprs().at(0));
+  arrItems.push_back(elementType);
 
-    // Everything must match the first type
+  // Ensure all elements have the same type as the first element
   for (size_t i = 1; i < element->getExprs().size(); i++) {
     constraintHandler->handle(elementType, astToVar(element->getExprs().at(i)));
     arrItems.push_back(astToVar(element->getExprs().at(i)));
   }
 
-
+  // Constrain the entire expression to be an array of the element type
   constraintHandler->handle(
-      astToVar(element),
-      std::make_shared<TipArray>(elementType, false)
+    astToVar(element),
+    std::make_shared<TipArray>(elementType, false)
   );
 }
 
