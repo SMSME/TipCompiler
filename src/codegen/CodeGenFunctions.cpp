@@ -1225,13 +1225,7 @@ llvm::Value *ASTTernaryExpr::codegen() {
 
 llvm::Value *ASTForRangeStmt::codegen() {
   LOG_S(1) << "Generating code for " << *this;
-
-
-  // llvm::Value *Iterate = getIterator()->codegen();
-  // if (!Iterate) {
-  //     throw InternalError("Failed to generate bitcode for A expression");
-  // }
-  
+retu  
   llvm::Function *TheFunction = irBuilder.GetInsertBlock()->getParent();
 
   labelNum++; // create shared labels for these BBs
@@ -1241,13 +1235,7 @@ llvm::Value *ASTForRangeStmt::codegen() {
       llvm::BasicBlock::Create(llvmContext, "body" + std::to_string(labelNum));
   llvm::BasicBlock *ExitBB =
       llvm::BasicBlock::Create(llvmContext, "exit" + std::to_string(labelNum));
-
-  // Add an explicit branch from the current BB to the header
-  irBuilder.CreateBr(HeaderBB);
-
-  // Emit loop header
-  irBuilder.SetInsertPoint(HeaderBB);
-
+rn 
   llvm::Value *A = getA()->codegen();
   if (!A) {
       throw InternalError("Failed to generate bitcode for A expression");
@@ -1266,11 +1254,20 @@ llvm::Value *ASTForRangeStmt::codegen() {
       Amt = llvm::ConstantInt::get(llvm::Type::getInt64Ty(llvmContext), 1);
   }
 
+  // llvm::AllocaInst *IteratorAlloc = irBuilder.CreateAlloca(A->getType(), nullptr, "iterator");
+  // irBuilder.CreateStore(A, IteratorAlloc);
+
+  // Add an explicit branch from the current BB to the header
+  irBuilder.CreateBr(HeaderBB);
+
+  // Emit loop header
+  irBuilder.SetInsertPoint(HeaderBB)
   // create a phi node and set the starting value to be A
   llvm::PHINode *Iterator = irBuilder.CreatePHI(A->getType(), 2, "iterator");
   Iterator->addIncoming(A, &TheFunction->getEntryBlock());
 
   // Convert condition to a bool by comparing non-equal to 0.
+  // llvm::Value *IteratorVal = irBuilder.CreateLoad(A->getType(), IteratorAlloc, "iteratorval");
   llvm::Value *CondV = irBuilder.CreateICmpSLE(Iterator, B, "loopcond");
   irBuilder.CreateCondBr(CondV, BodyBB, ExitBB);
 
@@ -1286,7 +1283,9 @@ llvm::Value *ASTForRangeStmt::codegen() {
     }
 
     // add the increment amount to the phi node
+    // llvm::Value *step = irBuilder.CreateLoad(A->getType(), IteratorAlloc, "step");
     llvm::Value *NextVal = irBuilder.CreateAdd(Iterator, Amt, "nextval");
+    // irBuilder.CreateStore(NextVal, IteratorAlloc);
     Iterator->addIncoming(NextVal, BodyBB);
     irBuilder.CreateBr(HeaderBB);
   }
@@ -1296,4 +1295,5 @@ llvm::Value *ASTForRangeStmt::codegen() {
   irBuilder.SetInsertPoint(ExitBB);
   return irBuilder.CreateCall(nop);
 } // LCOV_EXCL_LINE
+
 

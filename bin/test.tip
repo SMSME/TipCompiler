@@ -1,8 +1,6 @@
 main() {
-    var x, y, z, i;
-    x = 0;
-    for (i : 3 .. 10 by 2) {
-        x = 1;
-    }
-    return x;
+    var a;
+    a = (false ? true : false) ? 1 : 2;
+    
+    return a;
 }
