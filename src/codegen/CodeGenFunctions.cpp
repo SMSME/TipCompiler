@@ -1429,13 +1429,13 @@ llvm::Value *ASTArrayIndexExpr::codegen() {
         throw InternalError("Failed to generate index for array access");
     }
 
-
     llvm::Value *valuePtr = irBuilder.CreateGEP(
         llvm::Type::getInt64Ty(llvmContext), arrayPtr, indx, "element.ptr");
 
     return lValueGen ? valuePtr :
         irBuilder.CreateLoad(llvm::Type::getInt64Ty(llvmContext), valuePtr, "load.element");
 }
+
 llvm::Value *ASTLengthExpr::codegen() {
     LOG_S(1) << "Generating code for " << *this;
 
@@ -1445,7 +1445,15 @@ llvm::Value *ASTLengthExpr::codegen() {
         throw InternalError("Failed to generate array for length calculation");
     }
 
+    llvm::Type *arrType = arr->getType();
+
+    // Convert array to pointer
+    llvm::Value *arrayPtr = irBuilder.CreateIntToPtr(arr, llvm::Type::getInt64PtrTy(llvmContext), "array.ptr");
+
+
 }
+
+
 
 
 
