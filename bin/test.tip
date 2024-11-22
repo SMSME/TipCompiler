@@ -1,6 +1,6 @@
 main() {
-    var a;
-    a = (false ? true : false) ? 1 : 2;
-    
-    return a;
+    var arr, z;
+    arr = [99, 2, 3];
+    z = #arr;
+    return z;
 }

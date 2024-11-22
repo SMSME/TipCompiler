@@ -111,5 +111,5 @@ void Substituter::endVisit(TipArray *element) {
 
   std::reverse(initTypes.begin(), initTypes.end());
   visitedTypes.push_back(
-      std::make_shared<TipArray>(initTypes.at(0), initTypes.at(1), element->is_empty));
+      std::make_shared<TipArray>(initTypes.at(0), element->isEmpty));
 }

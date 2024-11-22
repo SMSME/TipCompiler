@@ -13,12 +13,11 @@
  */
 class TipArray : public TipCons {
 public:
-    bool array_of = false;
-    bool is_empty = false;
+    bool isEmpty = false;
 
 //     TipArray(std::vector<std::shared_ptr<TipType>> inits, bool arr_of_init);
-    TipArray(std::shared_ptr<TipType> expr1,std::shared_ptr<TipType> expr2, bool arr_of_init);
-    TipArray();
+    TipArray(std::shared_ptr<TipType> elementType, bool isEmptyInit);
+    // TipArray();
 
     std::vector<std::shared_ptr<TipType>> &getInits();
     bool operator==(const TipType &other) const override;

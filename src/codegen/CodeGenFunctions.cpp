@@ -1100,7 +1100,21 @@ llvm::Value *ASTReturnStmt::codegen() {
   return irBuilder.CreateRet(argVal);
 }
 
-// NEW//
+// NEW Added Code Gen//
+/* BooleanExpr X
+ * Increment X
+ * Decrement X
+ * Negative Expr X
+ * Not Expr X
+ * Ternary X
+ * Array Expr X --> How do we check whether its in bounds
+ * Array of Expr X
+ * Array Index X
+ * Array Len
+ * For Each
+ * For Range X
+ */
+
 llvm::Value *ASTBooleanExpr::codegen() {
   LOG_S(1) << "Generating code for " << *this;
 
@@ -1225,75 +1239,303 @@ llvm::Value *ASTTernaryExpr::codegen() {
 
 llvm::Value *ASTForRangeStmt::codegen() {
   LOG_S(1) << "Generating code for " << *this;
-retu  
+
   llvm::Function *TheFunction = irBuilder.GetInsertBlock()->getParent();
+  labelNum++; // Create shared labels for these BBs
+    std::cout << "T1";
 
-  labelNum++; // create shared labels for these BBs
+  // Create basic blocks for the loop
   llvm::BasicBlock *HeaderBB = llvm::BasicBlock::Create(
-      llvmContext, "header" + std::to_string(labelNum), TheFunction);
-  llvm::BasicBlock *BodyBB =
-      llvm::BasicBlock::Create(llvmContext, "body" + std::to_string(labelNum));
-  llvm::BasicBlock *ExitBB =
-      llvm::BasicBlock::Create(llvmContext, "exit" + std::to_string(labelNum));
-rn 
-  llvm::Value *A = getA()->codegen();
-  if (!A) {
-      throw InternalError("Failed to generate bitcode for A expression");
+      llvmContext, "for.header" + std::to_string(labelNum), TheFunction);
+  llvm::BasicBlock *BodyBB = llvm::BasicBlock::Create(
+      llvmContext, "for.body" + std::to_string(labelNum));
+  llvm::BasicBlock *StepBB = llvm::BasicBlock::Create(
+      llvmContext, "for.step" + std::to_string(labelNum));
+  llvm::BasicBlock *ExitBB = llvm::BasicBlock::Create(
+      llvmContext, "for.exit" + std::to_string(labelNum));
+    std::cout << "T2";
+
+  // Create an alloca for the iterator at the start of the function
+  llvm::IRBuilder<> TmpBuilder(&TheFunction->getEntryBlock(),
+                              TheFunction->getEntryBlock().begin());
+    std::cout << "T3";
+  llvm::AllocaInst *IteratorAlloca = TmpBuilder.CreateAlloca(
+      llvm::Type::getInt64Ty(llvmContext), nullptr, "iterator.addr");
+    std::cout << "T4";
+
+  // Generate range values
+  llvm::Value *Start = getA()->codegen();
+  llvm::Value *End = getB()->codegen();
+  llvm::Value *Step = getAmt() ? getAmt()->codegen()
+                               : llvm::ConstantInt::get(llvm::Type::getInt64Ty(llvmContext), 1);
+  std::cout << "T5";
+
+  if (!Start || !End || !Step) {
+    throw InternalError("Failed to generate bitcode for for-range components");
   }
 
-  llvm::Value *B = getB()->codegen();
-  if (!B) {
-      throw InternalError("Failed to generate bitcode for B expression");
+  // Branch to the header
+  // Branch to the loop header
+  irBuilder.CreateBr(HeaderBB);
+
+  // Emit pre-loop code
+  // Initialize the iterator once
+  irBuilder.SetInsertPoint(TheFunction->getEntryBlock().getTerminator());
+  irBuilder.CreateStore(Start, IteratorAlloca);
+
+  // Emit loop header
+  irBuilder.SetInsertPoint(HeaderBB);
+
+  // Load the current value from the iterator
+  llvm::Value *Current = irBuilder.CreateLoad(llvm::Type::getInt64Ty(llvmContext),
+                                              IteratorAlloca,
+                                              "current");
+
+  // Compare the current value with the end condition ***idk if its inclusive or naur
+  llvm::Value *Cond = irBuilder.CreateICmpSLE(Current, End, "for.cond");
+  irBuilder.CreateCondBr(Cond, BodyBB, ExitBB);
+
+
+  // Emit loop body
+  TheFunction->insert(TheFunction->end(), BodyBB);
+  irBuilder.SetInsertPoint(BodyBB);
+
+  llvm::Value *BodyV = getThen()->codegen();
+  if (!BodyV) {
+    throw InternalError("Failed to generate bitcode for the for-range body");
   }
 
-  llvm::Value *Amt = nullptr;
-  if (getAmt()) { 
-      Amt = getAmt()->codegen(); 
-  }
-  if (!Amt) {
-      Amt = llvm::ConstantInt::get(llvm::Type::getInt64Ty(llvmContext), 1);
+  irBuilder.CreateBr(StepBB);
+
+  // Emit increment block
+  TheFunction->insert(TheFunction->end(), StepBB);
+  irBuilder.SetInsertPoint(StepBB);
+
+  // Load current value for increment
+  Current = irBuilder.CreateLoad(llvm::Type::getInt64Ty(llvmContext),
+                               IteratorAlloca,
+                               "current.step");
+  llvm::Value *NextVal = irBuilder.CreateAdd(Current, Step, "next.val");
+  irBuilder.CreateStore(NextVal, IteratorAlloca);
+  irBuilder.CreateBr(HeaderBB);
+
+  // Emit exit block
+  TheFunction->insert(TheFunction->end(), ExitBB);
+  irBuilder.SetInsertPoint(ExitBB);
+
+  return irBuilder.CreateCall(nop);
+}
+
+
+
+llvm::Value *ASTArrayMulExpr::codegen() {
+    LOG_S(1) << "Generating code for " << *this;
+
+    // Get all expressions
+    auto exprs = getExprs();
+
+    // Temporary (?) Arbitrary int type empty array? - Not sure about this
+    if (exprs.empty()) {
+        llvm::Type *valueType = llvm::Type::getInt64Ty(llvmContext);
+        llvm::ArrayType *EmptyArrayType = llvm::ArrayType::get(valueType, 0);
+        return llvm::ConstantArray::get(EmptyArrayType, {});
+    }
+
+    // Vector to store array values
+    std::vector<llvm::Value *> values;
+    llvm::Type *valueType = nullptr;
+
+    for (auto &expr : exprs) {
+        llvm::Value *exprValue = expr->codegen();
+        if (!exprValue) {
+            throw InternalError("Failed to generate code for array elements");
+        }
+
+        // Get element type of the value
+        if (!valueType) {
+            valueType = exprValue->getType();
+        }
+
+        values.push_back(exprValue);
+    }
+    llvm::ArrayType *arrayType = llvm::ArrayType::get(valueType, values.size());
+
+    // Allocate memory for the array on the stack
+    llvm::Value *arrayAlloc = irBuilder.CreateAlloca(arrayType, nullptr, "array.alloca");
+
+    // Put values back into the array
+    for (size_t i = 0; i < values.size(); ++i) {
+        llvm::Value *indx = llvm::ConstantInt::get(llvm::Type::getInt32Ty(llvmContext), i);
+        llvm::Value *valuePtr = irBuilder.CreateGEP(
+            arrayType, arrayAlloc,
+            {llvm::ConstantInt::get(llvm::Type::getInt32Ty(llvmContext), 0), indx});
+        irBuilder.CreateStore(values[i], valuePtr);
+    }
+
+    return arrayAlloc;
+}
+
+
+llvm::Value *ASTArrayOfExpr::codegen() {
+    LOG_S(1) << "Generating code for " << *this;
+
+    // Value of array
+    llvm::Value *arrSize = getRight()->codegen();
+    if (!arrSize) {
+        throw InternalError("Failed to generate size of array");
+    }
+
+    // Generate the number of repetitions
+    llvm::Value *arrValue = getLeft()->codegen();
+    if (!arrValue) {
+        throw InternalError("Failed to values for the array");
+    }
+
+    llvm::Type *valueType = arrValue->getType();
+    // Use ZEctValue since arrSize is runtime not compile and we need it to be static
+    auto constSize = llvm::dyn_cast<llvm::ConstantInt>(arrSize);
+    llvm::ArrayType *arrayType = llvm::ArrayType::get(valueType, constSize->getZExtValue());
+
+    // Allocate memory for the array on the stack
+    llvm::Value *arrayAlloc = irBuilder.CreateAlloca(arrayType, nullptr, "array.alloca");
+
+    // Put values back into the array
+    for (size_t i = 0; i < constSize->getZExtValue(); ++i) {
+        llvm::Value *indx = llvm::ConstantInt::get(llvm::Type::getInt32Ty(llvmContext), i);
+        llvm::Value *valuePtr = irBuilder.CreateGEP(
+            arrayType, arrayAlloc,
+            {llvm::ConstantInt::get(llvm::Type::getInt32Ty(llvmContext), 0), indx});
+        irBuilder.CreateStore(arrValue, valuePtr);
+    }
+
+    return arrayAlloc;
+
+}
+
+llvm::Value *ASTArrayIndexExpr::codegen() {
+    LOG_S(1) << "Generating code for " << *this;
+
+    // Get the array
+    llvm::Value *arr = getName()->codegen();
+    if (!arr) {
+        throw InternalError("Failed to generate array for indexing");
+    }
+
+    llvm::Value *arrayPtr = irBuilder.CreateIntToPtr(arr, llvm::Type::getInt64PtrTy(llvmContext), "array.ptr");
+
+    // Get the index
+    llvm::Value *indx = getIndex()->codegen();
+    if (!indx) {
+        throw InternalError("Failed to generate index for array access");
+    }
+
+
+    llvm::Value *valuePtr = irBuilder.CreateGEP(
+        llvm::Type::getInt64Ty(llvmContext), arrayPtr, indx, "element.ptr");
+
+    return lValueGen ? valuePtr :
+        irBuilder.CreateLoad(llvm::Type::getInt64Ty(llvmContext), valuePtr, "load.element");
+}
+llvm::Value *ASTLengthExpr::codegen() {
+    LOG_S(1) << "Generating code for " << *this;
+
+    // Get the array
+    llvm::Value *arr = getLength()->codegen();
+    if (!arr) {
+        throw InternalError("Failed to generate array for length calculation");
+    }
+
+}
+
+
+
+
+
+/*
+ * Work in progess --
+ */
+llvm::Value *ASTForStmt::codegen() {
+  LOG_S(1) << "Generating code for " << *this;
+
+  llvm::Function *TheFunction = irBuilder.GetInsertBlock()->getParent();
+  labelNum++;
+
+  // Create basic blocks for the loop
+  llvm::BasicBlock *HeaderBB = llvm::BasicBlock::Create(
+      llvmContext, "for.header" + std::to_string(labelNum), TheFunction);
+  llvm::BasicBlock *BodyBB = llvm::BasicBlock::Create(
+      llvmContext, "for.body" + std::to_string(labelNum));
+  llvm::BasicBlock *StepBB = llvm::BasicBlock::Create(
+      llvmContext, "for.step" + std::to_string(labelNum));
+  llvm::BasicBlock *ExitBB = llvm::BasicBlock::Create(
+      llvmContext, "for.exit" + std::to_string(labelNum));
+
+  // Create alloca for the iterator variable
+  llvm::IRBuilder<> TmpBuilder(&TheFunction->getEntryBlock(),
+                              TheFunction->getEntryBlock().begin());
+  llvm::AllocaInst *IteratorAlloca = TmpBuilder.CreateAlloca(
+      llvm::Type::getInt64Ty(llvmContext), nullptr, "iterator.addr");
+
+  // Get the iteration range values
+  llvm::Value *Iterator = getItem()->codegen();
+  llvm::Value *Range = getIterate()->codegen();
+
+  if (!Iterator || !Range) {
+    throw InternalError("Failed to generate bitcode for for-statement components");
   }
 
-  // llvm::AllocaInst *IteratorAlloc = irBuilder.CreateAlloca(A->getType(), nullptr, "iterator");
-  // irBuilder.CreateStore(A, IteratorAlloc);
+  // Initialize the iterator
+  irBuilder.SetInsertPoint(TheFunction->getEntryBlock().getTerminator());
+  irBuilder.CreateStore(Iterator, IteratorAlloca);
 
-  // Add an explicit branch from the current BB to the header
+  // Branch to the header
   irBuilder.CreateBr(HeaderBB);
 
   // Emit loop header
-  irBuilder.SetInsertPoint(HeaderBB)
-  // create a phi node and set the starting value to be A
-  llvm::PHINode *Iterator = irBuilder.CreatePHI(A->getType(), 2, "iterator");
-  Iterator->addIncoming(A, &TheFunction->getEntryBlock());
+  irBuilder.SetInsertPoint(HeaderBB);
 
-  // Convert condition to a bool by comparing non-equal to 0.
-  // llvm::Value *IteratorVal = irBuilder.CreateLoad(A->getType(), IteratorAlloc, "iteratorval");
-  llvm::Value *CondV = irBuilder.CreateICmpSLE(Iterator, B, "loopcond");
-  irBuilder.CreateCondBr(CondV, BodyBB, ExitBB);
+  // Load the current iterator value
+  llvm::Value *Current = irBuilder.CreateLoad(llvm::Type::getInt64Ty(llvmContext),
+                                            IteratorAlloca,
+                                            "current");
+
+  // Create the condition - using SLE for inclusive range
+  llvm::Value *Cond = irBuilder.CreateICmpSLE(Current, Range, "forcond");
+  irBuilder.CreateCondBr(Cond, BodyBB, ExitBB);
 
   // Emit loop body
-  {
-    TheFunction->insert(TheFunction->end(), BodyBB);
-    irBuilder.SetInsertPoint(BodyBB);
+  TheFunction->insert(TheFunction->end(), BodyBB);
+  irBuilder.SetInsertPoint(BodyBB);
 
-    llvm::Value *BodyV = getThen()->codegen();
-    if (BodyV == nullptr) {
-      throw InternalError(                                 // LCOV_EXCL_LINE
-          "failed to generate bitcode for the loop body"); // LCOV_EXCL_LINE
-    }
-
-    // add the increment amount to the phi node
-    // llvm::Value *step = irBuilder.CreateLoad(A->getType(), IteratorAlloc, "step");
-    llvm::Value *NextVal = irBuilder.CreateAdd(Iterator, Amt, "nextval");
-    // irBuilder.CreateStore(NextVal, IteratorAlloc);
-    Iterator->addIncoming(NextVal, BodyBB);
-    irBuilder.CreateBr(HeaderBB);
+  llvm::Value *BodyV = getThen()->codegen();
+  if (!BodyV) {
+    throw InternalError("Failed to generate bitcode for the for-statement body");
   }
 
-  // Emit loop exit block.
+  irBuilder.CreateBr(StepBB);
+
+  // Emit increment block
+  TheFunction->insert(TheFunction->end(), StepBB);
+  irBuilder.SetInsertPoint(StepBB);
+
+  // Load and increment iterator
+  Current = irBuilder.CreateLoad(llvm::Type::getInt64Ty(llvmContext),
+                               IteratorAlloca,
+                               "current.step");
+  llvm::Value *NextVal = irBuilder.CreateAdd(
+      Current,
+      llvm::ConstantInt::get(llvm::Type::getInt64Ty(llvmContext), 1),
+      "nextval");
+  irBuilder.CreateStore(NextVal, IteratorAlloca);
+  irBuilder.CreateBr(HeaderBB);
+
+  // Emit exit block
   TheFunction->insert(TheFunction->end(), ExitBB);
   irBuilder.SetInsertPoint(ExitBB);
+
   return irBuilder.CreateCall(nop);
-} // LCOV_EXCL_LINE
+}
+
+
 
 

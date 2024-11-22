@@ -21,7 +21,7 @@ std::vector<std::shared_ptr<ASTNode>> ASTLengthExpr::getChildren() {
     return children;
 }
 
-llvm::Value *ASTLengthExpr::codegen() {
-    return nullptr;
-}
+// llvm::Value *ASTLengthExpr::codegen() {
+//     return nullptr;
+// }
 // LCOV_EXCL_END

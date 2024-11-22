@@ -45,7 +45,7 @@ std::vector<std::shared_ptr<ASTNode>> ASTArrayMulExpr::getChildren() {
   return children;
 }
 
-llvm::Value *ASTArrayMulExpr::codegen() {
-    return nullptr;
-}
+// llvm::Value *ASTArrayMulExpr::codegen() {
+//     return nullptr;
+// }
 // LCOV_EXCL_END
