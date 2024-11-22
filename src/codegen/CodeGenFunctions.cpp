@@ -1513,8 +1513,11 @@ llvm::Value *ASTArrayIndexExpr::codegen() {
         errorIntrinsic = llvm::Function::Create(
             FT, llvm::Function::ExternalLinkage, "_tip_error", CurrentModule.get());
     }
-
     irBuilder.CreateCall(errorIntrinsic, {indx}, "Out of bounds error");
+    irBuilder.CreateCall(
+        llvm::Intrinsic::getDeclaration(CurrentModule.get(),
+        llvm::Intrinsic::trap)
+    );
     irBuilder.CreateUnreachable();
 
     // Point for normal code
