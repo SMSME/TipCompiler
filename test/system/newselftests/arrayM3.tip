@@ -1,0 +1,17 @@
+main() {
+    var a, b, c, d;
+    a = [1,2,3];
+    b = [99, 2, 1, 4];
+    c = [7, 6];
+
+    d = [a, b, c, a];
+
+    if (d[0] != a) error a[0];
+    if (d[1] != b) error a[1];
+    if (d[2] != c) error a[2];
+    if (d[3] != a) error a[3];
+
+    if (#d != 4) error #d;
+
+    return 0;
+}

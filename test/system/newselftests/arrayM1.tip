@@ -1,0 +1,10 @@
+main() {
+    var a, x, y, z;
+    a = [1,2,3];
+
+    if (a[0] != 1) error a[0];
+    if (a[1] != 2) error a[1];
+    if (a[2] != 3) error a[2];
+
+    return 0;
+}
