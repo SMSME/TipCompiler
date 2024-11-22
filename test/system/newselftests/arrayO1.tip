@@ -1,0 +1,7 @@
+main() {
+    var a;
+    a = [5 of 3];
+    if (#a != 5) error #a;
+
+    return 0;
+}

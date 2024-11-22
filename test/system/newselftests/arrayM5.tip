@@ -3,10 +3,10 @@ main(){
     c = [true, false, false, true];
     c[0] = false; c[1] = false; c[2] = false; c[3] = false;
 
-    if (c[0] == true) error -1;
-    if (c[1] != false) error -1;
-    if (c[2] != false) error -1;
-    if (c[3] != false) error -1;
+    if (c[0] == true) error 0;
+    if (c[1] != false) error 1;
+    if (c[2] != false) error 2;
+    if (c[3] != false) error 3;
 
     return 0;
 }
