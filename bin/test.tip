@@ -1,6 +1,9 @@
 main() {
-    var arr, z;
-    arr = [99, 2, 3];
-    z = #arr;
+    var i, j, k, z;
+    z = 0;
+    j = [1, 2, 3, 4];
+    for (i : j) {
+        z++;
+    }
     return z;
 }
