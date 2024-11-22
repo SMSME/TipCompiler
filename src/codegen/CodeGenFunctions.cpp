@@ -1421,6 +1421,14 @@ llvm::Value *ASTArrayOfExpr::codegen() {
 llvm::Value *ASTArrayIndexExpr::codegen() {
     LOG_S(1) << "Generating code for " << *this;
 
+    // Store the current lValueGen state
+    bool isLValue = lValueGen;
+
+    // Reset lValueGen for sub-expressions
+    if (isLValue) {
+        lValueGen = false;
+    }
+
     // Get the array
     llvm::Value *arr = getName()->codegen();
     if (!arr) {
@@ -1443,7 +1451,7 @@ llvm::Value *ASTArrayIndexExpr::codegen() {
         llvm::Type::getInt64Ty(llvmContext), arrayPtr, adjustedIndx, "element.ptr");
 
 
-    return lValueGen ? valuePtr :
+    return isLValue ? valuePtr :
         irBuilder.CreateLoad(llvm::Type::getInt64Ty(llvmContext), valuePtr, "load.element");
 }
 
