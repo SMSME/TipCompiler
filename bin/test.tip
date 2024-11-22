@@ -1,9 +1,10 @@
 main() {
     var i, j, k, z;
     z = 0;
-    j = [1, 2, 3, 4];
+    j = [5, 2, 3];
     for (i : j) {
         z++;
     }
+
     return z;
 }
