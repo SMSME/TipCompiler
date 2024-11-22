@@ -363,7 +363,7 @@ void TypeConstraintVisitor::endVisit(ASTArrayMulExpr *element) {
     // Empty array gets an alpha type
     constraintHandler->handle(
       astToVar(element),
-      std::make_shared<TipArray>(std::make_shared<TipAlpha>(element), false)
+      std::make_shared<TipArray>(std::make_shared<TipAlpha>(element), true)
     );
     return;
   }
