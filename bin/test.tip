@@ -1,10 +1,10 @@
 main() {
-    var i, j, k, z;
-    z = 0;
-    j = [5, 2, 3];
-    for (i : j) {
-        z++;
+    var i, j, a, b, c, d;
+    a = 0;
+    c = 0;
+    b = [10, 20, 30, 40];
+    for (i : b) {
+        c = c + i;
     }
-
-    return z;
+    return a;
 }
