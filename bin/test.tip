@@ -1,6 +1,7 @@
 main() {
-    var arr, z;
-    arr = [99, 2, 3];
+    var arr, z, i;
+    arr = [999, 2, 3, 5, 6, 7];
     z = #arr;
-    return z;
+    i = arr[1];
+    return z + i;
 }
