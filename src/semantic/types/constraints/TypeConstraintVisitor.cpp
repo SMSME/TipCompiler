@@ -381,7 +381,7 @@ void TypeConstraintVisitor::endVisit(ASTArrayMulExpr *element) {
   // Constrain the entire expression to be an array of the element type
   constraintHandler->handle(
     astToVar(element),
-    std::make_shared<TipArray>(elementType, false)
+    std::make_shared<TipArray>(arrItems[0], false)
   );
 }
 
@@ -454,10 +454,8 @@ void TypeConstraintVisitor::endVisit(ASTLengthExpr *element) {
       std::make_shared<TipArray>(std::make_shared<TipAlpha>(element), false)
   );
 
-  // Ensure the length expression itself is an integer
   constraintHandler->handle(
-      astToVar(element),
-      std::make_shared<TipInt>()
+      astToVar(element), std::make_shared<TipInt>()
   );
 }
 
@@ -471,13 +469,11 @@ void TypeConstraintVisitor::endVisit(ASTLengthExpr *element) {
 void TypeConstraintVisitor::endVisit(ASTArrayIndexExpr *element) {
   auto elementType = std::make_shared<TipVar>(); // Type variable for the array element type
 
-
   constraintHandler->handle(astToVar(element->getName()), std::make_shared<TipArray>(astToVar(element), false));
   //std::make_shared<TipArray>(std::make_shared<TipInt>(), astToVar(element->getName()), true)
   constraintHandler->handle(astToVar(element->getIndex()), std::make_shared<TipInt>()); // Index is an int
-  // constraintHandler->handle(astToVar(element), elementType); // Return the same for the array elements
-}
 
+}
 
 
 /*! \brief Type constraints for ternary expression.
