@@ -1,8 +1,0 @@
-main() {
-    var i, j, a, b, c, d;
-    a = 0;
-    for (i : 10 .. 55 by 1) {
-        a++;
-    }
-    return a;
-}
