@@ -1,6 +1,6 @@
 main(){
     var c;
     c = [true, true, true, false];
-    if (#c != 4) error #c;
+    if (#c != 4) error 1;
     return #c;
 }

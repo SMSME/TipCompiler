@@ -484,7 +484,7 @@ void TypeConstraintVisitor::endVisit(ASTArrayIndexExpr *element) {
  *
  * Type rules for "E1 ? E2 : E3":
  *  [[E1]] = boolean
- *  [[E2]] = [[E3]] 
+ *  [[E2]] = [[E3]]
  *  X = Y ? Z : W
  */
 void TypeConstraintVisitor::endVisit(ASTTernaryExpr *element) {
@@ -496,14 +496,14 @@ void TypeConstraintVisitor::endVisit(ASTTernaryExpr *element) {
 /*! \brief Type constraints for a standard for loop expression.
  *
  * Type rules for "for (E1 : E2) S1"
- *  [[E1]] = [[E2]] 
+ *  [[E1]] = [[E2]]
  *  for (val : arr) statement
- *  
+ *
  */
 void TypeConstraintVisitor::endVisit(ASTForStmt *element) {
-    constraintHandler->handle(astToVar(element->getIterate()), 
+    constraintHandler->handle(astToVar(element->getIterate()),
     std::make_shared<TipArray>(astToVar(element->getItem()), false));
-    
+
 }
 
 /*! \brief Type constraints for a for range expression.
@@ -512,8 +512,8 @@ void TypeConstraintVisitor::endVisit(ASTForStmt *element) {
  *  [E2]] = int
  *  [E3]] = int
  *  [E4]] = int
- *  for '(' E1 ':' E2  '..' E3 ('by' E4)? ')' S 
- *  
+ *  for '(' E1 ':' E2  '..' E3 ('by' E4)? ')' S
+ *
  */
 void TypeConstraintVisitor::endVisit(ASTForRangeStmt *element) {
   constraintHandler->handle(astToVar(element->getIterator()), std::make_shared<TipInt>());
@@ -523,7 +523,6 @@ void TypeConstraintVisitor::endVisit(ASTForRangeStmt *element) {
     constraintHandler->handle(astToVar(element->getAmt()), std::make_shared<TipInt>());
   }
 }
-
 
 
 

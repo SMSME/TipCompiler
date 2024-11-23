@@ -1,0 +1,9 @@
+main() {
+    var a, x, y, z;
+    a = [1,2,3];
+    x = a[32]; // Error should be produced
+
+
+
+    return 0;
+}

@@ -1346,8 +1346,8 @@ llvm::Value *ASTArrayMulExpr::codegen() {
     LOG_S(1) << "Generating code for " << *this;
     auto exprs = getExprs();
 
+    // If the array is empty allocate just enough room to store the length
     if (exprs.empty()) {
-        // For empty array, still allocate minimum size to store length
         llvm::Value *numElements = llvm::ConstantInt::get(llvm::Type::getInt64Ty(llvmContext), 1); // Just length
         llvm::Value *elementSize = llvm::ConstantInt::get(llvm::Type::getInt64Ty(llvmContext), 8); // sizeof(int64_t)
 
@@ -1365,6 +1365,7 @@ llvm::Value *ASTArrayMulExpr::codegen() {
         return irBuilder.CreatePtrToInt(arrayPtr, llvm::Type::getInt64Ty(llvmContext));
     }
 
+    // Otherwise gather all the values
     std::vector<llvm::Value *> values;
     for (auto &expr : exprs) {
         llvm::Value *exprValue = expr->codegen();
@@ -1374,7 +1375,7 @@ llvm::Value *ASTArrayMulExpr::codegen() {
         values.push_back(exprValue);
     }
 
-    // Allocate memory: numElements = length + values
+    // Calloc memory on the heap
     llvm::Value *numElements = llvm::ConstantInt::get(
         llvm::Type::getInt64Ty(llvmContext),
         values.size() + 1); // +1 for length
@@ -1424,10 +1425,50 @@ llvm::Value *ASTArrayOfExpr::codegen() {
         throw InternalError("Array size must be a constant");
     }
 
-    // Allocate memory: numElements = size + 1 (for length)
+    // Use signed numbers to account for negatives
+    int64_t sizeValue = constSize->getSExtValue();
+
+    // Check bounds st 0 <= indx < #arr
+    llvm::Value *lowerBoundCheck = irBuilder.CreateICmpSGE(
+        constSize,
+        llvm::ConstantInt::get(llvm::Type::getInt64Ty(llvmContext), 0),
+        "check.lower.bound"
+    );
+
+    llvm::Value *upperBoundCheck = irBuilder.CreateICmpSLT(
+        constSize,
+        llvm::ConstantInt::get(llvm::Type::getInt64Ty(llvmContext), INT64_MAX),
+        "check.upper.bound"
+    );
+
+    llvm::Value *inBounds = irBuilder.CreateAnd(lowerBoundCheck, upperBoundCheck, "check.inbounds");
+
+    // Block setup
+    llvm::Function *parentFunc = irBuilder.GetInsertBlock()->getParent();
+    llvm::BasicBlock *errorBlock = llvm::BasicBlock::Create(llvmContext, "error.block", parentFunc);
+    llvm::BasicBlock *normalBlock = llvm::BasicBlock::Create(llvmContext, "normal.block", parentFunc);
+
+    // If within bounds (i.e. not negative) then branch normally, otherwise error
+    irBuilder.CreateCondBr(inBounds, normalBlock, errorBlock);
+
+    // Error block
+    irBuilder.SetInsertPoint(errorBlock);
+    if (!errorIntrinsic) {
+        std::vector<llvm::Type *> errorParams(1, llvm::Type::getInt64Ty(llvmContext));
+        auto *FT = llvm::FunctionType::get(
+            llvm::Type::getInt64Ty(llvmContext), errorParams, false);
+        errorIntrinsic = llvm::Function::Create(
+            FT, llvm::Function::ExternalLinkage, "_tip_error", CurrentModule.get());
+    }
+    irBuilder.CreateCall(errorIntrinsic, {constSize});
+    irBuilder.CreateUnreachable();
+
+    // Normal block
+    irBuilder.SetInsertPoint(normalBlock);
+
     llvm::Value *numElements = llvm::ConstantInt::get(
         llvm::Type::getInt64Ty(llvmContext),
-        constSize->getZExtValue() + 1); // +1 for length
+        sizeValue + 1); // +1 for length
     llvm::Value *elementSize = llvm::ConstantInt::get(
         llvm::Type::getInt64Ty(llvmContext),
         8); // sizeof(int64_t)
@@ -1440,11 +1481,11 @@ llvm::Value *ASTArrayOfExpr::codegen() {
 
     // Store length at index 0
     irBuilder.CreateStore(
-        llvm::ConstantInt::get(llvm::Type::getInt64Ty(llvmContext), constSize->getZExtValue()),
+        llvm::ConstantInt::get(llvm::Type::getInt64Ty(llvmContext), sizeValue),
         arrayPtr);
 
     // Store values starting at index 1
-    for (uint64_t i = 0; i < constSize->getZExtValue(); ++i) {
+    for (int64_t i = 0; i < sizeValue; ++i) {
         llvm::Value *elementPtr = irBuilder.CreateGEP(
             llvm::Type::getInt64Ty(llvmContext),
             arrayPtr,
@@ -1452,16 +1493,15 @@ llvm::Value *ASTArrayOfExpr::codegen() {
         irBuilder.CreateStore(arrValue, elementPtr);
     }
 
-    // Return the pointer as an integer
     return irBuilder.CreatePtrToInt(arrayPtr, llvm::Type::getInt64Ty(llvmContext));
 }
 
 
 llvm::Value *ASTArrayIndexExpr::codegen() {
     LOG_S(1) << "Generating code for " << *this;
-    // Store the current lValueGen state
+
     bool isLValue = lValueGen;
-    // Reset lValueGen for sub-expressions
+
     if (isLValue) {
         lValueGen = false;
     }
@@ -1501,15 +1541,12 @@ llvm::Value *ASTArrayIndexExpr::codegen() {
 
     llvm::Value *inBounds = irBuilder.CreateAnd(lowerBoundCheck, upperBoundCheck, "check.inbounds");
 
-    // Error handling block
     llvm::Function *parentFunc = irBuilder.GetInsertBlock()->getParent();
     llvm::BasicBlock *errorBlock = llvm::BasicBlock::Create(llvmContext, "error.block", parentFunc);
     llvm::BasicBlock *normalBlock = llvm::BasicBlock::Create(llvmContext, "normal.block", parentFunc);
-
-    // Branch based on the bounds check
+    // Branch
     irBuilder.CreateCondBr(inBounds, normalBlock, errorBlock);
 
-    // Error block: Call error handling and terminate
     irBuilder.SetInsertPoint(errorBlock);
 
     if (!errorIntrinsic) {
@@ -1521,10 +1558,9 @@ llvm::Value *ASTArrayIndexExpr::codegen() {
             FT, llvm::Function::ExternalLinkage, "_tip_error", CurrentModule.get());
     }
 
-    irBuilder.CreateCall(errorIntrinsic, {indx}, "Out of bounds error");
+    irBuilder.CreateCall(errorIntrinsic, {indx});
     irBuilder.CreateUnreachable();
 
-    // Point for normal code
     irBuilder.SetInsertPoint(normalBlock);
 
     // Adjust by 1 to account for length storage
