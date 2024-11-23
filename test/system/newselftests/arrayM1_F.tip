@@ -3,9 +3,7 @@ main() {
     a = [1,2,3];
     x = a[32]; // Error should be produced
 
-    if (a[0] != 1) error a[0];
-    if (a[1] != 2) error a[1];
-    if (a[2] != 3) error a[2];
+
 
     return 0;
 }

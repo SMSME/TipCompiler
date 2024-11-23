@@ -1,17 +1,17 @@
 main(){
     var c;
     c = [true, false, false, true];
-    if (c[0] != true) error 0;
-    if (c[1] != false) error 1;
-    if (c[2] != false) error 2;
-    if (c[3] != true) error 3;
+    if (c[0] != true) error 1;
+    if (c[1] != false) error 2;
+    if (c[2] != false) error 3;
+    if (c[3] != true) error 4;
 
     c[0] = false; c[1] = true; c[2] = true; c[3] = false;
 
-    if (c[0] != false) error 0;
-    if (c[1] != true) error 1;
-    if (c[2] != true) error 2;
-    if (c[3] != false) error 3;
+    if (c[0] != false) error 5;
+    if (c[1] != true) error 6;
+    if (c[2] != true) error 7;
+    if (c[3] != false) error 8;
 
     return 0;
 }
