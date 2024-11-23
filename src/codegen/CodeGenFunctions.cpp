@@ -25,26 +25,27 @@
 
 //TODO//
 /* 1st x is implemented, second is tested, working is tested with an actual tip program
-1. increment X     WORKING
-2. decrement X     WORKING
-3. modulo X        WORKING
-4. gte  X          WORKING
-5. lt  X           WORKING
-6. lte  X          WORKING
-9. and  X          WORKING
-10. or  X          WORKING
-15. boolean X      WORKING
-7. negative X      WORKING
-8. not X           WORKING
+1. increment X X          WORKING
+2. decrement X X          WORKING
+3. modulo X    X          WORKING
+4. gte  X      X          WORKING
+5. lt  X       X          WORKING
+6. lte  X      X          WORKING
+8. not X       X          WORKING
+9. and  X      X          WORKING
+10. or  X      X          WORKING
+15. boolean X  X          WORKING
+7. negative X  X          WORKING
 
-14. ternary X      WORKING
-11. for range 
-12. for loop 
 
-13. Array length 
-16. array index 
-17. array default
-18. array of
+14. ternary X  X          WORKING
+11. for range X X         WORKING
+12. for loop X X          WORKING
+
+13. Array length X        WORKING
+16. array index X         WORKING
+17. array default X       WORKING 
+18. array of X            WORKING
 */
 namespace {
 
@@ -1170,9 +1171,12 @@ llvm::Value *ASTNegExpr::codegen() {
 llvm::Value *ASTNotExpr::codegen() {
   LOG_S(1) << "Generating code for " << *this;
   llvm::Value *notted = getNot()->codegen();
-  llvm::Value* notVal = irBuilder.CreateICmpEQ(notted, llvm::ConstantInt::getFalse(llvmContext), "nottmp");
+  llvm::Value* notValTemp = irBuilder.CreateICmpEQ(notted, zeroV, "notrighttmp");
+
+  llvm::Value* notVal = irBuilder.CreateZExt(notValTemp, llvm::Type::getInt64Ty(llvmContext), "nottmp64");
 
   return notVal;
+
 } // LCOV_EXCL_LINE
 
 llvm::Value *ASTTernaryExpr::codegen() {
@@ -1250,10 +1254,12 @@ llvm::Value *ASTForRangeStmt::codegen() {
   llvm::BasicBlock *ExitBB =
       llvm::BasicBlock::Create(llvmContext, "exit" + std::to_string(labelNum));
  
+
   llvm::Value *Iterate = getIterator()->codegen();
   if (!Iterate) {
       throw InternalError("Failed to generate bitcode for Iterate expression");
   }
+  llvm::StringRef iterateName = Iterate->getName();
 
   llvm::Value *A = getA()->codegen();
   if (!A) {
@@ -1275,11 +1281,12 @@ llvm::Value *ASTForRangeStmt::codegen() {
   llvm::BasicBlock &entryBlock = TheFunction->getEntryBlock(); // Get entry block
   llvm::AllocaInst *iAlloc = nullptr;
 
-  // Search for 'i' allocation in entry block
+  // Search for iteratename allocation in entry block
   for (auto &Inst : entryBlock) {
       if (auto *allocaInst = llvm::dyn_cast<llvm::AllocaInst>(&Inst)) {
-          if (allocaInst->getName() == "i") {
+          if (allocaInst->getName() == iterateName.substr(0,1)) {
               iAlloc = allocaInst;
+
               break;
           }
       }
@@ -1569,11 +1576,14 @@ llvm::Value *ASTForStmt::codegen() {
 
   llvm::BasicBlock &entryBlock = TheFunction->getEntryBlock();
   llvm::AllocaInst *iAlloc = nullptr;
+  
 
+  llvm::Value *Item = getItem()->codegen();
+  llvm::StringRef ItemName = Item->getName();
   // search for 'i' allocation in entry block
   for (auto &Inst : entryBlock) {
       if (auto *allocaInst = llvm::dyn_cast<llvm::AllocaInst>(&Inst)) {
-          if (allocaInst->getName() == "i") {
+          if (allocaInst->getName() == ItemName.substr(0,1)) {
               iAlloc = allocaInst;
               break;
           }

@@ -1,0 +1,12 @@
+main(){
+    var c;
+    c = -1;
+
+    c++;
+    if (c != 0) error 1;
+
+    c++;
+    if (c != 1) error 2;
+
+    return 0;
+}

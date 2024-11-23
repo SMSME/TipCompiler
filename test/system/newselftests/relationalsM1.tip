@@ -1,0 +1,18 @@
+main() {
+    var a, b, c, d, e, f;
+    a = true;
+    b = false;
+    if ((a or b) != true) error 1;
+    if ((false or b) != false) error 2;
+    if ((a or b or true) != true) error 3;
+
+    if ((a and b) != false) error 4;
+    if ((true and a) != true) error 5;
+    if ((a and b and true) != false) error 6;
+
+    if ((not a or b) != false) error 7;
+    if ((true and not not a) != true) error 8;
+    if ((not false and not false and true) != true) error 9;
+
+    return 0;
+}

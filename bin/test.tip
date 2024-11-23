@@ -4,7 +4,9 @@ main() {
     c = 0;
     b = [10, 20, 30, 40];
     for (i : b) {
-        c = c + i;
+        for (j : b) {
+            c++;
+        }
     }
-    return a;
+    return c;
 }

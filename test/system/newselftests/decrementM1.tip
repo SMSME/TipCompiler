@@ -1,0 +1,7 @@
+main(){
+    var c;
+    c = 2;
+    c--;
+    if (c != 1) error 1;
+    return 0;
+}

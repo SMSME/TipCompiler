@@ -1,0 +1,10 @@
+main() {
+    var a, b, c, d, e, f;
+    a = true ? 5 : 100;
+    b = (true ? false : true) ? 10 : 50;
+
+    if (a != 5) error 1;
+    if (b != 50) error 2;
+
+    return 0;
+}

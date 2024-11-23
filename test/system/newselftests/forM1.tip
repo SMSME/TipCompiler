@@ -1,0 +1,19 @@
+main() {
+    var a, b, c, d, e, f;
+    b = [1, 2, 3, 4, 5];
+    a = 0;
+    for (f : b) {
+        a++;
+    }
+    if (a != 5) error 1;
+
+    c = 0;
+    for (d : b) {
+        for (e : b) {
+            c++;
+        }
+    }
+    if (c != 25) error 2;
+
+    return 0;
+}
