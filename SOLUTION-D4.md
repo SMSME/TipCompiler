@@ -52,7 +52,9 @@ additional code blocks to jump to which made our code quite lengthy and a bit co
 
 Additionally, because we needed
 to allocate room on the heap for the arrays, we had to consider the size of array which was an llvm value. This means we
-had to do some conversions back and forth and had variables that represented the same thing but in different forms.
+had to do some conversions back and forth and had variables that represented the same thing but in different forms. However,
+when we attempted to write a test that created an array via a function, we realized using constant ints and a typical
+for-loop would not work. This led us to use a phi-node to fill up the array instead.
 
 #### For-Loops
 For both for-loops our main difficulty was dealing with the iterator value and using it. For example:

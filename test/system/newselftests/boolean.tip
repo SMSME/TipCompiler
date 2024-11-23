@@ -1,0 +1,14 @@
+foo(bool){
+    return bool ? false : true;
+}
+
+main(){
+    var a, b;
+    a = foo(true);
+    b = foo(false);
+
+    if (a != false) error 1;
+    if (b != true) error 2;
+
+    return 0;
+}
