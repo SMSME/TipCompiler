@@ -1,0 +1,23 @@
+main() {
+    var a, b, c, d, e, f, g;
+
+    //base
+    a = 0;
+    for (b : 0 .. 0 by 1) {
+        a--;
+    }
+
+    if (a != 0) error 1;
+
+    // no step/amount specified
+    c = 4;
+    for (d : 0 .. 3) {
+        c --;
+    }
+
+    if (c != 1) error 2;
+
+
+
+    return 0;
+}
