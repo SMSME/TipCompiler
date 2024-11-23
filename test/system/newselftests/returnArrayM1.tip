@@ -1,0 +1,23 @@
+array(a, b, c){
+    var arr;
+    arr = [a,b,c];
+    return arr;
+}
+
+main(){
+    var arr2, arr;
+    arr2 = array(true, false, true);
+
+    if (arr2[0] != true) error 1;
+    if (arr2[1] != false) error 2;
+    if (arr2[2] != true) error 3;
+
+    arr = array(false, true, false);
+
+    if (arr[0] != false) error 4;
+    if (arr[1] != true) error 5;
+    if (arr[2] != false) error 6;
+
+    return 0;
+
+}

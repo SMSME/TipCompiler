@@ -1491,48 +1491,44 @@ llvm::Value *ASTArrayMulExpr::codegen() {
     return irBuilder.CreatePtrToInt(arrayPtr, llvm::Type::getInt64Ty(llvmContext));
 }
 
+
+
 llvm::Value *ASTArrayOfExpr::codegen() {
     LOG_S(1) << "Generating code for " << *this;
 
     llvm::Value *arrSize = getLeft()->codegen();
-    if (!arrSize) { // LCOV_EXCL_LINE
-        throw InternalError("Failed to generate size of array"); // LCOV_EXCL_LINE
+    if (!arrSize) {
+        throw InternalError("Failed to generate size of array");
     }
-
     llvm::Value *arrValue = getRight()->codegen();
-    if (!arrValue) { // LCOV_EXCL_LINE
-        throw InternalError("Failed to generate values for the array"); // LCOV_EXCL_LINE
+    if (!arrValue) {
+        throw InternalError("Failed to generate values for the array");
     }
 
-    auto constSize = llvm::dyn_cast<llvm::ConstantInt>(arrSize);
-    if (!constSize) { // LCOV_EXCL_LINE
-        throw InternalError("Array size must be a constant"); // LCOV_EXCL_LINE
-    }
+    // Cast instead of const int like before
+    arrSize = irBuilder.CreateSExtOrTrunc(arrSize, llvm::Type::getInt64Ty(llvmContext));
 
-    // Use signed numbers to account for negatives
-    int64_t sizeValue = constSize->getSExtValue();
-
-    // Check bounds st 0 <= indx < #arr
+    // Boundary checks
     llvm::Value *lowerBoundCheck = irBuilder.CreateICmpSGE(
-        constSize,
+        arrSize,
         llvm::ConstantInt::get(llvm::Type::getInt64Ty(llvmContext), 0),
         "check.lower.bound"
     );
 
     llvm::Value *upperBoundCheck = irBuilder.CreateICmpSLT(
-        constSize,
+        arrSize,
         llvm::ConstantInt::get(llvm::Type::getInt64Ty(llvmContext), INT64_MAX),
         "check.upper.bound"
     );
 
     llvm::Value *inBounds = irBuilder.CreateAnd(lowerBoundCheck, upperBoundCheck, "check.inbounds");
 
-    // Block setup
     llvm::Function *parentFunc = irBuilder.GetInsertBlock()->getParent();
     llvm::BasicBlock *errorBlock = llvm::BasicBlock::Create(llvmContext, "error.block", parentFunc);
     llvm::BasicBlock *normalBlock = llvm::BasicBlock::Create(llvmContext, "normal.block", parentFunc);
+    llvm::BasicBlock *loopBlock = llvm::BasicBlock::Create(llvmContext, "loop.block", parentFunc);
+    llvm::BasicBlock *afterLoop = llvm::BasicBlock::Create(llvmContext, "after.loop", parentFunc);
 
-    // If within bounds (i.e. not negative) then branch normally, otherwise error
     irBuilder.CreateCondBr(inBounds, normalBlock, errorBlock);
 
     // Error block
@@ -1544,39 +1540,62 @@ llvm::Value *ASTArrayOfExpr::codegen() {
         errorIntrinsic = llvm::Function::Create(
             FT, llvm::Function::ExternalLinkage, "_tip_error", CurrentModule.get());
     }
-    irBuilder.CreateCall(errorIntrinsic, {constSize});
+    irBuilder.CreateCall(errorIntrinsic, {arrSize});
     irBuilder.CreateUnreachable();
 
     // Normal block
     irBuilder.SetInsertPoint(normalBlock);
 
-    llvm::Value *numElements = llvm::ConstantInt::get(
-        llvm::Type::getInt64Ty(llvmContext),
-        sizeValue + 1); // +1 for length
+    // Create sizes for memory allocation + 1 for length considerations
+    llvm::Value *numElements = irBuilder.CreateAdd(
+        arrSize,
+        llvm::ConstantInt::get(llvm::Type::getInt64Ty(llvmContext), 1)
+    );
     llvm::Value *elementSize = llvm::ConstantInt::get(
-        llvm::Type::getInt64Ty(llvmContext),
-        8); // sizeof(int64_t)
+        llvm::Type::getInt64Ty(llvmContext), 8
+    );
 
     llvm::Value *calloc = irBuilder.CreateCall(callocFun, {numElements, elementSize}, "array.calloc");
     llvm::Value *arrayPtr = irBuilder.CreateBitCast(
         calloc,
         llvm::Type::getInt64PtrTy(llvmContext),
-        "array.ptr");
+        "array.ptr"
+    );
 
-    // Store length at index 0
-    irBuilder.CreateStore(
-        llvm::ConstantInt::get(llvm::Type::getInt64Ty(llvmContext), sizeValue),
-        arrayPtr);
+    // Length store
+    irBuilder.CreateStore(arrSize, arrayPtr);
 
-    // Store values starting at index 1
-    for (int64_t i = 0; i < sizeValue; ++i) {
-        llvm::Value *elementPtr = irBuilder.CreateGEP(
-            llvm::Type::getInt64Ty(llvmContext),
-            arrayPtr,
-            llvm::ConstantInt::get(llvm::Type::getInt64Ty(llvmContext), i + 1));
-        irBuilder.CreateStore(arrValue, elementPtr);
-    }
+    // PhiNode counter for filling the array
+    llvm::PHINode *counter = nullptr;
+    irBuilder.CreateBr(loopBlock);
 
+    // Loop and fill
+    irBuilder.SetInsertPoint(loopBlock);
+    counter = irBuilder.CreatePHI(llvm::Type::getInt64Ty(llvmContext), 2, "counter");
+    counter->addIncoming(llvm::ConstantInt::get(llvm::Type::getInt64Ty(llvmContext), 0),
+                        normalBlock);
+
+    // Set values
+    llvm::Value *currentPtr = irBuilder.CreateGEP(
+        llvm::Type::getInt64Ty(llvmContext),
+        arrayPtr,
+        irBuilder.CreateAdd(counter, llvm::ConstantInt::get(llvm::Type::getInt64Ty(llvmContext), 1))
+    );
+    irBuilder.CreateStore(arrValue, currentPtr);
+
+    // Increment
+    llvm::Value *nextCounter = irBuilder.CreateAdd(
+        counter,
+        llvm::ConstantInt::get(llvm::Type::getInt64Ty(llvmContext), 1)
+    );
+    counter->addIncoming(nextCounter, loopBlock);
+
+    // Check whether current num of values
+    llvm::Value *condition = irBuilder.CreateICmpSLT(nextCounter, arrSize);
+    irBuilder.CreateCondBr(condition, loopBlock, afterLoop);
+
+
+    irBuilder.SetInsertPoint(afterLoop);
     return irBuilder.CreatePtrToInt(arrayPtr, llvm::Type::getInt64Ty(llvmContext));
 }
 
