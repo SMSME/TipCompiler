@@ -1,12 +1,8 @@
 main() {
     var i, j, a, b, c, d;
     a = 0;
-    c = 0;
-    b = [10, 20, 30, 40];
-    for (i : b) {
-        for (j : b) {
-            c++;
-        }
+    for (i : 10 .. 55 by 1) {
+        a++;
     }
-    return c;
+    return a;
 }

@@ -18,6 +18,5 @@ main() {
     if (a[2] != false) error 8;
     if (a[3] != false) error 9;
 
-
     return 0;
 }

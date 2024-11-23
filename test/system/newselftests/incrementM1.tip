@@ -8,5 +8,9 @@ main(){
     c++;
     if (c != 1) error 2;
 
+    c++;
+    c++;
+    if (c != 3) error 3;
+
     return 0;
 }

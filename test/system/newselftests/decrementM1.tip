@@ -1,7 +1,16 @@
 main(){
-    var c;
+    var a, c;
     c = 2;
+    
     c--;
     if (c != 1) error 1;
+
+    c--;
+    if (c != 0) error 2;
+
+    c--;
+    c--;
+    if (c != -2) error 3;
+
     return 0;
 }

@@ -5,5 +5,6 @@ main(){
     if (a >= b != false) error 1;
     if (b >= a != true) error 2;
     if (100 >= 100 != true) error 3;
+    
     return 0;
 }

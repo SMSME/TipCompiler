@@ -1247,10 +1247,18 @@ llvm::Value *ASTForRangeStmt::codegen() {
   llvm::Function *TheFunction = irBuilder.GetInsertBlock()->getParent();
 
   labelNum++; // create shared labels for these BBs
-  llvm::BasicBlock *HeaderBB = llvm::BasicBlock::Create(
-      llvmContext, "header" + std::to_string(labelNum), TheFunction);
+  llvm::BasicBlock *NormalBB = llvm::BasicBlock::Create(
+      llvmContext, "normal" + std::to_string(labelNum), TheFunction);
+  llvm::BasicBlock *HeaderPBB =
+      llvm::BasicBlock::Create(llvmContext, "headerP" + std::to_string(labelNum));
+  llvm::BasicBlock *HeaderNBB =
+      llvm::BasicBlock::Create(llvmContext, "headerN" + std::to_string(labelNum));
   llvm::BasicBlock *BodyBB =
       llvm::BasicBlock::Create(llvmContext, "body" + std::to_string(labelNum));
+  llvm::BasicBlock *BodyNBB =
+      llvm::BasicBlock::Create(llvmContext, "bodyN" + std::to_string(labelNum));
+  llvm::BasicBlock *ErrorBB =
+      llvm::BasicBlock::Create(llvmContext, "error" + std::to_string(labelNum));
   llvm::BasicBlock *ExitBB =
       llvm::BasicBlock::Create(llvmContext, "exit" + std::to_string(labelNum));
  
@@ -1278,6 +1286,27 @@ llvm::Value *ASTForRangeStmt::codegen() {
   if (!Amt) {
       Amt = llvm::ConstantInt::get(llvm::Type::getInt64Ty(llvmContext), 1);
   }
+
+  llvm::Value *isNegative = irBuilder.CreateICmpSGT(
+    Amt, 
+    llvm::ConstantInt::get(llvm::Type::getInt64Ty(llvmContext), 0),
+    "isNegTmp"
+  );
+
+  llvm::Value *validRange = irBuilder.CreateICmpSLE(
+    A, B,
+    "isValidTmp"
+  );
+
+  llvm::Value *andTrue = irBuilder.CreateAnd(isNegative, validRange, "andTrue");
+  llvm::Value *notIsNegative = irBuilder.CreateNot(isNegative, "notIsNegative");
+  llvm::Value *notValidRange = irBuilder.CreateNot(validRange, "notValidRange");
+  llvm::Value *andFalse = irBuilder.CreateAnd(notIsNegative, notValidRange, "andFalse");
+  llvm::Value *finalCond = irBuilder.CreateOr(andTrue, andFalse, "finalCond");
+
+  irBuilder.CreateCondBr(finalCond, NormalBB, ErrorBB);
+
+  irBuilder.SetInsertPoint(NormalBB);
   llvm::BasicBlock &entryBlock = TheFunction->getEntryBlock(); // Get entry block
   llvm::AllocaInst *iAlloc = nullptr;
 
@@ -1300,16 +1329,16 @@ llvm::Value *ASTForRangeStmt::codegen() {
   llvm::AllocaInst *IteratorAlloc = irBuilder.CreateAlloca(A->getType(), nullptr, "iterator");
   irBuilder.CreateStore(A, IteratorAlloc);
 
-  // Add an explicit branch from the current BB to the header
-  irBuilder.CreateBr(HeaderBB);
+  //if step is negative branch to negative version, otherwise normal
+  irBuilder.CreateCondBr(isNegative, HeaderPBB, HeaderNBB);
 
-  // Emit loop header
-  irBuilder.SetInsertPoint(HeaderBB);
-  // create a phi node and set the starting value to be A
+  // Emit positive loop header
+  TheFunction->insert(TheFunction->end(), HeaderPBB);
+  irBuilder.SetInsertPoint(HeaderPBB);
 
   // Convert condition to a bool by comparing non-equal to 0.
   llvm::Value *IteratorVal = irBuilder.CreateLoad(A->getType(), IteratorAlloc, "iteratorval");
-  llvm::Value *CondV = irBuilder.CreateICmpSLE(IteratorVal, B, "loopcond");
+  llvm::Value *CondV = irBuilder.CreateICmpSLT(IteratorVal, B, "loopcond");
   irBuilder.CreateCondBr(CondV, BodyBB, ExitBB);
 
   // Emit loop body
@@ -1333,7 +1362,56 @@ llvm::Value *ASTForRangeStmt::codegen() {
     llvm::Value *NextIVal = irBuilder.CreateAdd(iValue, Amt, "nextival");
     irBuilder.CreateStore(NextIVal, iAlloc);
 
-    irBuilder.CreateBr(HeaderBB);
+    irBuilder.CreateBr(HeaderPBB);
+  }
+
+  
+  // // Emit negative loop header
+  TheFunction->insert(TheFunction->end(), HeaderNBB);
+  irBuilder.SetInsertPoint(HeaderNBB);
+
+  // // Convert condition to a bool by comparing non-equal to 0.
+  llvm::Value *IteratorNVal = irBuilder.CreateLoad(A->getType(), IteratorAlloc, "iteratorvalN");
+  llvm::Value *CondNV = irBuilder.CreateICmpSGT(IteratorNVal, B, "loopcondN");
+  irBuilder.CreateCondBr(CondNV, BodyNBB, ExitBB);
+
+  // Emit negative loop body
+  {
+    TheFunction->insert(TheFunction->end(), BodyNBB);
+    irBuilder.SetInsertPoint(BodyNBB);
+
+    llvm::Value *BodyNV = getThen()->codegen();
+    if (BodyNV == nullptr) {
+      throw InternalError(                                 // LCOV_EXCL_LINE
+          "failed to generate bitcode for the loop body"); // LCOV_EXCL_LINE
+    }
+
+    // add the increment amount to the iterator
+    llvm::Value *stepN = irBuilder.CreateLoad(A->getType(), IteratorAlloc, "step");
+    llvm::Value *NextNVal = irBuilder.CreateAdd(stepN, Amt, "nextval");
+    irBuilder.CreateStore(NextNVal, IteratorAlloc);
+
+
+    llvm::Value *iNValue = irBuilder.CreateLoad(iAlloc->getAllocatedType(), iAlloc, "load_i");
+    llvm::Value *NextINVal = irBuilder.CreateAdd(iNValue, Amt, "nextival");
+    irBuilder.CreateStore(NextINVal, iAlloc);
+
+    irBuilder.CreateBr(HeaderNBB);
+  }
+
+  // emit error block
+  {
+    irBuilder.SetInsertPoint(ErrorBB);
+    TheFunction->insert(TheFunction->end(), ErrorBB);
+    if (!errorIntrinsic) {
+      std::vector<llvm::Type *> errorParams(1, llvm::Type::getInt64Ty(llvmContext));
+      auto *FT = llvm::FunctionType::get(
+          llvm::Type::getInt64Ty(llvmContext), errorParams, false);
+      errorIntrinsic = llvm::Function::Create(
+          FT, llvm::Function::ExternalLinkage, "_tip_error", CurrentModule.get());
+    }
+    irBuilder.CreateCall(errorIntrinsic, {zeroV});
+    irBuilder.CreateUnreachable();
   }
 
   // Emit loop exit block.

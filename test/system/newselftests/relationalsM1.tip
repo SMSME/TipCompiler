@@ -14,5 +14,12 @@ main() {
     if ((true and not not a) != true) error 8;
     if ((not false and not false and true) != true) error 9;
 
+    c = [0, 1, 2, 3];
+    if (c[0] == 0 != true) error 10;
+    if (c[0] < c[1] != true) error 11;
+    if (c[1] > c[0] != true) error 12;
+    if (c[0] <= #c != true) error 13;
+    if (#c >= c[0] != true) error 14;
+
     return 0;
 }
