@@ -7,11 +7,22 @@ main() {
     d = [a, b, c, a];
 
     if (d[0] != a) error a[0];
+    if (d[0][0] != 1) error 1;
+
     if (d[1] != b) error a[1];
+    if (d[1][0] != 99) error 1;
+
     if (d[2] != c) error a[2];
+    if (d[2][0] != 7) error 1;
+
     if (d[3] != a) error a[3];
+    if (d[3][0] != 1) error 1;
 
     if (#d != 4) error #d;
+    if (#d[0] != 3) error #a;
+    if (#d[1] != 4) error #b;
+    if (#d[2] != 2) error #c;
+    if (#d[3] != 3) error #a;
 
     return 0;
 }
