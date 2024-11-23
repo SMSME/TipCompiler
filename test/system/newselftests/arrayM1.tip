@@ -2,9 +2,13 @@ main() {
     var a, x, y, z;
     a = [1,2,3];
 
+    x = [];
+
     if (a[0] != 1) error 1;
     if (a[1] != 2) error 2;
     if (a[2] != 3) error 3;
+
+    if (#x != 0) error 4;
 
     return 0;
 }

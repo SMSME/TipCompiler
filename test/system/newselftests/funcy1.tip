@@ -1,0 +1,26 @@
+math(a) {
+    a = a * 100 % 3 - 1;
+    return a;
+}
+
+main(){
+    var x, y, z;
+    x = [2, 4, 6, 8, 10, 12];
+
+    for (y : 0 .. 5) {
+        if (y % 2 == 0){
+            z = math(x[y]);
+            }
+        else { z = 1;}
+
+        x[y] = -z + 33;}
+
+    if (x[0] != 32) error 1;
+    if (x[1] != 32) error 2;
+    if (x[2] != 34) error 3;
+    if (x[3] != 32) error 4;
+    if (x[4] != 33) error 5;
+    if (x[5] != 12) error 6;
+
+    return 0;
+}
