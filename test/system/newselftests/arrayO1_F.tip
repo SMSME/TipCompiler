@@ -1,0 +1,6 @@
+main() {
+    var a;
+    a = [-1 of 3]; // Should fail
+
+    return 0;
+}

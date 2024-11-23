@@ -1,7 +1,7 @@
 main() {
     var a, x, y, z;
     a = [1,2,3];
-    x = a[32]; // Error should be produced
+    x = a[-4]; // Error should be produced
 
     if (a[0] != 1) error a[0];
     if (a[1] != 2) error a[1];
