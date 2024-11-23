@@ -1381,7 +1381,7 @@ llvm::Value *ASTArrayMulExpr::codegen() {
         values.size() + 1); // +1 for length
     llvm::Value *elementSize = llvm::ConstantInt::get(
         llvm::Type::getInt64Ty(llvmContext),
-        8); // sizeof(int64_t)
+        8); // sizeof(int64_t) for calloc-ing
 
     llvm::Value *calloc = irBuilder.CreateCall(callocFun, {numElements, elementSize}, "array.calloc");
     llvm::Value *arrayPtr = irBuilder.CreateBitCast(
@@ -1403,7 +1403,6 @@ llvm::Value *ASTArrayMulExpr::codegen() {
         irBuilder.CreateStore(values[i], elementPtr);
     }
 
-    // Return the pointer as an integer
     return irBuilder.CreatePtrToInt(arrayPtr, llvm::Type::getInt64Ty(llvmContext));
 }
 
@@ -1422,7 +1421,7 @@ llvm::Value *ASTArrayOfExpr::codegen() {
 
     auto constSize = llvm::dyn_cast<llvm::ConstantInt>(arrSize);
     if (!constSize) {
-        throw InternalError("Array size must be a constant");
+        throw InternalError("Array size must be a constant"); // Cannot allocate otherwise
     }
 
     // Use signed numbers to account for negatives
