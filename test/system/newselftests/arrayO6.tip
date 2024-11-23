@@ -1,0 +1,7 @@
+main() {
+    var a;
+    a = [5 of -1 + 8 - 2 + 9 * 3];
+    if (a[0] != 32) error 1;
+    if (#a != 5) error 2;
+    return 0;
+}
