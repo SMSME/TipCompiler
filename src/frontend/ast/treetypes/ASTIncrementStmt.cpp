@@ -21,7 +21,7 @@ std::vector<std::shared_ptr<ASTNode>> ASTIncrementStmt::getChildren() {
   return children;
 }
 
-llvm::Value *ASTIncrementStmt::codegen() {
-  return nullptr;
-}
+// llvm::Value *ASTIncrementStmt::codegen() {
+//   return nullptr;
+// }
 // LCOV_EXCL_END

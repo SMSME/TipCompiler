@@ -1,0 +1,11 @@
+main() {
+    var a, b;
+    a = [5 of 3];
+    b = [2 of a];
+
+    if (#b != 2) error 1;
+    if (#b[0] != 5) error 2;
+    if (b[0][0] != 3) error 3;
+
+    return 0;
+    }

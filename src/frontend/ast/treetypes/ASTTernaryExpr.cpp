@@ -27,7 +27,7 @@ std::vector<std::shared_ptr<ASTNode>> ASTTernaryExpr::getChildren() {
     return children;
 }
 
-llvm::Value *ASTTernaryExpr::codegen() {
-    return nullptr;
-}
+// llvm::Value *ASTTernaryExpr::codegen() {
+//     return nullptr;
+// }
 // LCOV_EXCL_END

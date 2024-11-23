@@ -1,0 +1,25 @@
+main() {
+    var a, b, c, d, e, f;
+    a = true;
+    b = false;
+    if ((a or b) != true) error 1;
+    if ((false or b) != false) error 2;
+    if ((a or b or true) != true) error 3;
+
+    if ((a and b) != false) error 4;
+    if ((true and a) != true) error 5;
+    if ((a and b and true) != false) error 6;
+
+    if ((not a or b) != false) error 7;
+    if ((true and not not a) != true) error 8;
+    if ((not false and not false and true) != true) error 9;
+
+    c = [0, 1, 2, 3];
+    if (c[0] == 0 != true) error 10;
+    if (c[0] < c[1] != true) error 11;
+    if (c[1] > c[0] != true) error 12;
+    if (c[0] <= #c != true) error 13;
+    if (#c >= c[0] != true) error 14;
+
+    return 0;
+}

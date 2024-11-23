@@ -1,0 +1,21 @@
+main() {
+    var a, b, c, d, e, f, g;
+
+    // no step/amount specified
+    c = 4;
+    for (d : 0 .. 3) {
+        c --;
+    }
+
+    if (c != 1) error 2;
+
+    // negative step
+    c = 4;
+    for (e : 3 .. 0 by -1) {
+        c --;
+    }
+
+    if (c != 1) error 3;
+
+    return 0;
+}

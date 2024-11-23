@@ -1,0 +1,13 @@
+main(){
+    var c, d;
+    d = [23, 323, 1];
+    c = [99*12, d[1] + 12, -d[1] + d[0], d[0]];
+
+    if (c[0] != 1188) error 1;
+    if (c[1] != 335) error 2;
+    if (c[2] != -300) error 3;
+    if (c[3] != 23) error 4;
+    if (#c - #d != 1) error 5;
+
+    return 0;
+}

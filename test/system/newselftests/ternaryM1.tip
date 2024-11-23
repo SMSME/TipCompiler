@@ -1,0 +1,25 @@
+main() {
+    var a, b, c, d, e, f;
+
+    a = true ? 5 : 100;
+    if (a != 5) error 1;
+
+    b = (true ? false : true) ? 10 : 50;
+    if (b != 50) error 2;
+
+    c = (b == 50 ? true : false);
+    if (c != true) error 3;
+
+    d = (true ? true : false) ? (true ? 5 : 10) : (false ? 50 : 100);
+    if (d != 5) error 4;
+
+    d = ((true ? true : false) ? true : false) ? (true ? 5 : 10) : (false ? 50 : 100);
+    if (d != 5) error 5;
+
+    e = [0, 1, 2, 3, 4, 5];
+    f = e[0] == 0 ? e[1] : e[2];
+    if (f != 1) error 6;
+
+    return 0;
+
+}

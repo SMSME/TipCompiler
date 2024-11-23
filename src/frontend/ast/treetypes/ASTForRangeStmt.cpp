@@ -37,7 +37,7 @@ std::vector<std::shared_ptr<ASTNode>> ASTForRangeStmt::getChildren() {
   return children;
 }
 
-llvm::Value *ASTForRangeStmt::codegen() {
-    return nullptr;
-}
+// llvm::Value *ASTForRangeStmt::codegen() {
+//     return nullptr;
+// }
 // LCOV_EXCL_END

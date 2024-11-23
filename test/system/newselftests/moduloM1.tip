@@ -1,0 +1,20 @@
+main(){
+    var a, b, c, d, e, f;
+    a = 10;
+    b = 100;
+    if (a % b != 10) error 1;
+    if (b % a != 0) error 2;
+    if (a % b % 10 != 0) error 3;
+
+    c = [0, 1, 2, -2, -5, 5];
+    if (c[5] % c[2] != 1) error 4;
+    if (c[5] % c[3] != 1) error 5;
+    if (c[4] % c[3] != -1) error 6;
+    if (c[4] % c[2] != -1) error 7;
+
+    if (100 % 10 + 1 != 1) error 8;
+    if (100 % 11 + 1 != 2) error 9;
+    
+
+    return 0;
+}

@@ -64,6 +64,87 @@ do
   rm $i.bc
 done
 
+# New self contained test cases
+for i in newselftests/*.tip
+do
+  base="$(basename $i .tip)"
+
+  if [[ $i == *"_F.tip" ]]; then
+    # test optimized program for tests expected to fail
+    initialize_test
+    ${TIPC} $i
+    ${TIPCLANG} -w $i.bc ${RTLIB}/tip_rtlib.bc -o $base
+
+    ./${base} &>/dev/null
+    exit_code=${?}
+    # Test is passing when it should fail
+    if [ ${exit_code} -eq 0 ]; then
+      echo -n "Test failure for : "
+      echo $i
+      ./${base}
+      ((numfailures++))
+    else
+      rm ${base}
+    fi
+    rm $i.bc
+
+    # test unoptimized program for tests expected to fail
+    initialize_test
+    ${TIPC} -do $i
+    ${TIPCLANG} -w $i.bc ${RTLIB}/tip_rtlib.bc -o $base
+
+    ./${base} &>/dev/null
+    exit_code=${?}
+    # Test is passing when it should fail
+    if [ ${exit_code} -eq 0 ]; then
+      echo -n "Test failure for : "
+      echo $i
+      ./${base}
+      ((numfailures++))
+    else
+      rm ${base}
+    fi
+    rm $i.bc
+
+  else
+    # Regular tests that should pass - check both optimized and unoptimized
+
+    # test optimized program
+    initialize_test
+    ${TIPC} $i
+    ${TIPCLANG} -w $i.bc ${RTLIB}/tip_rtlib.bc -o $base
+
+    ./${base} &>/dev/null
+    exit_code=${?}
+    if [ ${exit_code} -ne 0 ]; then
+      echo -n "Test failure for : "
+      echo $i
+      ./${base}
+      ((numfailures++))
+    else
+      rm ${base}
+    fi
+    rm $i.bc
+
+    # test unoptimized program
+    initialize_test
+    ${TIPC} -do $i
+    ${TIPCLANG} -w $i.bc ${RTLIB}/tip_rtlib.bc -o $base
+
+    ./${base} &>/dev/null
+    exit_code=${?}
+    if [ ${exit_code} -ne 0 ]; then
+      echo -n "Test failure for : "
+      echo $i
+      ./${base}
+      ((numfailures++))
+    else
+      rm ${base}
+    fi
+    rm $i.bc
+  fi
+done
+
 # IO related test cases
 for i in iotests/*.expected
 do

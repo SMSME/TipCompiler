@@ -1,0 +1,22 @@
+main() {
+    var a;
+    a = [4 of true];
+
+    if (#a != 4) error 1;
+    if (a[0] != true) error 2;
+    if (a[1] != true) error 3;
+    if (a[2] != true) error 4;
+    if (a[3] != true) error 5;
+
+    a[0] = false;
+    a[1] = false;
+    a[2] = false;
+    a[3] = false;
+
+    if (a[0] != false) error 6;
+    if (a[1] != false) error 7;
+    if (a[2] != false) error 8;
+    if (a[3] != false) error 9;
+
+    return 0;
+}

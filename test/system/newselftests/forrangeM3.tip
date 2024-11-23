@@ -1,0 +1,20 @@
+main() {
+    var c, d, e, f, g, h;
+    c = 0;
+    for (d : 0 .. 5 by 1) {
+        for (e : 5 .. 0 by -1) {
+            c++;
+        }
+    }
+    if (c != 25) error 1;
+
+    f = 0;
+    for (d : 5 .. 0 by -1) {
+        for (e : 5 .. 0 by -1) {
+            f++;
+        }
+    }
+    if (f != 25) error 2;
+
+    return 0;
+}

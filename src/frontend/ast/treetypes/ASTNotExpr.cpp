@@ -21,7 +21,7 @@ std::vector<std::shared_ptr<ASTNode>> ASTNotExpr::getChildren() {
     return children;
 }
 
-llvm::Value *ASTNotExpr::codegen() {
-    return nullptr;
-}
+// llvm::Value *ASTNotExpr::codegen() {
+//     return nullptr;
+// }
 // LCOV_EXCL_END

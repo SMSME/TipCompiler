@@ -1,0 +1,10 @@
+main() {
+    var a, b, c, d, e, f, g;
+
+    a = 0;
+    for (b : 10 .. 10 by -1) {
+        a++;
+    }
+
+    return 0;
+}

@@ -12,7 +12,7 @@ std::ostream &ASTBooleanExpr::print(std::ostream &out) const {
 } // LCOV_EXCL_LINE
 
 // LCOV_EXCL_START
-llvm::Value *ASTBooleanExpr::codegen() {
-    return nullptr;
-}
+// llvm::Value *ASTBooleanExpr::codegen() {
+//     return nullptr;
+// }
 // LCOV_EXCL_END
