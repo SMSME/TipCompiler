@@ -1309,7 +1309,7 @@ llvm::Value *ASTForRangeStmt::codegen() {
 
   // Convert condition to a bool by comparing non-equal to 0.
   llvm::Value *IteratorVal = irBuilder.CreateLoad(A->getType(), IteratorAlloc, "iteratorval");
-  llvm::Value *CondV = irBuilder.CreateICmpSLE(IteratorVal, B, "loopcond");
+  llvm::Value *CondV = irBuilder.CreateICmpSLT(IteratorVal, B, "loopcond");
   irBuilder.CreateCondBr(CondV, BodyBB, ExitBB);
 
   // Emit loop body
