@@ -12,7 +12,7 @@ std::ostream &ASTNegExpr::print(std::ostream &out) const {
     out << "-" << *getNegate();
     return out;
 }
-// LCOV_EXCL_START
+
 std::vector<std::shared_ptr<ASTNode>> ASTNegExpr::getChildren() {
     std::vector<std::shared_ptr<ASTNode>> children;
 
@@ -20,8 +20,3 @@ std::vector<std::shared_ptr<ASTNode>> ASTNegExpr::getChildren() {
 
     return children;
 }
-
-// llvm::Value *ASTNegExpr::codegen() {
-//     return nullptr;
-// }
-// LCOV_EXCL_END

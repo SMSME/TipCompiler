@@ -13,7 +13,7 @@ std::ostream &ASTArrayOfExpr::print(std::ostream &out) const {
   out << "[" << *getLeft() << " of " << *getRight() << "]";
   return out;
 } // LCOV_EXCL_LINE
-// LCOV_EXCL_START
+
 std::vector<std::shared_ptr<ASTNode>> ASTArrayOfExpr::getChildren() {
   std::vector<std::shared_ptr<ASTNode>> children;
   children.push_back(LEFT);
@@ -21,7 +21,3 @@ std::vector<std::shared_ptr<ASTNode>> ASTArrayOfExpr::getChildren() {
   return children;
 }
 
-// llvm::Value *ASTArrayOfExpr::codegen() {
-//     return nullptr;
-// }
-// LCOV_EXCL_END

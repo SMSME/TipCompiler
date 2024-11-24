@@ -12,7 +12,7 @@ std::ostream &ASTNotExpr::print(std::ostream &out) const {
     out << "not " << *getNot();
     return out;
 }
-// LCOV_EXCL_START
+
 std::vector<std::shared_ptr<ASTNode>> ASTNotExpr::getChildren() {
     std::vector<std::shared_ptr<ASTNode>> children;
 
@@ -20,8 +20,3 @@ std::vector<std::shared_ptr<ASTNode>> ASTNotExpr::getChildren() {
 
     return children;
 }
-
-// llvm::Value *ASTNotExpr::codegen() {
-//     return nullptr;
-// }
-// LCOV_EXCL_END
