@@ -1,0 +1,15 @@
+main() {
+    var a, b, c, d, e, f, g;
+    b = [1, 2, 3, 4, 5];
+    c = [1, 2];
+    d = [2, 5];
+    e = [b, d, c];
+
+    a = 0;
+    for (g : e) {
+        a = a + g[1] + g[0];
+    }
+    if (a != 13) error 1;
+
+    return 0;
+}

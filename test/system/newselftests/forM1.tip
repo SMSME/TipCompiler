@@ -3,9 +3,9 @@ main() {
     b = [1, 2, 3, 4, 5];
     a = 0;
     for (f : b) {
-        a++;
+        a = a + f;
     }
-    if (a != 5) error 1;
+    if (a != 15) error 1;
 
     c = 0;
     for (d : b) {
