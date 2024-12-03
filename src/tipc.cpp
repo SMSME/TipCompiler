@@ -53,6 +53,15 @@ static cl::opt<std::string> outputfile("o", cl::value_desc("outputfile"),
                                        cl::desc("write output to <outputfile>"),
                                        cl::cat(TIPcat));
 
+static cl::list<Optimization> OptimizationList(
+		cl::desc("Available Optimizations:"),
+		cl::values(
+			clEnumVal(licm, "Loop Invariant Code Motion"),
+			clEnumVal(del, "Loop Deletion"),
+      clEnumVal(unj, "Loop Unroll and Jam"),
+			clEnumVal(fin, "Function Inlining")),
+		cl::cat(TIPcat));
+
 /*! \brief tipc driver.
  *
  * This function is the entry point for tipc.   It handles command line parsing
@@ -127,7 +136,7 @@ int main(int argc, char *argv[]) {
           CodeGenerator::generate(ast.get(), analysisResults.get(), sourceFile);
 
       if (!disopt) {
-        Optimizer::optimize(llvmModule.get());
+        Optimizer::optimize(llvmModule.get(),OptimizationList);
       }
 
       if (emitHrAsm) {
