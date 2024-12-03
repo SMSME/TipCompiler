@@ -1,0 +1,10 @@
+main(n, m) {
+var a, i, j;
+a = [n of [m of 1]];
+for (i : 0 .. n) {
+    for (j : 0 .. m) {
+        a[i][j] = i + j;
+    }
+}
+return a[0][0];
+}
