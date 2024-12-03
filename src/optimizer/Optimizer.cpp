@@ -13,6 +13,8 @@
 #include "llvm/Transforms/Scalar/LoopDeletion.h"
 #include "llvm/Transforms/Scalar/LoopUnrollPass.h"
 #include "llvm/Transforms/Scalar/LoopFlatten.h"
+#include "llvm/Transforms/Scalar/ADCE.h"
+
 
 
 
@@ -94,6 +96,11 @@ void Optimizer::optimize(llvm::Module *theModule,
   if (contains(unr, enabledOpts)) {
     // Add loop unroll pass
     functionPassManager.addPass(llvm::LoopUnrollPass()); 
+  }   
+
+  if (contains(adce, enabledOpts)) {
+    // Add acde pass
+    functionPassManager.addPass(llvm::ADCEPass()); 
   }   
 
   // Add loop pass managers with and w/out MemorySSA

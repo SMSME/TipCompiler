@@ -60,6 +60,7 @@ static cl::list<Optimization> OptimizationList(
 			clEnumVal(del, "Loop Deletion"),
       clEnumVal(unr, "Loop Unroll"),
       clEnumVal(flat, "Loop Flatten"),
+      clEnumVal(adce, "Loop Flatten"),
 			clEnumVal(fin, "Function Inlining")),
 		cl::cat(TIPcat));
 
