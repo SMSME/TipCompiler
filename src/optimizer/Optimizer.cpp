@@ -11,9 +11,13 @@
 // P5 passes
 #include "llvm/Transforms/Scalar/LICM.h"
 #include "llvm/Transforms/Scalar/LoopDeletion.h"
+
+
+#include "llvm/Transforms/IPO/GlobalDCE.h"
+#include "llvm/Transforms/IPO/MergeFunctions.h"
+#include "llvm/Transforms/Scalar/TailRecursionElimination.h"
 #include "llvm/Transforms/Scalar/LoopUnrollPass.h"
-#include "llvm/Transforms/Scalar/LoopFlatten.h"
-#include "llvm/Transforms/Scalar/ADCE.h"
+#include "llvm/Transforms/Scalar/LoopStrengthReduce.h"
 
 
 
@@ -78,30 +82,34 @@ void Optimizer::optimize(llvm::Module *theModule,
   // Simplify the control flow graph (deleting unreachable blocks, etc).
   functionPassManager.addPass(llvm::SimplifyCFGPass());
 
+
+
+
+  if (contains(tail, enabledOpts)) {
+    // Add tail elimination recursion pass
+    functionPassManager.addPass(llvm::TailCallElimPass());
+  }
+
+
   if (contains(licm, enabledOpts)) {
     // Add loop invariant code motion 
-    loopPassManagerWithMSSA.addPass(llvm::LICMPass(llvm::LICMOptions())); 
+    loopPassManagerWithMSSA.addPass(llvm::LICMPass(llvm::LICMOptions()));
   }
 
   if (contains(del, enabledOpts)) {
     // Add loop deletion pass
     loopPassManager.addPass(llvm::LoopDeletionPass()); 
-  }   
+  }
 
-  if (contains(flat, enabledOpts)) {
-    // Add loop flatten pass
-    loopPassManager.addPass(llvm::LoopFlattenPass()); 
-  }   
+    if (contains(unr, enabledOpts)) {
+      // Add loop unroll pass
+      functionPassManager.addPass(llvm::LoopUnrollPass(llvm::LoopUnrollOptions()));
+    }
 
-  if (contains(unr, enabledOpts)) {
-    // Add loop unroll pass
-    functionPassManager.addPass(llvm::LoopUnrollPass()); 
-  }   
-
-  if (contains(adce, enabledOpts)) {
-    // Add acde pass
-    functionPassManager.addPass(llvm::ADCEPass()); 
-  }   
+  if (contains(streduc, enabledOpts)) {
+    // Add strength reduction
+    loopPassManager.addPass(llvm::LoopStrengthReducePass());
+  }
 
   // Add loop pass managers with and w/out MemorySSA
   functionPassManager.addPass(
@@ -116,6 +124,13 @@ void Optimizer::optimize(llvm::Module *theModule,
   modulePassManager.addPass(
       createModuleToFunctionPassAdaptor(std::move(functionPassManager), true));
 
+  if (contains(gdce, enabledOpts)) {
+    modulePassManager.addPass(llvm::GlobalDCEPass());
+  }
+
+  if (contains(merg, enabledOpts)) {
+    modulePassManager.addPass(llvm::MergeFunctionsPass());
+  }
 
   if (contains(fin, enabledOpts)) {
     modulePassManager.addPass(llvm::ModuleInlinerPass());

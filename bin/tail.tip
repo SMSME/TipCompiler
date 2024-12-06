@@ -1,0 +1,46 @@
+/*
+This program demonstrates the tail recursion elimination optimization. To see its impact:
+ASM viewing:
+    ./build.sh --asm tail.tip
+    wc tail.tip.ll ( See how much the program gets longer)
+    cat tail.tip.ll ( See code optimizations)
+
+Then build and run the program with and without optimization to see the difference:
+    ./build.sh tail.tip
+    time ./unroll 160000
+
+    ./build.sh -tail tail.tip
+    time ./unroll 160000
+
+Execution time goes from ~0.015s+ to peaking around this and ~0.011s. However the main difference with this addition is
+that when running this program at higher repetitions we will not blow the stack so running:
+./build.sh tail.tip
+time ./unroll 1600000 (extra zero added)
+will NOT work, but running it with the optimization will succeed.
+
+*/
+main(n) {
+    var f, g;
+    g = 43;
+    f = rec(n, 1);
+    g = g + (f * f + f * 3 + 3 * 9 - 4 / 2 % 3);
+    return g;
+}
+
+rec(n, acc) {
+    var f, nextAcc;
+
+    if (n == 0) {
+        f = acc;
+    } else {
+
+        nextAcc = (n * acc);  // n * acc (accumulated value)
+        nextAcc = nextAcc * (n * 3 + 7) - (nextAcc % 2);
+        nextAcc = nextAcc + (nextAcc / (n + 1));
+
+
+        f = rec(n - 1, nextAcc);
+    }
+
+    return f;  // Return the final computed value
+}
