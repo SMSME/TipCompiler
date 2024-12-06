@@ -1,3 +1,23 @@
+<<<<<<< HEAD
+main(n) {
+    var i, j, x, y;
+
+    x = 0;
+    y = 0;
+    for (i : 0 .. n) {
+        for (j : 0 .. n) {
+            x++;
+        }
+    }
+
+    for (i : 0 .. n) {
+        for (j : 0 .. n) {
+            y++;
+        }
+    }
+    return x+y;
+}
+=======
 /*
  * Example program with dead code in a loop for ADCE testing.
  *
@@ -18,3 +38,4 @@ main(n) {
 
   return result;  // Only `result` affects the output
 }
+>>>>>>> d110a9a514c99e6ef595f6cdc0d5697a21ddcf42
