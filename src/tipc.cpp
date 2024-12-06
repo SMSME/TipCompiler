@@ -56,9 +56,13 @@ static cl::opt<std::string> outputfile("o", cl::value_desc("outputfile"),
 static cl::list<Optimization> OptimizationList(
 		cl::desc("Available Optimizations:"),
 		cl::values(
+		clEnumVal(tail, "Recursive Tail Elimination"),
 			clEnumVal(licm, "Loop Invariant Code Motion"),
 			clEnumVal(del, "Loop Deletion"),
-      clEnumVal(unj, "Loop Unroll and Jam"),
+			clEnumVal(gdce, "Global Dead Code Elimination"),
+      clEnumVal(merg, "Merge Identical Functions"),
+			clEnumVal(unr, "Loop Unroll"),
+      clEnumVal(streduc, "Loop Strength Reduction"),
 			clEnumVal(fin, "Function Inlining")),
 		cl::cat(TIPcat));
 

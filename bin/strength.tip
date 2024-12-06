@@ -1,0 +1,51 @@
+/*
+This program demonstrates the loop strength reduction optimization. To see its impact:
+ASM viewing:
+    ./build.sh --asm strength.tip
+    wc strength.tip.ll ( See how much the program gets shorter)
+    cat strength.tip.ll ( See code optimizations)
+
+Then build and run the program with and without optimization to see the difference:
+    ./build.sh strength.tip
+    time ./strength 10000
+
+    ./build.sh -streduc strength.tip
+    time ./strength 10000
+
+In terms of execution time, the unoptimized average time was approximately ~0.730s,
+while the optimized average time is approximately ~0.550s, leading to a 25% increase in performance
+
+Additionally, the llvm code became ~7% smaller
+*/
+
+
+main(n){
+    var i, r;
+    i = 10;
+    while (i < n){
+        r = r + streduc();
+        i++;
+    }
+    return r;
+}
+
+streduc() {
+    var i, j, a, b, r, d, e, f, g;
+    a = 100;
+    b = 1;
+    r = 5;
+    d = 2;
+    e = 4;
+
+    // Nested loops
+    for (i : 0 .. a) {
+        for (j : 0 .. a) {
+            b = b + 6 * i;
+            r = r + 7 * j;
+            d = d + 8 * (i + j);
+            e = e + (9 * 9 * 9 / 2 * i * j);
+
+        }
+    }
+    return b + r + d + e;
+}
