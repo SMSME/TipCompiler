@@ -1,0 +1,52 @@
+/*
+This program demonstrates the loop unrolling optimization. To see its impact:
+ASM viewing:
+    ./build.sh --asm unroll.tip
+    wc merge.tip.ll ( See how much the program gets longer)
+    cat unroll.tip.ll ( See code optimizations)
+
+Then build and run the program with and without optimization to see the difference:
+    ./build.sh unroll.tip
+    time ./unroll 7500
+
+    ./build.sh -unr unroll.tip
+    time ./unroll 7500
+
+In terms of execution time, the unoptimized average time was approximately ~1.190s,
+while the optimized average time is approximately ~0.192s, leading to an ~85% increase in performance/ 6x speed increase.
+
+*/
+main(n){
+    var i, r, k, c;
+    i = 0;
+    c = 23;
+    k = 7;
+    while (i < n){
+        r = unroll() * i;
+        i++;
+    }
+    return r;
+}
+
+
+unroll() {
+    var i, j, factor, sum;
+    sum = 0;
+    factor = 2;
+
+    for (i : 1 .. 72 * 7 * 9 by 3) {
+        // Multiplication can be replaced with addition
+        factor = i * factor;
+
+        for (j : 1 .. 2 * 11 + 4 - 2 - 2 by 4) {
+            // Power operation can be replaced with repeated multiplications
+            factor = j * j * j * j * j * j * j * j * j;
+
+            // Division in a loop can be replaced with precomputed reciprocal
+            sum = sum + factor+1 / factor/2;
+
+        }
+    }
+
+    return sum * factor;
+}

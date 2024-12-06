@@ -1,0 +1,84 @@
+/* This optimization doesn't reduce time, but reduces bit code length.
+After building the unoptimized program with:
+    ./build.sh --asm GDCE.tip
+    wc GDCE.tip.ll
+
+Then build the optimized program with:
+    ./build.sh --asm --gdce GDCE.tip
+    wc GDCE.tip.ll
+and compare the bitcode length between the two.
+
+You should be able to see a 15x reduction in lines, and a 36x reduction in words and 24x reduction in file size.
+*/
+
+main() {
+    return 0;
+}
+
+func1() {
+    var i, j, a;
+    i = 0;
+    j = 0;
+    a = 0;
+
+    while (i < 10000) {
+        while (j < 10000) {
+            a++;
+            j++;
+        }
+        i++;
+    }
+
+    return a;
+}
+
+func2() {
+    var i, j, a;
+    i = 0;
+    j = 0;
+    a = 0;
+
+    while (i < 10000) {
+        while (j < 10000) {
+            a = i + j;
+            j++;
+        }
+        i++;
+    }
+
+    return a;
+}
+
+func3() {
+    var i, j, a;
+    i = 0;
+    j = 0;
+    a = 0;
+
+    while (i < 10000) {
+        while (j < 10000) {
+            a = j - i;
+            j++;
+        }
+        i++;
+    }
+
+    return a;
+}
+
+func4() {
+    var i, j, a;
+    i = 0;
+    j = 0;
+    a = 0;
+
+    while (i < 10000) {
+        while (j < 10000) {
+            a = j + i * (i + 2*j);
+            j++;
+        }
+        i++;
+    }
+
+    return a;
+}

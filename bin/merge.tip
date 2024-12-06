@@ -1,0 +1,92 @@
+/* this optimization doesn't reduce time, but reduces bit code length.
+After building the unoptimized program with:
+    ./build.sh --asm merge.tip
+    wc merge.tip.ll
+
+Then build the optimized program with:
+    ./build.sh --asm --merg merge.tip
+    wc merge.tip.ll
+and compare the bitcode length between the two.
+
+You should be able to see a 2.25x reduction in lines, and a 2.5x reduction in words and file size.
+*/
+
+main() {
+    var a;
+    a = 0;
+
+    a = func1();
+    a = func2();
+    a = func3();
+    a = func4();
+
+    return 0;
+}
+
+func1() {
+    var i, j, a;
+    i = 0;
+    j = 0;
+    a = 0;
+
+    while (i < 1000000) {
+        while (j < 1000000) {
+            a++;
+            j++;
+        }
+        i++;
+    }
+
+    return a;
+}
+
+func2() {
+    var i, j, a;
+    i = 0;
+    j = 0;
+    a = 0;
+
+    while (i < 1000000) {
+        while (j < 1000000) {
+            a++;
+            j++;
+        }
+        i++;
+    }
+
+    return a;
+}
+
+func3() {
+    var i, j, a;
+    i = 0;
+    j = 0;
+    a = 0;
+
+    while (i < 1000000) {
+        while (j < 1000000) {
+            a++;
+            j++;
+        }
+        i++;
+    }
+
+    return a;
+}
+
+func4() {
+    var i, j, a;
+    i = 0;
+    j = 0;
+    a = 0;
+
+    while (i < 1000000) {
+        while (j < 1000000) {
+            a++;
+            j++;
+        }
+        i++;
+    }
+
+    return a;
+}
