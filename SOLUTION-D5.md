@@ -45,7 +45,10 @@ This optimization reduces the strength of operations by replacing expensive oper
 ##### Evidence
 This optimization provides unique benefit in optimizing SIP programs because it can cause decrease run time. For example, in our ablation study, we saw a 1.25x decrease in run time, meaning a better performance.
 
+### GetChildren Code Coverage
+After finishing this part of the project and running code coverage, we realized we forgot to add code coverage for the getChildren methods for the ASTNodes. We then added new tests into ASTNodeTests.cpp that covered these methods.
 
 ### Conclusion
 
 The optimizations implemented in this study have demonstrated improvements in both code size reduction and performance for the programs. By applying techniques such as Global Dead Code Elimination, Merge Functions, Tail Recursion Elimination, Loop Unroll, and Loop Strength Reduction, we were able to achieve notable decreases in runtime and code size, as shown in our ablation study results. These optimizations not only enhance the efficiency. Overall, the optimizations selected were beneficial in improving the performance and reducing the complexity of SIP programs.
+
