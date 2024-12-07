@@ -46,7 +46,7 @@ This optimization reduces the strength of operations by replacing expensive oper
 This optimization provides unique benefit in optimizing SIP programs because it can cause decrease run time. For example, in our ablation study, we saw a 1.25x decrease in run time, meaning a better performance.
 
 ### GetChildren Code Coverage
-After finishing this part of the project and running code coverage, we realized we forgot to add code coverage for the getChildren methods for the ASTNodes. We then added new tests into ASTNodeTests.cpp that covered these methods.
+After finishing this part of the project and running code coverage, we realized we forgot to add code coverage for the getChildren methods in the ASTNodes. We then added new tests into ASTNodeTests.cpp that covered these methods. For each ASTNode, we called getChildren() on it and checked the values of each child and checked if the number of children matched the expected.
 
 ### Conclusion
 
