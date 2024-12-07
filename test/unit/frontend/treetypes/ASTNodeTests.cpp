@@ -511,6 +511,32 @@ TEST_CASE("ASTDecrementStmt: Test methods of AST subtype.",
    REQUIRE(ptest.str() == "z--");
 }
 
+TEST_CASE("ASTDecrementStmtGetChildren: Test getChildren methods of AST subtype.",
+          "[ASTNodes]") {
+   std::stringstream stream;
+   stream << R"(
+      foo(x) {
+         var z;
+         z = 12;
+         z--;
+         return 0;
+      }
+    )";
+
+   auto ast = ASTHelper::build_ast(stream);
+   auto stmt = ASTHelper::find_node<ASTDecrementStmt>(ast);
+
+   // Get the children
+   auto children = stmt->getChildren();
+   REQUIRE(children.size() == 1); // Verify the number of children
+
+   // Check the contents of the children
+   std::stringstream child0;
+   child0 << *children[0];
+   REQUIRE(child0.str() == "z"); // First child matches 'e1'
+
+}
+
 TEST_CASE("ASTIncrementStmt: Test methods of AST subtype.",
           "[ASTNodes]") {
     std::stringstream stream;
@@ -533,6 +559,31 @@ TEST_CASE("ASTIncrementStmt: Test methods of AST subtype.",
    std::stringstream ptest;
    ptest << *stmt;
    REQUIRE(ptest.str() == "z++");
+}
+
+TEST_CASE("ASTIncrementStmtGetChildren: Test methods of AST subtype.",
+          "[ASTNodes]") {
+   std::stringstream stream;
+   stream << R"(
+      foo(x) {
+         var z;
+         z = 12;
+         z++;
+         return 0;
+      }
+    )";
+
+   auto ast = ASTHelper::build_ast(stream);
+   auto stmt = ASTHelper::find_node<ASTIncrementStmt>(ast);
+
+   // Get the children
+   auto children = stmt->getChildren();
+   REQUIRE(children.size() == 1); // Verify the number of children
+
+   // Check the contents of the children
+   std::stringstream child0;
+   child0 << *children[0];
+   REQUIRE(child0.str() == "z"); // First child matches 'e1'
 }
 
 TEST_CASE("ASTNotExpr: Test methods of AST subtype.",
@@ -558,7 +609,30 @@ TEST_CASE("ASTNotExpr: Test methods of AST subtype.",
    REQUIRE(ptest.str() == "not z");
 }
 
-TEST_CASE("ASTArrayMulExprMultiple: Test methods of AST subtype.",
+TEST_CASE("ASTNotExprGetChildren: Test methods of AST subtype.",
+          "[ASTNodes]") {
+   std::stringstream stream;
+   stream << R"(
+      foo(x) {
+         var z;
+         x = not z;
+         return 0;
+      }
+    )";
+
+   auto ast = ASTHelper::build_ast(stream);
+   auto expr = ASTHelper::find_node<ASTNotExpr>(ast);
+
+   auto children = expr->getChildren();
+   REQUIRE(children.size() == 1); // Verify the number of children
+
+   // Check the contents of the children
+   std::stringstream child0;
+   child0 << *children[0];
+   REQUIRE(child0.str() == "z"); // First child matches 'e1'
+}
+
+TEST_CASE("ASTArrayMulExprNone: Test methods of AST subtype.",
           "[ASTNodes]") {
     std::stringstream stream;
     stream << R"(
@@ -580,7 +654,7 @@ TEST_CASE("ASTArrayMulExprMultiple: Test methods of AST subtype.",
    REQUIRE(ptest.str() == "[]");
 }
 
-TEST_CASE("ASTArrayMulExprNone: Test methods of AST subtype.",
+TEST_CASE("ASTArrayMulExprMultiple: Test methods of AST subtype.",
           "[ASTNodes]") {
     std::stringstream stream;
     stream << R"(
@@ -600,6 +674,37 @@ TEST_CASE("ASTArrayMulExprNone: Test methods of AST subtype.",
    std::stringstream ptest;
    ptest << *expr;
    REQUIRE(ptest.str() == "[e1,e2,e3]");
+}
+
+TEST_CASE("ASTArrayMulExprMultipleGetChildren: Test getChildren.",
+          "[ASTNodes]") {
+   std::stringstream stream;
+   stream << R"(
+      foo(x) {
+         var e1, e2, e3, arr;
+         arr = [e1, e2, e3];
+         return 0;
+      }
+    )";
+
+   // Build the AST and find the specific ASTArrayOfExpr node
+   auto ast = ASTHelper::build_ast(stream);
+   auto expr = ASTHelper::find_node<ASTArrayMulExpr>(ast);
+
+   // Get the children
+   auto children = expr->getChildren();
+   REQUIRE(children.size() == 3); // Verify the number of children
+
+   // Check the contents of the children
+   std::stringstream child0, child1, child2;
+   child0 << *children[0];
+   REQUIRE(child0.str() == "e1"); // First child matches 'e1'
+
+   child1 << *children[1];
+   REQUIRE(child1.str() == "e2"); // Second child matches 'e2'
+
+   child2 << *children[2];
+   REQUIRE(child2.str() == "e3"); // Second child matches 'e2'
 }
 
 TEST_CASE("ASTArrayOfExprDefault: Test methods of AST subtype.",
@@ -629,6 +734,34 @@ TEST_CASE("ASTArrayOfExprDefault: Test methods of AST subtype.",
    REQUIRE(ptest.str() == "[e1 of e2]");
 }
 
+TEST_CASE("ASTArrayOfExprGetChildren: Verify children of AST node.", "[ASTNodes]") {
+   std::stringstream stream;
+   stream << R"(
+      foo(x) {
+         var e1, e2, arr;
+         arr = [e1 of e2];
+         return 0;
+      }
+    )";
+
+   // Build the AST and find the specific ASTArrayOfExpr node
+   auto ast = ASTHelper::build_ast(stream);
+   auto expr = ASTHelper::find_node<ASTArrayOfExpr>(ast);
+
+   // Get the children
+   auto children = expr->getChildren();
+   REQUIRE(children.size() == 2); // Verify the number of children
+
+   // Check the contents of the children
+   std::stringstream child0, child1;
+   child0 << *children[0];
+   REQUIRE(child0.str() == "e1"); // First child matches 'e1'
+
+   child1 << *children[1];
+   REQUIRE(child1.str() == "e2"); // Second child matches 'e2'
+}
+
+
 
 TEST_CASE("ASTLengthExpr: Test methods of AST subtype.",
           "[ASTNodes]") {
@@ -652,6 +785,31 @@ TEST_CASE("ASTLengthExpr: Test methods of AST subtype.",
    std::stringstream ptest;
    ptest << *expr;
    REQUIRE(ptest.str() == "#z");
+}
+
+TEST_CASE("ASTLengthExprGetChildren: Test methods of AST subtype.",
+          "[ASTNodes]") {
+   std::stringstream stream;
+   stream << R"(
+      foo(x) {
+         var z, expr1;
+         z = [expr1];
+         a = #z;
+         return 0;
+      }
+    )";
+
+   auto ast = ASTHelper::build_ast(stream);
+   auto expr = ASTHelper::find_node<ASTLengthExpr>(ast);
+
+   // Get the children
+   auto children = expr->getChildren();
+   REQUIRE(children.size() == 1); // Verify the number of children
+
+   // Check the contents of the children
+   std::stringstream child0;
+   child0 << *children[0];
+   REQUIRE(child0.str() == "z"); // First child matches 'e1'
 }
 
 TEST_CASE("ASTArrayIndexExpr: Test methods of AST subtype.",
@@ -679,6 +837,34 @@ TEST_CASE("ASTArrayIndexExpr: Test methods of AST subtype.",
    std::stringstream ptest;
    ptest << *expr;
    REQUIRE(ptest.str() == "z[1]");
+}
+
+TEST_CASE("ASTArrayIndexExprGetChildren: Check children.",
+          "[ASTNodes]") {
+   std::stringstream stream;
+   stream << R"(
+      foo(x) {
+         var z;
+         x = z[1];
+         return 0;
+      }
+    )";
+
+
+   auto ast = ASTHelper::build_ast(stream);
+   auto expr = ASTHelper::find_node<ASTArrayIndexExpr>(ast);
+
+   // Get the children
+   auto children = expr->getChildren();
+   REQUIRE(children.size() == 2); // Verify the number of children
+
+   // Check the contents of the children
+   std::stringstream child0, child1;
+   child0 << *children[0];
+   REQUIRE(child0.str() == "z"); // First child matches 'e1'
+
+   child1 << *children[1];
+   REQUIRE(child1.str() == "1"); // Second child matches 'e2'
 }
 
 
@@ -713,6 +899,36 @@ TEST_CASE("ASTTernaryExpr: Test methods of AST subtype.",
    REQUIRE(ptest.str() == "(1>2) ? 3 : 4");
 }
 
+TEST_CASE("ASTTernaryExprGetChildren: Test methods of AST subtype.",
+         "[ASTNodes]") {
+   std::stringstream stream;
+   stream << R"(
+   foo(c) {
+      var x;
+      x = (1 > 2) ? 3 : 4;
+      return 0;
+   }
+   )";
+
+   auto ast = ASTHelper::build_ast(stream);
+   auto expr = ASTHelper::find_node<ASTTernaryExpr>(ast);
+
+   // Get the children
+   auto children = expr->getChildren();
+   REQUIRE(children.size() == 3); // Verify the number of children
+
+   // Check the contents of the children
+   std::stringstream child0, child1, child2;
+   child0 << *children[0];
+   REQUIRE(child0.str() == "(1>2)"); // First child matches 'e1'
+
+   child1 << *children[1];
+   REQUIRE(child1.str() == "3"); // First child matches 'e1'
+
+   child2 << *children[2];
+   REQUIRE(child2.str() == "4"); // First child matches 'e1'
+}
+
 TEST_CASE("ASTNegExprTest: Test methods of AST subtype.",
           "[ASTNodes]") {
     std::stringstream stream;
@@ -732,6 +948,28 @@ TEST_CASE("ASTNegExprTest: Test methods of AST subtype.",
    std::stringstream ptest;
    ptest << *expr;
    REQUIRE(ptest.str() == "-x");
+}
+
+TEST_CASE("ASTNegExprTestGetChildren: Test methods of AST subtype.",
+          "[ASTNodes]") {
+   std::stringstream stream;
+   stream << R"(
+      foo(x) {
+         return -x;
+      }
+    )";
+
+   auto ast = ASTHelper::build_ast(stream);
+   auto expr = ASTHelper::find_node<ASTNegExpr>(ast);
+
+   // Get the children
+   auto children = expr->getChildren();
+   REQUIRE(children.size() == 1); // Verify the number of children
+
+   // Check the contents of the children
+   std::stringstream child0;
+   child0 << *children[0];
+   REQUIRE(child0.str() == "x"); // First child matches 'e1'
 }
 
 TEST_CASE("ASTForStmtTest: Test methods of AST subtype.",
@@ -763,6 +1001,35 @@ TEST_CASE("ASTForStmtTest: Test methods of AST subtype.",
    std::stringstream ptest;
    ptest << *stmt;
    REQUIRE(ptest.str() == "for (item : collection) item = x;");
+}
+
+TEST_CASE("ASTForStmtTestGetChildren: Test methods of AST subtype.",
+          "[ASTNodes]") {
+   std::stringstream stream;
+   stream << R"(
+      foo(x) {
+         var item, collection, x;
+         for (item : collection) item = x;
+         return 0;
+      }
+   )";
+
+   auto ast = ASTHelper::build_ast(stream);
+   auto stmt = ASTHelper::find_node<ASTForStmt>(ast);
+
+   auto children = stmt->getChildren();
+   REQUIRE(children.size() == 3); // Verify the number of children
+
+   // Check the contents of the children
+   std::stringstream child0, child1, child2;
+   child0 << *children[0];
+   REQUIRE(child0.str() == "item"); // First child matches 'e1'
+
+   child1 << *children[1];
+   REQUIRE(child1.str() == "collection"); // First child matches 'e1'
+
+   child2 << *children[2];
+   REQUIRE(child2.str() == "item = x;"); // First child matches 'e1'
 }
 
 TEST_CASE("ASTForRangeStmtTest: Test methods of AST subtype.",
@@ -839,6 +1106,41 @@ TEST_CASE("ASTForRangeStmtTestAmt: Test methods of AST subtype.",
    std::stringstream ptest;
    ptest << *stmt;
    REQUIRE(ptest.str() == "for (e1 : e2 .. e3 by 1) stmt = x;");
+}
+
+TEST_CASE("ASTForRangeStmtTestAmtGetChildren: Test methods of AST subtype.",
+          "[ASTNodes]") {
+   std::stringstream stream;
+   stream << R"(
+      foo(x) {
+         var e1, e2, e3, stmt;
+         for (e1 : e2 .. e3 by 1) stmt = x;
+         return 0;
+      }
+   )";
+
+   auto ast = ASTHelper::build_ast(stream);
+   auto stmt = ASTHelper::find_node<ASTForRangeStmt>(ast);
+
+   auto children = stmt->getChildren();
+   REQUIRE(children.size() == 5); // Verify the number of children
+
+   // Check the contents of the children
+   std::stringstream child0, child1, child2, child3, child4;
+   child0 << *children[0];
+   REQUIRE(child0.str() == "e1"); // First child matches 'e1'
+
+   child1 << *children[1];
+   REQUIRE(child1.str() == "e2"); // First child matches 'e1'
+
+   child2 << *children[2];
+   REQUIRE(child2.str() == "e3"); // First child matches 'e1'
+
+   child3 << *children[3];
+   REQUIRE(child3.str() == "1"); // First child matches 'e1'
+
+   child4 << *children[4];
+   REQUIRE(child4.str() == "stmt = x;"); // First child matches 'e1'
 }
 
 TEST_CASE("ASTBinaryExprTestforMod: Test methods of AST subtype.",
