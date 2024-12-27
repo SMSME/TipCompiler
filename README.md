@@ -6,6 +6,10 @@ tipc
 =========
 A compiler from TIP to llvm bitcode
 
+## About
+This project extends and builds upon the TIP language, adding in functionality for features such as for loops (for each and range), ternary
+expressions, arrays and more. Read more about the language below.
+
 
 ## TIP Language, Interpreter, and Analyzers
 
@@ -14,6 +18,7 @@ TIP is a "Tiny Imperative Programming" language developed by Anders M&#248;ller 
 Accompanying those notes is a [Scala implementation](https://github.com/cs-au-dk/TIP/) that provides a number of static analysis implementations and interpreter-based evaluators.
 
 This project implements `tipc` which compiles TIP programs into LLVM bitcode.  Linking that bitcode with the [runtime library](./rtlib) routines and standard libraries will produce an executable.
+
 
 ## Dependencies
 
